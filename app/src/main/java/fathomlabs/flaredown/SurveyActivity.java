@@ -7,14 +7,20 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Point;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -29,7 +35,6 @@ public class SurveyActivity extends Activity {
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
-    //Context _context = getApplicationContext();
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -147,7 +152,8 @@ public class SurveyActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            Bundle stuff = getArguments();
+
+            ViewGroup view = (ViewGroup)inflater.inflate(R.layout.select_page, container, false);
 
             ArrayList<Input> inputs = new ArrayList<Input>();
             inputs.add(new Input(0, "very_well", "happy_face", null));
@@ -158,10 +164,39 @@ public class SurveyActivity extends Activity {
 
             Select select = new Select("general_wellbeing", inputs);
 
-            View view = inflater.inflate(R.layout.select_page, container, false);
-            //TextView textView = new TextView(_context);
+            Point size = getWindowSize(inflater);
+            int width = size.x;
+            int height = size.y;
+
+            LinearLayout linearLayout = new LinearLayout(inflater.getContext());
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(width, height);
+            linearLayout.setLayoutParams(layoutParams);
+
+            TextView textView = new TextView(inflater.getContext());
+            textView.setText(select.get_name());
+            linearLayout.addView(textView);
+
+            int xLocationModifier = 1;
+            for(Input input : inputs){
+                CheckBox checkbox = new CheckBox(inflater.getContext());
+                checkbox.setText(input.get_label());
+                checkbox.setX(xLocationModifier*25);
+                linearLayout.addView(checkbox);
+                xLocationModifier++;
+            }
+            linearLayout.setX(75);
+            linearLayout.setY(50);
+            view.addView(linearLayout);
             return view;
 
+        }
+        private Point getWindowSize(LayoutInflater inflater){
+            WindowManager wm = (WindowManager) inflater.getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            return size;
         }
     }
 
