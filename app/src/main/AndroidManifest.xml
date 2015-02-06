@@ -15,6 +15,12 @@
         <activity
             android:name=".SurveyActivity"
             android:label="@string/title_activity_survey" >
+            <!-- Move to correct activity, only here for testing -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
