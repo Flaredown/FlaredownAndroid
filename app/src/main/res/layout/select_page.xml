@@ -9,12 +9,4 @@
     tools:context="fathomlabs.flaredown.SurveyActivity.FirstQuestion"
     android:id="@+id/select_complications">
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Page"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
 </RelativeLayout>

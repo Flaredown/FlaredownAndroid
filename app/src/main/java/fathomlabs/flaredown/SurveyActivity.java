@@ -1,6 +1,8 @@
 package fathomlabs.flaredown;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -10,49 +12,40 @@ import android.content.Context;
 import android.graphics.Point;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 
 public class SurveyActivity extends Activity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
     SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     ViewPager mViewPager;
+    HashMap pages = new HashMap();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
     }
 
 
@@ -75,31 +68,31 @@ public class SurveyActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        ArrayList<Input> _inputs =new ArrayList<Input>();
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+
+            _inputs.add(new Input(0, "very_well", "happy_face", null));
+            _inputs.add(new Input(1, "slightly_below_par", "neutral_face", null));
+            _inputs.add(new Input(2, "poor", "frowny_face", null));
+            _inputs.add(new Input(3, "very_poor", "sad_face", null));
+            _inputs.add(new Input(4, "terrible", "sad_face", null));
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a FirstQuestion (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return SelectPage.newInstance(position + 1, null);
+                    return SelectPage.newInstance(_inputs);
                 case 1:
-                    return NumberPage.newInstance(position + 1);
+                    return new NumberPage();
                 case 2:
-                    return SelectPage.newInstance(position + 1, null);
+                    return SelectPage.newInstance(_inputs);
                 default:
-                    return NumberPage.newInstance(position + 1);
+                    return new NumberPage();
             }
         }
 
@@ -120,112 +113,6 @@ public class SurveyActivity extends Activity {
                     return getString(R.string.title_section3).toUpperCase(l);
             }
             return null;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class SelectPage extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        private static Context _context;
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static SelectPage newInstance(int sectionNumber, Context context) {
-            _context = context;
-            SelectPage fragment = new SelectPage();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public SelectPage(){
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-
-            ViewGroup view = (ViewGroup)inflater.inflate(R.layout.select_page, container, false);
-
-            ArrayList<Input> inputs = new ArrayList<Input>();
-            inputs.add(new Input(0, "very_well", "happy_face", null));
-            inputs.add(new Input(1, "slightly_below_par", "neutral_face", null));
-            inputs.add(new Input(2, "poor", "frowny_face", null));
-            inputs.add(new Input(3, "very_poor", "sad_face", null));
-            inputs.add(new Input(4, "terrible", "sad_face", null));
-
-            Select select = new Select("general_wellbeing", inputs);
-
-            Point size = getWindowSize(inflater);
-            int width = size.x;
-            int height = size.y;
-
-            LinearLayout linearLayout = new LinearLayout(inflater.getContext());
-            linearLayout.setOrientation(LinearLayout.VERTICAL);
-            LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(width, height);
-            linearLayout.setLayoutParams(layoutParams);
-
-            TextView textView = new TextView(inflater.getContext());
-            textView.setText(select.get_name());
-            linearLayout.addView(textView);
-
-            int xLocationModifier = 1;
-            for(Input input : inputs){
-                CheckBox checkbox = new CheckBox(inflater.getContext());
-                checkbox.setText(input.get_label());
-                checkbox.setX(xLocationModifier*25);
-                linearLayout.addView(checkbox);
-                xLocationModifier++;
-            }
-            linearLayout.setX(75);
-            linearLayout.setY(50);
-            view.addView(linearLayout);
-            return view;
-
-        }
-        private Point getWindowSize(LayoutInflater inflater){
-            WindowManager wm = (WindowManager) inflater.getContext().getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            return size;
-        }
-    }
-
-    public static class NumberPage extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static NumberPage newInstance(int sectionNumber) {
-            NumberPage fragment = new NumberPage();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public NumberPage() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.select_page, container, false);
         }
     }
 }

@@ -23,6 +23,8 @@ public class Input {
         return _meta_label;
     }
 
+    public String get_helper() {return _helper;}
+
     public Input(int value, String label, String meta_label, String helper){
         _value = value;
         _label = label;
