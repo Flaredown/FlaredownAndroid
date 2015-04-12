@@ -48,3 +48,34 @@ gulp.task('git-check', function(done) {
   }
   done();
 });
+
+
+var rimraf = require('gulp-rimraf');
+var rename = require("gulp-rename");
+
+gulp.task('dev', function() {
+  gulp.src('www/AppConfig.js', { read: false })
+    .pipe(rimraf({ force: true }));
+
+  gulp.src('./config/development.js')
+    .pipe(rename("AppConfig.js"))
+    .pipe(gulp.dest('www/'));
+});
+
+gulp.task('test', function() {
+  gulp.src('www/AppConfig.js', { read: false })
+  .pipe(rimraf({ force: true }));
+
+  gulp.src('./config/test.js')
+  .pipe(rename("AppConfig.js"))
+  .pipe(gulp.dest('www/'));
+});
+
+gulp.task('prod', function() {
+  gulp.src('www/AppConfig.js', { read: false })
+  .pipe(rimraf({ force: true }));
+
+  gulp.src('./config/production.js')
+  .pipe(rename("AppConfig.js"))
+  .pipe(gulp.dest('www/'));
+});
