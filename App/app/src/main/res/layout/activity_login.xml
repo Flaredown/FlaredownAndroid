@@ -57,7 +57,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:hint="@string/prompt_email"/>
 
                 <TextView
                     android:id="@+id/textView3"
