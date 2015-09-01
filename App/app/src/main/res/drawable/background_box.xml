@@ -8,7 +8,7 @@
             <solid android:color="@color/box_shadow"/>
         </shape>
     </item>
-    <item android:bottom="5dp">
+    <item android:bottom="3dp">
         <shape
             android:shape="rectangle">
             <corners
