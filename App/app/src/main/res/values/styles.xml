@@ -9,12 +9,18 @@
         <item name="android:windowBackground">@color/background</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:textColor">@color/textColor</item>
+        <item name="android:buttonStyle">@style/AppTheme.Button</item>
     </style>
 
 
     <style name="AppTheme.Box">
         <item name="android:padding">5dp</item>
         <item name="android:background">@drawable/background_box</item>
+    </style>
+
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@drawable/button_text_color</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 </resources>
