@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#BFB19C</color>
     <color name="textColor">#000000</color>
     <color name="accent">#73C1BA</color>
+    <color name="accent_hover">#47a098</color>
     <color name="box_background">#FFFFFF</color>
     <color name="box_shadow">#E1D8C8</color>
 </resources>
