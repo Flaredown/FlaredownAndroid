@@ -1,15 +1,25 @@
 package android.flaredown.com.flaredown;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class HomeActivity extends AppCompatActivity {
-
+    Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mContext = this;
         super.onCreate(savedInstanceState);
+        // Checking if user is logged in, otherwise redirect to login screen.
+        if(!LoginActivity.isUserLogedIn(mContext)) {
+            PreferenceKeys.log(PreferenceKeys.LOG_I, "HomeActivity", "User not logged in, redirecting to login activity");
+            Intent intent = new Intent(mContext, LoginActivity.class);
+            startActivity(intent);
+            this.finish();
+        }
         setContentView(R.layout.activity_home);
     }
 
