@@ -307,10 +307,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
 
-
-
-
-
     public static boolean isUserLogedIn(Context context) {
         SharedPreferences sharedPreferences = PreferenceKeys.getSharedPreferences(context);
         return sharedPreferences.getBoolean(PreferenceKeys.P_LOGGED_IN, false);

@@ -10,6 +10,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
     </style>
 
 
