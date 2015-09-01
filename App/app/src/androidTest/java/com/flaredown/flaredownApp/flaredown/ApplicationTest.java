@@ -1,4 +1,4 @@
-package android.flaredown.com.flaredown;
+package com.flaredown.flaredownApp.flaredown;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,5 +1,6 @@
-package android.flaredown.com.flaredown;
+package com.flaredown.flaredownApp;
 
+import android.flaredown.com.flaredown.R;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;

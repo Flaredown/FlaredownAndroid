@@ -1,4 +1,4 @@
-package android.flaredown.com.flaredown;
+package com.flaredown.flaredownApp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
