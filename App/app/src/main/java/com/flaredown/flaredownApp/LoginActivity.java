@@ -89,7 +89,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
+        // mLoginFormView = findViewById(R.id.login_form);
+        mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
@@ -145,8 +146,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            //mAuthTask = new UserLoginTask(email, password);
-            //mAuthTask.execute((Void) null);
+            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask.execute((Void) null);
         }
     }
 
@@ -168,10 +169,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+            //int shortAnimTime = 1000;
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            //mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mLoginFormView.setVisibility(View.VISIBLE);
+            mLoginFormView.setAlpha(show ? 0 : 1);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -180,7 +184,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            //mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.setVisibility(View.VISIBLE);
+            mProgressView.setAlpha(show ? 0 : 1);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -188,12 +194,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
-        } else {
+        } else {*/
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        //}
     }
 
     @Override
@@ -252,7 +258,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * the user..... Not using anymore as Volley handles background communication.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -292,7 +298,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (success && false) {
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -306,8 +312,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             showProgress(false);
         }
     }
-
-
 
     public static boolean isUserLogedIn(Context context) {
         SharedPreferences sharedPreferences = PreferenceKeys.getSharedPreferences(context);
