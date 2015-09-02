@@ -2,5 +2,11 @@
 <resources>
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorAccent">@color/accent</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+    </style>
+    <style name="AppTheme.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/accent</item>
+        <item name="android:indeterminateTintMode">src_in</item>
     </style>
 </resources>
