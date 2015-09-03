@@ -15,6 +15,7 @@ public class HomeActivity extends AppCompatActivity {
         mContext = this;
         super.onCreate(savedInstanceState);
         // Checking if user is logged in, otherwise redirect to login screen.
+
         if(!LoginActivity.isUserLogedIn(mContext)) {
             PreferenceKeys.log(PreferenceKeys.LOG_I, "HomeActivity", "User not logged in, redirecting to login activity");
             Intent intent = new Intent(mContext, LoginActivity.class);

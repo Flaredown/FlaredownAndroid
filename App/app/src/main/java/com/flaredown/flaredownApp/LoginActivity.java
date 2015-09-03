@@ -27,9 +27,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.ExecutorDelivery;
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +44,8 @@ import java.util.List;
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     private Context mContext;
-
+    private static final String IS_RESTORING = "restoring";
+    private final String DEBUG_TAG = "LoginActivity";
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -52,6 +57,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private FlareDownAPI flareDownAPI;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -60,7 +66,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mLoginFormView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_login);
@@ -92,12 +98,55 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         // mLoginFormView = findViewById(R.id.login_form);
         mLoginFormView = findViewById(R.id.email_login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
+
+        flareDownAPI = new FlareDownAPI(mContext);
+        if(flareDownAPI.locales == null) {
+            PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
+            flareDownAPI.cacheLocales(new FlareDownAPI.OnCacheLocales() {
+                @Override
+                public void onSuccess(JSONObject locales) {
+                    populateLocales(savedInstanceState == null);
+                }
+
+                @Override
+                public void onError() {
+                    PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Error loading locales");
+                }
+            });
+        } else {
+            populateLocales(savedInstanceState == null);
+        }
+    }
+    private void populateLocales(final Boolean animate) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if(animate)
+                    Thread.sleep(2000);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showProgress(false);
+                        }
+                    });
+                } catch (Exception e) {e.printStackTrace();}
+            }
+        }).start();
     }
 
     private void populateAutoComplete() {
         getLoaderManager().initLoader(0, null, this);
     }
 
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_RESTORING, true);
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -166,40 +215,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-            //int shortAnimTime = 1000;
-
-            //mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.setVisibility(View.VISIBLE);
-            mLoginFormView.setAlpha(show ? 0 : 1);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            //mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.setVisibility(View.VISIBLE);
-            mProgressView.setAlpha(show ? 0 : 1);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {*/
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            //mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        //}
+        //mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     @Override
