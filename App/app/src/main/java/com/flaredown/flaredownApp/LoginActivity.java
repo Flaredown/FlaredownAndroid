@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,14 +31,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.ExecutorDelivery;
 import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A login screen that offers login via email/password.
@@ -195,8 +203,41 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            //mAuthTask = new UserLoginTask(email, password);
+            //mAuthTask.execute((Void) null);
+
+
+            flareDownAPI.users_sign_in(email, password, new FlareDownAPI.OnApiResponse() {
+                @Override
+                public void onSuccess(JSONObject jsonObject) {
+                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
+                    Intent intent = new Intent(mContext, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                    //PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, jsonObject.toString());
+
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, FlareDownAPI.getEndpointUrl("/current_user"), new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.w(DEBUG_TAG, response);
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+                    //Volley.newRequestQueue(mContext).add(stringRequest);
+                }
+
+                @Override
+                public void onFailure(VolleyError error) {
+                    showProgress(false);
+                    //TODO differentiate between no internet connection and incorrect user details.
+                    PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
+                }
+            });
+
         }
     }
 
@@ -328,11 +369,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mAuthTask = null;
             showProgress(false);
         }
-    }
-
-    public static boolean isUserLogedIn(Context context) {
-        SharedPreferences sharedPreferences = PreferenceKeys.getSharedPreferences(context);
-        return sharedPreferences.getBoolean(PreferenceKeys.P_LOGGED_IN, false);
     }
 }
 

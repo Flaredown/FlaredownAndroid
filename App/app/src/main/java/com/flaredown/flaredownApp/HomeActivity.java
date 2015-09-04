@@ -10,13 +10,15 @@ import android.view.MenuItem;
 
 public class HomeActivity extends AppCompatActivity {
     Context mContext;
+    FlareDownAPI flareDownAPI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
+        flareDownAPI = new FlareDownAPI(mContext);
         super.onCreate(savedInstanceState);
         // Checking if user is logged in, otherwise redirect to login screen.
 
-        if(!LoginActivity.isUserLogedIn(mContext)) {
+        if(!flareDownAPI.isLoggedIn(false)) {
             PreferenceKeys.log(PreferenceKeys.LOG_I, "HomeActivity", "User not logged in, redirecting to login activity");
             Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);

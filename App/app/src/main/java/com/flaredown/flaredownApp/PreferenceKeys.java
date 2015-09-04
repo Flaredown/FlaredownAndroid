@@ -14,9 +14,9 @@ public class PreferenceKeys {
 
     //Key values stored in sharedpreferences
     public static final String P_FIRST_RUN = "first_run";
-    public static final String P_LOGGED_IN = "logged_in";
-    public static final String P_USER_EMAIL = "user_email";
-    public static final String P_AUTH_TOKEN = "auth_token";
+    //public static final String P_LOGGED_IN = "logged_in";
+    //public static final String P_USER_EMAIL = "user_email";
+    //public static final String P_AUTH_TOKEN = "auth_token";
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
