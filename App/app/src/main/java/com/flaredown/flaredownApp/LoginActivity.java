@@ -39,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView tv_noInternetConnection;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
+        tv_noInternetConnection = (TextView) findViewById(R.id.tv_noInternetConnection);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -126,6 +129,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         } else {
             populateLocales(savedInstanceState == null);
         }
+
     }
     private void populateLocales(final Boolean animate) {
         new Thread(new Runnable() {
@@ -138,6 +142,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         @Override
                         public void run() {
                             showProgress(false);
+                            if(!flareDownAPI.checkInternet()){
+                                showProgress(true);
+                                tv_noInternetConnection.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
                 } catch (Exception e) {e.printStackTrace();}
@@ -231,10 +239,24 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
 
                 @Override
-                public void onFailure(VolleyError error) {
+                public void onFailure(FlareDownAPI.API_Error error) {
                     showProgress(false);
                     //TODO differentiate between no internet connection and incorrect user details.
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
+                    // Check for incorrect credentials
+                    if(error.statusCode == 422) {
+                        String errorMessage = "";
+                        try {
+                            errorMessage = flareDownAPI.locales.getJSONObject("nice_errors").getString("bad_credentials");
+                        } catch (Exception e) {
+                            errorMessage = "Invalid Login Credentials";
+                        }
+                        mEmailView.setError(errorMessage);
+                        mPasswordView.setError(errorMessage);
+                    } else if(!error.internetConnection) {
+                        flareDownAPI.error_503();
+                    } else
+                        flareDownAPI.error_unknown();
                 }
             });
 

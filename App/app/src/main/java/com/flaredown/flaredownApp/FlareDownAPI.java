@@ -2,8 +2,11 @@ package com.flaredown.flaredownApp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -49,7 +52,7 @@ public class FlareDownAPI {
     }
     public interface OnApiResponse{
         void onSuccess(JSONObject jsonObject);
-        void onFailure(VolleyError error);
+        void onFailure(API_Error error);
     }
 
 
@@ -76,18 +79,26 @@ public class FlareDownAPI {
 
                         @Override
                         public void onError() {
-                            onApiResponse.onFailure(null);
+                            onApiResponse.onFailure(new API_Error().setInternetConnection(true));
                         }
                     });
 
 
                     //onApiResponse.onSuccess(jsonResponse);
-                } catch (JSONException e) { e.printStackTrace(); }
+                } catch (JSONException e) {
+                    onApiResponse.onFailure(new API_Error().setInternetConnection(true));
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(error);
+                try {
+                    PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, String.valueOf(error.networkResponse.statusCode));
+                } catch (NullPointerException e) {
+                    PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "503");
+                }
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
             }
         }) {
             @Override
@@ -118,7 +129,7 @@ public class FlareDownAPI {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(error);
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
             }
         }) {
             @Override
@@ -229,6 +240,73 @@ public class FlareDownAPI {
 
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(jsonObjectRequest);
+    }
+
+
+    public boolean checkInternet() {
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if(ni != null && ni.isConnected())
+            return true;
+        return false;
+    }
+
+
+    public class API_Error {
+        public VolleyError volleyError;
+        public Boolean internetConnection;
+        public int statusCode = 500;
+
+        public API_Error setVolleyError(VolleyError volleyError) {
+            this.volleyError = volleyError;
+            //if(volleyError.networkResponse.statusCode != null)
+            try {
+                this.statusCode = volleyError.networkResponse.statusCode;
+                if(this.statusCode == 503) {
+                    this.internetConnection = false;
+                }
+            } catch (NullPointerException e) {
+                this.statusCode = 503;
+                this.internetConnection = false;
+            }
+            return this;
+        }
+        public API_Error setInternetConnection(boolean internetConnection) {
+            if(!internetConnection)
+                statusCode = 503;
+            if(statusCode == 503)
+                this.internetConnection = false;
+            else
+                this.internetConnection = internetConnection;
+            return this;
+        }
+        public String toString() {
+            return "Internet Connection: " + (internetConnection ? "true" : "false") + " Status Code: " + String.valueOf(statusCode);
+        }
+    }
+
+
+
+    public void error_503 () {
+        String errorMessage = "";
+        try{
+            errorMessage = this.locales.getJSONObject("nice_errors").getString("503");
+        } catch (Exception e) {
+            errorMessage = "server is currently unavailable";
+        }
+        Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
+    }
+    public void error_unknown() {
+        error_500();
+    }
+    public void error_500() {
+        String errorMessage = "";
+        try{
+            errorMessage = this.locales.getJSONObject("nice_errors").getString("500");
+        } catch (Exception e) {
+            errorMessage = "Something went wrong, perhaps try again";
+        }
+        Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
     }
 
 }

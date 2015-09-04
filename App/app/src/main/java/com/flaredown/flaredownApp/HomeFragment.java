@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(VolleyError error) {
+                    public void onFailure(FlareDownAPI.API_Error error) {
                         Toast.makeText(mContext, "Error signing out", Toast.LENGTH_LONG).show();
                     }
                 });

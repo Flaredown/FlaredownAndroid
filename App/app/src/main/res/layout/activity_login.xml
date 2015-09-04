@@ -40,6 +40,15 @@
                 android:layout_gravity="center_horizontal"
                 style="?android:attr/progressBarStyleLarge" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Internet Connection"
+                android:id="@+id/tv_noInternetConnection"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#f00"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/email_login_form"
                 style="@style/AppTheme.Box"
