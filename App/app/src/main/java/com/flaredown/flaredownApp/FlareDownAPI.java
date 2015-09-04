@@ -58,7 +58,7 @@ public class FlareDownAPI {
             @Override
             public void onResponse(String response){
                 try {
-                    JSONObject jsonResponse = new JSONObject(response);
+                    final JSONObject jsonResponse = new JSONObject(response);
                     JSONObject jsonUser = jsonResponse.getJSONObject("user");
 
                     SharedPreferences.Editor sp = PreferenceKeys.getSharedPreferences(mContext).edit();
@@ -67,7 +67,21 @@ public class FlareDownAPI {
                     sp.putString(SP_USER_EMAIL, jsonUser.getString("email"));
                     sp.putBoolean(SP_USER_SIGNED_IN, true);
                     sp.commit();
-                    onApiResponse.onSuccess(jsonResponse);
+
+                    cacheLocales(new OnCacheLocales() {
+                        @Override
+                        public void onSuccess(JSONObject locales) {
+                            onApiResponse.onSuccess(jsonResponse);
+                        }
+
+                        @Override
+                        public void onError() {
+                            onApiResponse.onFailure(null);
+                        }
+                    });
+
+
+                    //onApiResponse.onSuccess(jsonResponse);
                 } catch (JSONException e) { e.printStackTrace(); }
             }
         }, new Response.ErrorListener() {
@@ -173,13 +187,14 @@ public class FlareDownAPI {
     }
     public void cacheLocales(OnCacheLocales onCacheLocales) { cacheLocales("en", onCacheLocales);}
     public void cacheLocales(final String language, final OnCacheLocales onCacheLocales) {
+        PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Refreshing locale file");
 
 
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getEndpointUrl("/locales/" + language), null, new Response.Listener<JSONObject>() {
+        StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/locales/" + language), new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(String response) {
                 try {
+                    JSONObject jsonResponse = new JSONObject(response);
                     File dir = mContext.getCacheDir();
                     if (!dir.exists())
                         dir.mkdirs();
@@ -191,9 +206,9 @@ public class FlareDownAPI {
                     }
 
                     ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(data));
-                    objectOutputStream.writeObject(response.getJSONObject(language).toString());
+                    objectOutputStream.writeObject(jsonResponse.getJSONObject(language).toString());
                     objectOutputStream.close();
-                    onCacheLocales.onSuccess(response.getJSONObject(language));
+                    onCacheLocales.onSuccess(jsonResponse.getJSONObject(language));
                 } catch (Exception e) {
                     e.printStackTrace();
                     onCacheLocales.onError();
@@ -204,7 +219,13 @@ public class FlareDownAPI {
             public void onErrorResponse(VolleyError error) {
                 onCacheLocales.onError();
             }
-        });
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return addAuthenticationParams();
+                //
+            }
+        };
 
         RequestQueue queue = Volley.newRequestQueue(mContext);
         queue.add(jsonObjectRequest);
