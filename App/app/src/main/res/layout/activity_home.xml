@@ -5,10 +5,17 @@
     android:layout_height="match_parent"
     >
     <!-- Main content view -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:id="@+id/content_frame">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary" />
 
         <fragment
             android:layout_width="match_parent"
@@ -16,7 +23,7 @@
             android:name="com.flaredown.flaredownApp.HomeFragment"
             android:id="@+id/fragment"
             android:layout_gravity="center" />
-    </FrameLayout>
+    </LinearLayout>
     <!-- Left Side Draw -->
     <FrameLayout
         android:id="@+id/draw_frame"
