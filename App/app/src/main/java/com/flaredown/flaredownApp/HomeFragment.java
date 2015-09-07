@@ -33,26 +33,6 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         mContext = getActivity();
         fragmentRoot = inflater.inflate(R.layout.fragment_checkout, container, false);
-        flareDownAPI = new FlareDownAPI(mContext);
-        butt_logout = (Button) fragmentRoot.findViewById(R.id.butt_logout);
-        butt_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flareDownAPI.users_sign_out(new FlareDownAPI.OnApiResponse() {
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        Intent intent = new Intent(mContext, LoginActivity.class);
-                        getActivity().startActivity(intent);
-                        getActivity().finish();
-                    }
-
-                    @Override
-                    public void onFailure(FlareDownAPI.API_Error error) {
-                        Toast.makeText(mContext, "Error signing out", Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
-        });
         return fragmentRoot;
     }
 }
