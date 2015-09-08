@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp;
 import android.content.Context;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -52,6 +53,10 @@ public class NavigationFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
+                    case CAI_DISCUSSION:
+                        Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(getResources().getString(R.string.discussion_website)));
+                        getActivity().startActivity(intent);
+                        break;
                     case CAI_LOG_OUT:
                         //DO LOGOUT
                         FlareDownAPI flareDownAPI = new FlareDownAPI(getActivity());
