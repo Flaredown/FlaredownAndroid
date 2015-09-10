@@ -9,5 +9,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="box_width">@integer/custom_match_parent</dimen>
-    <dimen name="logo_size">75dp</dimen>
+    <dimen name="logo_size">240dp</dimen>
+    <dimen name="default_sep_margin">5dp</dimen>
+    <dimen name="title_font_size">30sp</dimen>
 </resources>

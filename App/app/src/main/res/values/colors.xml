@@ -7,4 +7,5 @@
     <color name="accent_hover">#47a098</color>
     <color name="box_background">#FFFFFF</color>
     <color name="box_shadow">#E1D8C8</color>
+    <color name="sub_text_color">#c3b399</color>
 </resources>
