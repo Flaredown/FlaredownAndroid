@@ -2,4 +2,5 @@
     <string name="app_name">Flare Down</string>
     <string name="slogan">Decode your Chronic Illness</string>
     <string name="discussion_website">https://talk.flaredown.com</string>
+    <string name="password_reset_website">https://app.flaredown.com/reset-your-password</string>
 </resources>

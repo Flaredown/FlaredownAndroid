@@ -4,7 +4,7 @@
         <shape
             android:shape="rectangle">
             <corners
-                android:radius="5dp"/>
+                android:radius="@dimen/default_radius"/>
             <solid android:color="@color/box_shadow"/>
         </shape>
     </item>
@@ -12,7 +12,7 @@
         <shape
             android:shape="rectangle">
             <corners
-                android:radius="5dp"/>
+                android:radius="@dimen/default_radius"/>
             <solid android:color="@color/box_background"/>
         </shape>
     </item>

@@ -3,7 +3,14 @@
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:buttonStyle">@style/AppTheme.Button.v21</item>
     </style>
+
+
+    <style name="AppTheme.Button.v21" parent="AppTheme.Button">
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
     <style name="AppTheme.ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateTint">@color/accent</item>
