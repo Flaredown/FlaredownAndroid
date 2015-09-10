@@ -59,7 +59,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/email_login_form">
+                android:id="@+id/email_login_form"
+                android:visibility="gone">
 
                 <LinearLayout
                     style="@style/AppTheme.Box"
@@ -104,15 +105,24 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/forgot_password"
+                    android:id="@+id/tv_ForgotPassword"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/sep_margin_medium"
+                    android:layout_marginBottom="@dimen/sep_margin_medium"
+                    android:textColor="@color/sub_text_color"/>
+
                 <Button
                     android:id="@+id/email_sign_in_button"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/action_sign_in"
-                    android:textStyle="bold"
                     android:layout_gravity="bottom"
-                    android:layout_marginTop="@dimen/sep_margin_medium"
-                    android:layout_marginBottom="@dimen/sep_margin_medium" />
+                    android:layout_marginBottom="@dimen/sep_margin_medium"
+                    android:paddingBottom="3dp" />
 
             </LinearLayout>
 
