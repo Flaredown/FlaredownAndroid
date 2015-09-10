@@ -72,6 +72,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
+        // Populate form if debug... makes signing in a little easier :D.
+        if(PreferenceKeys.DEBUGGING) {
+            mEmailView.setText("test@flaredown.com");
+            mPasswordView.setText("testing123");
+        }
+
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
