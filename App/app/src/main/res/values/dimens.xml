@@ -10,6 +10,8 @@
 
     <dimen name="box_width">@integer/custom_match_parent</dimen>
     <dimen name="logo_size">240dp</dimen>
-    <dimen name="default_sep_margin">5dp</dimen>
-    <dimen name="title_font_size">30sp</dimen>
+    <dimen name="sep_margin_large">25dp</dimen>
+    <dimen name="sep_margin_medium">20dp</dimen>
+    <dimen name="sep_margin_small">10dp</dimen>
+    <dimen name="title_font_size">25sp</dimen>
 </resources>

@@ -30,7 +30,8 @@
                 android:layout_gravity="center"
                 android:src="@drawable/fd_logo"
                 android:adjustViewBounds="true"
-                android:layout_margin="@dimen/default_sep_margin" />
+                android:layout_marginTop="@dimen/sep_margin_small"
+                android:layout_marginBottom="@dimen/sep_margin_small" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,8 +40,10 @@
                 android:id="@+id/tv_slogan"
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/sub_text_color"
-                android:layout_margin="@dimen/default_sep_margin"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:layout_marginLeft="@dimen/sep_margin_large"
+                android:layout_marginRight="@dimen/sep_margin_large"
+                android:layout_marginBottom="@dimen/sep_margin_large" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,60 +53,69 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="#f00"
                 android:visibility="gone"
-                android:layout_margin="@dimen/default_sep_margin" />
+                android:layout_margin="@dimen/sep_margin_large" />
 
             <LinearLayout
-                android:id="@+id/email_login_form"
-                style="@style/AppTheme.Box"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone"
-                android:layout_margin="@dimen/default_sep_margin">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/email_login_form">
 
-                <TextView
-                    android:id="@+id/tv_loginTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_activity_login"
-                    android:layout_margin="@dimen/default_sep_margin"
-                    android:textAlignment="center"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="@dimen/title_font_size" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/email"
+                <LinearLayout
+                    style="@style/AppTheme.Box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:hint="@string/prompt_email"
-                    android:layout_margin="0dp" />
+                    android:orientation="vertical"
+                    android:paddingTop="50dp"
+                    android:paddingBottom="50dp"
+                    android:layout_marginTop="@dimen/sep_margin_large">
 
-                <EditText
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified|flagNoExtractUi"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:hint="@string/prompt_password"
-                    android:singleLine="true"
-                    android:layout_margin="0dp" />
+                    <TextView
+                        android:id="@+id/tv_loginTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/title_activity_login"
+                        android:layout_margin="@dimen/sep_margin_large"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="@dimen/title_font_size" />
+
+                    <AutoCompleteTextView
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:hint="@string/prompt_email"
+                        android:layout_margin="0dp" />
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeActionId="@+id/login"
+                        android:imeActionLabel="@string/action_sign_in_short"
+                        android:imeOptions="actionUnspecified|flagNoExtractUi"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:hint="@string/prompt_password"
+                        android:singleLine="true"
+                        android:layout_marginBottom="@dimen/sep_margin_large" />
+
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/email_sign_in_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/action_sign_in"
                     android:textStyle="bold"
-                    android:layout_gravity="right"
-                    android:layout_margin="0dp" />
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="@dimen/sep_margin_medium"
+                    android:layout_marginBottom="@dimen/sep_margin_medium" />
 
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
