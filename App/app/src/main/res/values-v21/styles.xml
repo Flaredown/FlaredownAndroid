@@ -4,6 +4,7 @@
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:buttonStyle">@style/AppTheme.Button.v21</item>
+
     </style>
 
 
