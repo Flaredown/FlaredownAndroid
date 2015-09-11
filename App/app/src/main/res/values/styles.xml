@@ -14,6 +14,13 @@
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:textViewStyle">@style/AppTheme.TextView</item>
         <item name="android:textSize">@dimen/font_size</item>
+        <item name="android:windowAnimationStyle">@style/AppTheme.ActivityAnimation</item>
+    </style>
+    <style name="AppTheme.ActivityAnimation">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_in</item>
     </style>
     <style name="AppTheme.TextView">
         <item name="android:textSize">@dimen/font_size</item>
