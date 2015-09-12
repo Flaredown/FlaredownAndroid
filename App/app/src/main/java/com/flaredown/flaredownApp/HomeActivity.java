@@ -17,10 +17,6 @@ public class HomeActivity extends AppCompatActivity {
     Context mContext;
     FlareDownAPI flareDownAPI;
 
-    Toolbar toolbar;
-    LinearLayout contentFrame;
-    FrameLayout drawFrame;
-    DrawerLayout rootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,35 +32,6 @@ public class HomeActivity extends AppCompatActivity {
             this.finish();
         }
         setContentView(R.layout.activity_home);
-
-        rootView = (DrawerLayout) findViewById(R.id.home_draw_layout);
-        contentFrame = (LinearLayout) findViewById(R.id.content_frame);
-        drawFrame = (FrameLayout) findViewById(R.id.draw_frame);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        initToolBar();
     }
 
-    private void initToolBar () {
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, rootView, toolbar, R.string.app_name, R.string.app_name) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                invalidateOptionsMenu();
-                syncState();
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-                syncState();
-            }
-        };
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        actionBarDrawerToggle.syncState();
-        rootView.setDrawerListener(actionBarDrawerToggle);
-    }
 }

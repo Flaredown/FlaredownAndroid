@@ -15,6 +15,15 @@
         <item name="android:textViewStyle">@style/AppTheme.TextView</item>
         <item name="android:textSize">@dimen/font_size</item>
         <item name="android:windowAnimationStyle">@style/AppTheme.ActivityAnimation</item>
+        <item name="android:editTextStyle">@style/AppTheme.EditText</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AppTheme.EditText</item>
+    </style>
+    <style name="AppTheme.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/background_edittext</item>
+        <item name="android:padding">@dimen/sep_margin_small</item>
+        <item name="android:layout_marginBottom">@dimen/sep_margin_small</item>
+        <item name="android:layout_marginTop">@dimen/sep_margin_small</item>
+        <item name="android:useDefaultMargins">true</item>
     </style>
     <style name="AppTheme.ActivityAnimation">
         <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>

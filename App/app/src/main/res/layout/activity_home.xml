@@ -1,45 +1,5 @@
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/home_draw_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    <!-- Main content view -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/content_frame">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:minHeight="?attr/actionBarSize" />
+    android:layout_height="match_parent">
 
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.flaredown.flaredownApp.HomeFragment"
-            android:id="@+id/fragment"
-            android:layout_gravity="center" />
-    </LinearLayout>
-    <!-- Left Side Draw -->
-    <FrameLayout
-        android:id="@+id/draw_frame"
-        android:layout_width="fill_parent"
-        android:layout_marginRight="20dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#fff"
-        android:elevation="16dp"
-        android:clickable="true">
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.flaredown.flaredownApp.NavigationFragment"
-            android:id="@+id/navigationFragment"/>
-    </FrameLayout>
-</android.support.v4.widget.DrawerLayout>
+</RelativeLayout>

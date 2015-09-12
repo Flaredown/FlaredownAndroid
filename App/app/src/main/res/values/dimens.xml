@@ -10,7 +10,7 @@
 
     <dimen name="box_width">@integer/custom_match_parent</dimen>
     <dimen name="logo_size">240dp</dimen>
-    <dimen name="default_radius">10dp</dimen>
+    <dimen name="default_radius">11dp</dimen>
     <dimen name="sep_margin_large">25dp</dimen>
     <dimen name="sep_margin_medium">20dp</dimen>
     <dimen name="sep_margin_small">10dp</dimen>

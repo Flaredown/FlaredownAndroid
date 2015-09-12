@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/email_login_form"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     style="@style/AppTheme.Box"
@@ -88,7 +88,7 @@
                         android:maxLines="1"
                         android:singleLine="true"
                         android:hint="@string/prompt_email"
-                        android:layout_margin="0dp" />
+                        style="@style/AppTheme.EditText" />
 
                     <EditText
                         android:id="@+id/password"
@@ -101,7 +101,8 @@
                         android:maxLines="1"
                         android:hint="@string/prompt_password"
                         android:singleLine="true"
-                        android:layout_marginBottom="@dimen/sep_margin_large" />
+                        android:layout_marginBottom="@dimen/sep_margin_large"
+                        style="@style/AppTheme.EditText" />
 
                 </LinearLayout>
 
