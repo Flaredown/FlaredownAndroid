@@ -38,6 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mainToolbarView.setTitle("Settings");
         mainToolbarView.getActionBar().getMenu().clear();
+        mainToolbarView.setBackButton(true);
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
