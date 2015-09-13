@@ -48,6 +48,7 @@
     <style name="AppTheme.Box">
         <item name="android:padding">@dimen/box_padding</item>
         <item name="android:background">@drawable/background_box</item>
+        <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button">

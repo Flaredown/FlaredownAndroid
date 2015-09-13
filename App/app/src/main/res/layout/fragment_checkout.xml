@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/box_width"
         android:layout_height="wrap_content"
         style="@style/AppTheme.Box">
 
