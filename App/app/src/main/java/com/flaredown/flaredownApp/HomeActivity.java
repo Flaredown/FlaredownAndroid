@@ -22,6 +22,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
         flareDownAPI = new FlareDownAPI(mContext);
+        MainToolbarView mainToolbarView;
         super.onCreate(savedInstanceState);
         // Checking if user is logged in, otherwise redirect to login screen.
 
@@ -32,6 +33,11 @@ public class HomeActivity extends AppCompatActivity {
             this.finish();
         }
         setContentView(R.layout.activity_home);
+
+        // FindViews
+        mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
+        mainToolbarView.setTitle("July 13");
+
     }
 
 }
