@@ -15,9 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.flaredown.flaredownApp.FlareDown.API;
 
 import org.json.JSONObject;
 
@@ -59,8 +60,8 @@ public class NavigationFragment extends Fragment {
                         break;
                     case CAI_LOG_OUT:
                         //DO LOGOUT
-                        FlareDownAPI flareDownAPI = new FlareDownAPI(getActivity());
-                        flareDownAPI.users_sign_out(new FlareDownAPI.OnApiResponse() {
+                        API flareDownAPI = new API(getActivity());
+                        flareDownAPI.users_sign_out(new API.OnApiResponse() {
                             @Override
                             public void onSuccess(JSONObject jsonObject) {
                                 Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -69,7 +70,7 @@ public class NavigationFragment extends Fragment {
                             }
 
                             @Override
-                            public void onFailure(FlareDownAPI.API_Error error) {
+                            public void onFailure(API.API_Error error) {
                                 Toast.makeText(getActivity(), "Failed to logout", Toast.LENGTH_LONG).show();
                             }
                         });

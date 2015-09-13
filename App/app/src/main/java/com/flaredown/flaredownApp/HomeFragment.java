@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -9,11 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-
-import org.json.JSONObject;
+import com.flaredown.flaredownApp.FlareDown.API;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -24,7 +20,7 @@ public class HomeFragment extends Fragment {
     }
 
     private Button butt_logout;
-    private FlareDownAPI flareDownAPI;
+    private API flareDownAPI;
     private Context mContext;
     private View fragmentRoot;
 

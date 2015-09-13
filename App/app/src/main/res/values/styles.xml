@@ -33,6 +33,7 @@
     </style>
     <style name="AppTheme.TextView">
         <item name="android:textSize">@dimen/font_size</item>
+
     </style>
 
     <style name="AppTheme.Box">

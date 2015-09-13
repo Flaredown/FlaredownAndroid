@@ -3,25 +3,27 @@ package com.flaredown.flaredownApp;
 import android.content.Context;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+
+import com.flaredown.flaredownApp.FlareDown.API;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class HomeActivity extends AppCompatActivity {
     Context mContext;
-    FlareDownAPI flareDownAPI;
+    API flareDownAPI;
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = this;
-        flareDownAPI = new FlareDownAPI(mContext);
+        Styling.setFont();
+        flareDownAPI = new API(mContext);
         MainToolbarView mainToolbarView;
         super.onCreate(savedInstanceState);
         // Checking if user is logged in, otherwise redirect to login screen.

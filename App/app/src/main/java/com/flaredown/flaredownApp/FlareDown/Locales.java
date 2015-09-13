@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.FlareDown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.flaredown.flaredownApp.PreferenceKeys;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +23,7 @@ import java.util.Iterator;
 /**
  * Created by thunter on 03/09/15.
  */
-public class FlareDownLocales {
+public class Locales {
     private static final String DEBUG_TAG = "FlareDownLocales";
     private static final String SHARED_PREFERENCES_KEY = "com.flaredown.flaredownApp.locales";
     private static final int SHARED_PREFERENCES_MODE = Context.MODE_PRIVATE;

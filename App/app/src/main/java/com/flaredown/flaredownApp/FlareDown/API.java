@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.FlareDown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.flaredown.flaredownApp.PreferenceKeys;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +34,7 @@ import java.util.Map;
 /**
  * Created by thunter on 03/09/15.
  */
-public class FlareDownAPI {
+public class API {
     private Context mContext;
     private static final String DEBUG_TAG = "FlareDownAPI";
     private static final String SP_USER_AUTHTOKEN = "FlareDownAPI_userauthtoken"; // String
@@ -46,7 +47,7 @@ public class FlareDownAPI {
     }
     public JSONObject locales = null;
 
-    public FlareDownAPI(Context context) {
+    public API(Context context) {
         mContext = context;
         locales = readCachedLocales();
     }

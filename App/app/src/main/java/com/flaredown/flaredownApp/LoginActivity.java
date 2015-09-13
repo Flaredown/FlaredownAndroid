@@ -26,10 +26,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.FlareDown.API;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * A login screen that offers login via email/password.
@@ -39,7 +43,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private Context mContext;
     private static final String IS_RESTORING = "restoring";
     private final String DEBUG_TAG = "LoginActivity";
-    private FlareDownAPI flareDownAPI;
+    private API flareDownAPI;
     private InternetReceiver internetReceiver;
 
     // UI references.
@@ -50,9 +54,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private TextView tv_noInternetConnection;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        Styling.setFont();
 
         setContentView(R.layout.activity_login);
 
@@ -97,10 +107,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.email_login_form);
 
-        flareDownAPI = new FlareDownAPI(mContext);
+        flareDownAPI = new API(mContext);
         if(flareDownAPI.locales == null) {
             PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
-            flareDownAPI.cacheLocales(new FlareDownAPI.OnCacheLocales() {
+            flareDownAPI.cacheLocales(new API.OnCacheLocales() {
                 @Override
                 public void onSuccess(JSONObject locales) {
                     populateLocales(savedInstanceState == null);
@@ -205,7 +215,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //mAuthTask.execute((Void) null);
 
 
-            flareDownAPI.users_sign_in(email, password, new FlareDownAPI.OnApiResponse() {
+            flareDownAPI.users_sign_in(email, password, new API.OnApiResponse() {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
                     PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
@@ -215,7 +225,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
 
                 @Override
-                public void onFailure(FlareDownAPI.API_Error error) {
+                public void onFailure(API.API_Error error) {
                     setView(VIEW_LOGIN);
                     //TODO differentiate between no internet connection and incorrect user details.
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
@@ -355,7 +365,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-            FlareDownAPI flareDownAPI = new FlareDownAPI(context);
+            API flareDownAPI = new API(context);
             if(flareDownAPI.checkInternet() && !isConnected)
                 handler.post(doOnConnect);
             else if(!flareDownAPI.checkInternet() && isConnected)

@@ -5,4 +5,12 @@
     <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/main_toolbar_view"/>
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:name="com.flaredown.flaredownApp.NavigationFragment"
+        android:id="@+id/fragment"
+        android:layout_below="@+id/main_toolbar_view"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
