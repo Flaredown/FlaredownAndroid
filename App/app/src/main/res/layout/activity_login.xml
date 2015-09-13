@@ -68,8 +68,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="50dp"
-                    android:paddingBottom="50dp"
                     android:layout_marginTop="@dimen/sep_margin_large">
 
                     <TextView
@@ -77,7 +75,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/title_activity_login"
-                        android:layout_margin="@dimen/sep_margin_large"
                         android:layout_gravity="center_horizontal"
                         android:textSize="@dimen/title_font_size" />
 
@@ -102,7 +99,6 @@
                         android:maxLines="1"
                         android:hint="@string/prompt_password"
                         android:singleLine="true"
-                        android:layout_marginBottom="@dimen/sep_margin_large"
                         style="@style/AppTheme.EditText" />
 
                 </LinearLayout>

@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp;
 import android.content.Context;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ public class MainToolbarView extends LinearLayout{
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        Intent intent = new Intent(context, LoginActivity.class);
+                        Intent intent = new Intent(context, SettingsActivity.class);
                         context.startActivity(intent);
                         return true;
                     }
@@ -43,7 +44,7 @@ public class MainToolbarView extends LinearLayout{
         this(context, null);
     }
     public void setTitle (String text) {
-        title.setText(text);
+        if(title != null) title.setText(text);
     }
     public Toolbar getActionBar() {
         return toolbar;

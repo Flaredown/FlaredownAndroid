@@ -18,6 +18,15 @@
         <item name="android:editTextStyle">@style/AppTheme.EditText</item>
         <item name="android:autoCompleteTextViewStyle">@style/AppTheme.EditText</item>
     </style>
+    <style name="AppTheme.TextView.Link">
+        <item name="android:textColor">@color/accent</item>
+    </style>
+    <style name="AppTheme.TextView.Title">
+        <item name="android:textSize">@dimen/title_font_size</item>
+    </style>
+    <style name="AppTheme.TextView.SubTitle">
+        <item name="android:textSize">@dimen/sub_title_font_size</item>
+    </style>
     <style name="AppTheme.EditText" parent="Widget.AppCompat.EditText">
         <item name="android:background">@drawable/background_edittext</item>
         <item name="android:padding">@dimen/sep_margin_small</item>
@@ -37,7 +46,7 @@
     </style>
 
     <style name="AppTheme.Box">
-        <item name="android:padding">10dp</item>
+        <item name="android:padding">@dimen/box_padding</item>
         <item name="android:background">@drawable/background_box</item>
     </style>
 

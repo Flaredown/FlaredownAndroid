@@ -4,7 +4,7 @@
 
     <!-- Basic permissions should be obvious -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <!-- For storing the locales localy -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- Checking internet connectivity -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -35,7 +35,11 @@
         <activity
             android:name="com.flaredown.flaredownApp.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+        <activity
+            android:name="com.flaredown.flaredownApp.SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 
