@@ -33,7 +33,7 @@ public class MainToolbarView extends LinearLayout{
         title = (TextView) findViewById(R.id.toolbar_title);
         toolbar.getMenu()
                 .add("Settings")
-                .setIcon(R.drawable.ic_settings_tinted)
+                .setIcon(R.drawable.ic_settings)
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
