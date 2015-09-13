@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -46,7 +45,7 @@ public class MainToolbarView extends LinearLayout{
     }
     public void setBackButton(boolean show) {
         if(show) {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
             toolbar.setNavigationOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
