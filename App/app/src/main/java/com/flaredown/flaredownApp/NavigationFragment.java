@@ -29,11 +29,11 @@ public class NavigationFragment extends Fragment {
     private ArrayAdapter<String> mAdapter;
     View fragmentRoot;
     private CustomAdapterItem[] mTitles = {
-            new CustomAdapterItem("Check In", R.drawable.ic_assignment_turned_in_black_24dp),
-            new CustomAdapterItem("Discussion", R.drawable.ic_public_black_24dp),
-            new CustomAdapterItem("Profile", R.drawable.ic_person_black_24dp),
-            new CustomAdapterItem("Settings", R.drawable.ic_setting_light),
-            new CustomAdapterItem("Log Out", R.drawable.ic_lock_open_black_24dp)
+            new CustomAdapterItem("Check In"),
+            new CustomAdapterItem("Discussion"),
+            new CustomAdapterItem("Profile"),
+            new CustomAdapterItem("Settings"),
+            new CustomAdapterItem("Log Out")
     };
     private static final int CAI_CHECK_IN = 0;
     private static final int CAI_DISCUSSION = 1;
