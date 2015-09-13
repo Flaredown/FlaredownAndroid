@@ -6,4 +6,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/main_toolbar_view"/>
 
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/questionPager"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/main_toolbar_view" />
 </RelativeLayout>
