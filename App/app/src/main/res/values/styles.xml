@@ -69,4 +69,13 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="AppTheme.ViewPagerProgress">
+        <item name="android:imageButtonStyle">@style/AppTheme.ViewPagerProgress.Image</item>
+    </style>
+    <style name="AppTheme.ViewPagerProgress.Image">
+        <item name="android:background">@drawable/viewpagerprogress</item>
+        <item name="android:layout_width">@dimen/viewpageprogress_size</item>
+        <item name="android:layout_height">@dimen/viewpageprogress_size</item>
+    </style>
 </resources>

@@ -11,7 +11,10 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 
@@ -30,6 +33,8 @@ public class HomeActivity extends AppCompatActivity {
     private static final int NUMBER_PAGES = 5;
     private ViewPager questionPager;
     private PagerAdapter questionPagerAdapter;
+    private Button bt_nextQuestion;
+    private ViewPagerProgress vpp_questionProgress;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -56,6 +61,8 @@ public class HomeActivity extends AppCompatActivity {
         // FindViews
         mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
         questionPager = (ViewPager) findViewById(R.id.questionPager);
+        bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
+        vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
 
         mainToolbarView.setTitle("July 13");
 
@@ -67,10 +74,26 @@ public class HomeActivity extends AppCompatActivity {
         fragments.add(new HomeFragment());
         fragments.add(new HomeFragment());
 
+        vpp_questionProgress.setNumberOfPages(fragments.size());
+
         questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
         questionPager.setAdapter(questionPagerAdapter);
+        questionPager.addOnPageChangeListener(vpp_questionProgress);
 
 
+        bt_nextQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextQuestion();
+            }
+        });
+
+
+    }
+
+
+    public void nextQuestion() {
+        questionPager.setCurrentItem(questionPager.getCurrentItem() + 1);
     }
 
     @Override

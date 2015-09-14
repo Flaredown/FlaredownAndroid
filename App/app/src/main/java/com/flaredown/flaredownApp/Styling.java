@@ -1,5 +1,11 @@
 package com.flaredown.flaredownApp;
 
+import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
+import android.view.View;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -18,5 +24,14 @@ public class Styling {
          *      super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
          * }
          */
+    }
+    public static float getInDP(Context context, float dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    }
+    public static void setBackground(Context context, View view, int resId) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+            view.setBackgroundDrawable(ContextCompat.getDrawable(context, resId));
+        else
+            view.setBackground(ContextCompat.getDrawable(context, resId));
     }
 }

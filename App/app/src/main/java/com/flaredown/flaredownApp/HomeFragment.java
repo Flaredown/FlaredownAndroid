@@ -8,8 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+
+import org.w3c.dom.Text;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -29,6 +32,16 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         mContext = getActivity();
         fragmentRoot = inflater.inflate(R.layout.fragment_checkout, container, false);
+
+        TextView tv = (TextView) fragmentRoot.findViewById(R.id.textView);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((HomeActivity) mContext).nextQuestion();
+            }
+        });
+
+
         return fragmentRoot;
     }
 }
