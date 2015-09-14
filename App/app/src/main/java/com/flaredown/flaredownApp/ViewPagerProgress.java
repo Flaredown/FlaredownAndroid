@@ -40,6 +40,7 @@ public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageC
     }
 
     public void updateDots() {
+        this.removeAllViews();
         dots.clear();
         for(int i = 0; i < numberOfPages; i++) {
             ImageButton ib = createDot();
@@ -67,8 +68,8 @@ public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageC
 
     @Override
     public void onPageSelected(int position) {
-        if(position > dots.size())
-            setNumberOfPages(position);
+        if(position + 1 > dots.size())
+            setNumberOfPages(position + 1);
         for(int i = 0; i < dots.size(); i++) {
             dots.get(i).setSelected(false );
         }

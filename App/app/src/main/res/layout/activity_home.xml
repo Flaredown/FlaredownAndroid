@@ -33,10 +33,19 @@
             style="@style/AppTheme.ViewPagerProgress"/>
         <Button
             android:layout_width="@dimen/box_width"
+            style="@style/AppTheme.Button"
             android:layout_height="wrap_content"
             android:text="Continue"
             android:id="@+id/bt_nextQuestion"
             android:layout_gravity="center_horizontal" />
+        <!--<Button
+            android:id="@+id/bt_nextQuestion"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/sep_margin_medium"
+            android:paddingBottom="3dp" />-->
     </LinearLayout>
 
 </RelativeLayout>
