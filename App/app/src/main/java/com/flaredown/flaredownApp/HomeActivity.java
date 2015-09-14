@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +45,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // Checking if user is logged in, otherwise redirect to login screen.
 
-        if(!flareDownAPI.isLoggedIn(false)) {
-            PreferenceKeys.log(PreferenceKeys.LOG_I, "HomeActivity", "User not logged in, redirecting to login activity");
-            Intent intent = new Intent(mContext, LoginActivity.class);
-            startActivity(intent);
-            this.finish();
-        }
+        //new ForceLogin(mContext, flareDownAPI);
         setContentView(R.layout.activity_home);
 
         // FindViews
@@ -85,6 +81,11 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        new ForceLogin(mContext, flareDownAPI);
+    }
 
     public void nextQuestion() {
         vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);
