@@ -25,7 +25,7 @@
             android:animateLayoutChanges="true">
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/iv_fdLogo"
                 android:layout_width="@dimen/logo_size"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -60,7 +60,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/email_login_form"
+                android:id="@+id/ll_email_login_form"
                 android:visibility="visible">
 
                 <LinearLayout
@@ -79,7 +79,7 @@
                         android:textSize="@dimen/title_font_size" />
 
                     <AutoCompleteTextView
-                        android:id="@+id/email"
+                        android:id="@+id/act_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textEmailAddress"
@@ -92,7 +92,7 @@
                         android:id="@+id/password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:imeActionId="@+id/login"
+                        android:imeActionId="@+id/et_login"
                         android:imeActionLabel="@string/action_sign_in_short"
                         android:imeOptions="actionUnspecified|flagNoExtractUi"
                         android:inputType="textPassword"
@@ -114,7 +114,7 @@
                     android:textColor="@color/sub_text_color"/>
 
                 <Button
-                    android:id="@+id/email_sign_in_button"
+                    android:id="@+id/bt_sign_in"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/action_sign_in"

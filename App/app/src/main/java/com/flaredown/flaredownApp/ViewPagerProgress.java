@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp;
 
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.widget.ImageButton;
@@ -57,8 +56,8 @@ public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageC
         //lp.setMargins(margins, margins, margins, margins);
         lp.setMargins(0, margins, margins, margins);
         ib.setLayoutParams(lp);
-        Styling.setBackground(mContext, ib, R.drawable.viewpagerprogress);
-        //ib.setBackground(ContextCompat.getDrawable(mContext, R.drawable.viewpagerprogress));
+        Styling.setBackground(mContext, ib, R.drawable.viewpagerprogress_background);
+        //ib.setBackground(ContextCompat.getDrawable(mContext, R.drawable.viewpagerprogress_background));
         return ib;
     }
 

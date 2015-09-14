@@ -28,7 +28,7 @@
         <item name="android:textSize">@dimen/sub_title_font_size</item>
     </style>
     <style name="AppTheme.EditText" parent="Widget.AppCompat.EditText">
-        <item name="android:background">@drawable/background_edittext</item>
+        <item name="android:background">@drawable/edittext_background</item>
         <item name="android:padding">@dimen/sep_margin_small</item>
         <item name="android:layout_marginBottom">@dimen/sep_margin_small</item>
         <item name="android:layout_marginTop">@dimen/sep_margin_small</item>
@@ -47,7 +47,7 @@
 
     <style name="AppTheme.Box">
         <item name="android:padding">@dimen/box_padding</item>
-        <item name="android:background">@drawable/background_box</item>
+        <item name="android:background">@drawable/box_background</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
@@ -74,7 +74,7 @@
         <item name="android:imageButtonStyle">@style/AppTheme.ViewPagerProgress.Image</item>
     </style>
     <style name="AppTheme.ViewPagerProgress.Image">
-        <item name="android:background">@drawable/viewpagerprogress</item>
+        <item name="android:background">@drawable/viewpagerprogress_background</item>
         <item name="android:layout_width">@dimen/viewpageprogress_size</item>
         <item name="android:layout_height">@dimen/viewpageprogress_size</item>
     </style>
