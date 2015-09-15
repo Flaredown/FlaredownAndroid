@@ -36,6 +36,8 @@ public class LocalesTest extends AppCompatActivity {
         api = new API(this);
 
         SharedPreferences localeSP = Locales.getSharedPreferences(mContext);
-        textView.setText(Html.fromHtml(localeSP.getString("showing_symptoms_and_treatments_over_days", "NOTHING")));
+        //textView.setText(Html.fromHtml(localeSP.getString("showing_symptoms_and_treatments_over_days", "NOTHING")));
+
+        textView.setText(Html.fromHtml(Locales.read(this, "showing_symptoms_and_treatments_over_das").replace("numSymptoms", "10").replace("numConditions","11").replace("numTreatments", "3").replace("numDays", "2").create()));
     }
 }

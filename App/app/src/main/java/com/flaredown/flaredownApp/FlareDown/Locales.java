@@ -76,4 +76,32 @@ public class Locales {
                 sp_editor.putString(prefix + String.valueOf(i), jsonArray.getString(i));
         }
     }
+
+
+    /**
+     * Read the shared preferences including string replacement.
+     */
+
+    public static class Reader {
+        private Context context;
+        private String result;
+        public Reader(Context context, String result) {
+            this.context = context;
+            this.result = result;
+        }
+        public Reader replace(String key, String value) {
+            result = result.replaceAll("\\{\\{" + key + "\\}\\}", value);
+            return this;
+        }
+        public String create() {
+            return result;
+        }
+    }
+    public static Reader read(Context context, String key) {
+        SharedPreferences sp = getSharedPreferences(context);
+        String result = sp.getString(key, "_LOCALE_ERROR_");
+
+
+        return new Reader(context, result);
+    }
 }
