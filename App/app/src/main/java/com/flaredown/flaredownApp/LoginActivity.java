@@ -110,7 +110,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         flareDownAPI = new API(mContext);
         if(flareDownAPI.locales == null) {
             PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
-            flareDownAPI.cacheLocales(new API.OnCacheLocales() {
+            flareDownAPI.getLocales(new API.OnCacheLocales() {
                 @Override
                 public void onSuccess(JSONObject locales) {
                     populateLocales(savedInstanceState == null);

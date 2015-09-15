@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -34,10 +35,19 @@ public class HomeFragment extends Fragment {
         fragmentRoot = inflater.inflate(R.layout.fragment_checkout, container, false);
 
         TextView tv = (TextView) fragmentRoot.findViewById(R.id.textView);
+        TextView tv2 = (TextView) fragmentRoot.findViewById(R.id.textView2);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((HomeActivity) mContext).nextQuestion();
+            }
+        });
+        tv2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent((HomeActivity) mContext, LocalesTest.class);
+                ((HomeActivity) mContext).startActivity(intent);
+
             }
         });
 

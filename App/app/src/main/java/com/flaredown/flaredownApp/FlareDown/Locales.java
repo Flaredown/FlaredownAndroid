@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp.FlareDown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -17,7 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
 import java.util.Iterator;
 
 /**
@@ -34,60 +32,48 @@ public class Locales {
         return context.getSharedPreferences(SHARED_PREFERENCES_KEY, SHARED_PREFERENCES_MODE);
     }
 
-    public static void updateSharedPreferences(final Context context) {
+    /**
+     * Loads the locales to a sharedpreferences xml file.
+     */
+    public static boolean updateSharedPreferences(final Context context, JSONObject locales) {
         PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Updating locales");
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, LOCALE_URL, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Finished loading locales");
-                    JSONObject root = response.getJSONObject(response.keys().next());
-                    getSharedPreferences(context).edit().clear();
-                    addToPreferences(context, root);
-
-                    Toast.makeText(context, getSharedPreferences(context).getString("occupation_options.1", "NOTHING"), Toast.LENGTH_LONG).show();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "Error loading locales...." + error.getLocalizedMessage());
-            }
-        });
-        RequestQueue queue = Volley.newRequestQueue(context);
-        queue.add(jsonObjectRequest);
+        SharedPreferences.Editor sp_editor = Locales.getSharedPreferences(context).edit();
+        sp_editor.clear();
+        try {
+            addToPreferences(context, locales, sp_editor);
+            sp_editor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
-    private static void addToPreferences(Context context, JSONObject object) throws JSONException{ addToPreferences(context, "", object); }
-    private static void addToPreferences(Context context, String prefix, JSONObject object) throws JSONException{
-        SharedPreferences.Editor prefs = getSharedPreferences(context).edit();
 
+    private static void addToPreferences(Context context, JSONObject object, SharedPreferences.Editor sp_editor) throws JSONException{
+        addToPreferences(context, "", object, sp_editor);
+    }
+    private static void addToPreferences(Context context, String prefix, JSONObject object, SharedPreferences.Editor sp_editor) throws JSONException{
         Iterator<?> keys = object.keys();
         while (keys.hasNext()) {
             String key = (String) keys.next();
-            if(object.get(key) instanceof JSONObject) addToPreferences(context, prefix + key + ".", object.getJSONObject(key));
-            if((object.get(key) instanceof JSONArray)) {
-                addToPreferences(context, prefix + key + ".", object.getJSONArray(key));
-            } else {
-                prefs.putString(prefix + key, object.getString(key));
+            if(object.get(key) instanceof JSONObject)
+                addToPreferences(context, prefix + key + ".", object.getJSONObject(key), sp_editor);
+            if((object.get(key) instanceof JSONArray))
+                addToPreferences(context, prefix + key + ".", object.getJSONArray(key), sp_editor);
+            else {
+                sp_editor.putString(prefix + key, object.getString(key));
             }
         }
-        prefs.commit();
     }
-    private static void addToPreferences(Context context, String prefix, JSONArray jsonArray) throws JSONException {
-        SharedPreferences.Editor prefs = getSharedPreferences(context).edit();
-
+    private static void addToPreferences(Context context, String prefix, JSONArray jsonArray, SharedPreferences.Editor sp_editor) throws JSONException {
         for(int i = 0; i < jsonArray.length(); i++) {
             if(jsonArray.get(i) instanceof JSONObject)
-                addToPreferences(context, prefix + String.valueOf(i) + ".", jsonArray.getJSONObject(i));
+                addToPreferences(context, prefix + String.valueOf(i) + ".", jsonArray.getJSONObject(i), sp_editor);
             else if(jsonArray.get(i) instanceof JSONArray)
-                addToPreferences(context, prefix + String.valueOf(i) + ".", jsonArray.getJSONArray(i));
+                addToPreferences(context, prefix + String.valueOf(i) + ".", jsonArray.getJSONArray(i), sp_editor);
             else
-                prefs.putString(prefix + String.valueOf(i), jsonArray.getString(i));
+                sp_editor.putString(prefix + String.valueOf(i), jsonArray.getString(i));
         }
-        prefs.commit();
     }
 }

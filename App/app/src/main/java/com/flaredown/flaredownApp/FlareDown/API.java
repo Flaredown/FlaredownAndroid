@@ -4,17 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.PreferenceKeys;
@@ -42,8 +39,16 @@ public class API {
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
     private static final String LOCALE_CACHE_FNAME = "localeCache";
-    public static final String getEndpointUrl(String endpoint) {
-        return API_BASE_URL + endpoint;
+    public String getEndpointUrl(String endpoint) {
+        return getEndpointUrl(endpoint, new HashMap<String, String>());
+    }
+    public String getEndpointUrl(String endpoint, Map<String, String> params) {
+        params.putAll(addAuthenticationParams());
+        String url = API_BASE_URL + endpoint + "?";
+        for(String key: params.keySet()) {
+            url += "&" + key + "=" + params.get(key);
+        }
+        return url;
     }
     public JSONObject locales = null;
 
@@ -72,7 +77,7 @@ public class API {
                     sp.putBoolean(SP_USER_SIGNED_IN, true);
                     sp.commit();
 
-                    cacheLocales(new OnCacheLocales() {
+                    getLocales(new OnCacheLocales() {
                         @Override
                         public void onSuccess(JSONObject locales) {
                             onApiResponse.onSuccess(jsonResponse);
@@ -84,6 +89,7 @@ public class API {
                         }
                     });
 
+                    //TODO: UPDATE LOCALES ON SIGN IN
 
                     //onApiResponse.onSuccess(jsonResponse);
                 } catch (JSONException e) {
@@ -197,17 +203,17 @@ public class API {
         void onSuccess(JSONObject locales);
         void onError();
     }
-    public void cacheLocales(OnCacheLocales onCacheLocales) { cacheLocales("en", onCacheLocales);}
-    public void cacheLocales(final String language, final OnCacheLocales onCacheLocales) {
+    public void getLocales(OnCacheLocales onCacheLocales) { getLocales("en", onCacheLocales);}
+    public void getLocales(final String language, final OnCacheLocales onCacheLocales) {
         PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Refreshing locale file");
 
 
-        StringRequest jsonObjectRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/locales/" + language), new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/locales/" + language), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
                     JSONObject jsonResponse = new JSONObject(response);
-                    File dir = mContext.getCacheDir();
+                    /*File dir = mContext.getCacheDir();
                     if (!dir.exists())
                         dir.mkdirs();
                     String path = mContext.getCacheDir().getPath() + LOCALE_CACHE_FNAME;
@@ -219,8 +225,13 @@ public class API {
 
                     ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(data));
                     objectOutputStream.writeObject(jsonResponse.getJSONObject(language).toString());
-                    objectOutputStream.close();
-                    onCacheLocales.onSuccess(jsonResponse.getJSONObject(language));
+                    objectOutputStream.close();*/
+
+                    // NEW LOCALE SAVE
+                    if(Locales.updateSharedPreferences(mContext, jsonResponse.getJSONObject(language)))
+                        onCacheLocales.onSuccess(jsonResponse.getJSONObject(language));
+                    else
+                        onCacheLocales.onError();
                 } catch (Exception e) {
                     e.printStackTrace();
                     onCacheLocales.onError();
@@ -235,12 +246,11 @@ public class API {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 return addAuthenticationParams();
-                //
             }
         };
 
         RequestQueue queue = Volley.newRequestQueue(mContext);
-        queue.add(jsonObjectRequest);
+        queue.add(stringRequest);
     }
 
 
@@ -290,11 +300,13 @@ public class API {
 
     public void error_503 () {
         String errorMessage = "";
-        try{
-            errorMessage = this.locales.getJSONObject("nice_errors").getString("503");
-        } catch (Exception e) {
+
+        //TODO: Get error message from locales.
+        //try{
+        //    errorMessage = this.locales.getJSONObject("nice_errors").getString("503");
+        //} catch (Exception e) {
             errorMessage = "server is currently unavailable";
-        }
+        //}
         Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
     }
     public void error_unknown() {
@@ -302,11 +314,11 @@ public class API {
     }
     public void error_500() {
         String errorMessage = "";
-        try{
-            errorMessage = this.locales.getJSONObject("nice_errors").getString("500");
-        } catch (Exception e) {
+        //try{
+        //    errorMessage = this.locales.getJSONObject("nice_errors").getString("500");
+        //} catch (Exception e) {
             errorMessage = "Something went wrong, perhaps try again";
-        }
+        //}
         Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
     }
 
