@@ -42,14 +42,6 @@ public class HomeFragment extends Fragment {
                 ((HomeActivity) mContext).nextQuestion();
             }
         });
-        tv2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent((HomeActivity) mContext, LocalesTest.class);
-                ((HomeActivity) mContext).startActivity(intent);
-
-            }
-        });
 
 
         return fragmentRoot;

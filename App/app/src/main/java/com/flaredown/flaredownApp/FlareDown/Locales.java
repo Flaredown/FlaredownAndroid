@@ -2,14 +2,7 @@ package com.flaredown.flaredownApp.FlareDown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.PreferenceKeys;
 
 import org.json.JSONArray;
@@ -61,9 +54,8 @@ public class Locales {
                 addToPreferences(context, prefix + key + ".", object.getJSONObject(key), sp_editor);
             if((object.get(key) instanceof JSONArray))
                 addToPreferences(context, prefix + key + ".", object.getJSONArray(key), sp_editor);
-            else {
+            else
                 sp_editor.putString(prefix + key, object.getString(key));
-            }
         }
     }
     private static void addToPreferences(Context context, String prefix, JSONArray jsonArray, SharedPreferences.Editor sp_editor) throws JSONException {

@@ -42,10 +42,6 @@
             android:name="com.flaredown.flaredownApp.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
-        <activity
-            android:name="com.flaredown.flaredownApp.LocalesTest"
-            android:label="@string/title_activity_locales_test" >
-        </activity>
     </application>
 
 </manifest>
