@@ -12,11 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -31,18 +38,21 @@ public class HomeActivity extends AppCompatActivity {
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
 
+    private List<Fragment> fragment_questions = new ArrayList<>();
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         mContext = this;
         Styling.setFont();
         flareDownAPI = new API(mContext);
-        MainToolbarView mainToolbarView;
         super.onCreate(savedInstanceState);
+
+        MainToolbarView mainToolbarView;
         // Checking if user is logged in, otherwise redirect to login screen.
 
         //new ForceLogin(mContext, flareDownAPI);
@@ -56,19 +66,39 @@ public class HomeActivity extends AppCompatActivity {
 
         mainToolbarView.setTitle("July 13");
 
-        List<Fragment> fragments = new ArrayList<Fragment>();
 
-        fragments.add(new HomeFragment());
-        fragments.add(new HomeFragment());
-        fragments.add(new HomeFragment());
-        fragments.add(new HomeFragment());
-        fragments.add(new HomeFragment());
+        try {
+            flareDownAPI.entries(API.API_DATE_FORMAT.parse("Sep 16 2015"), new API.OnApiResponse() {
+                @Override
+                public void onSuccess(JSONObject jsonObject) {
+                    try {
+                        fragment_questions = createFragments(jsonObject.getJSONObject("entry"));
+                        vpp_questionProgress.setNumberOfPages(fragment_questions.size());
+                        questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
+                        vp_questions.setAdapter(questionPagerAdapter);
+                        vp_questions.addOnPageChangeListener(vpp_questionProgress);
+                    } catch (JSONException e) {
+                        Toast.makeText(mContext, "ERROR PARSING JSON", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                }
 
-        vpp_questionProgress.setNumberOfPages(fragments.size());
+                @Override
+                public void onFailure(API.API_Error error) {
+                    Toast.makeText(mContext, "ERROR LOADING QUESTIONS", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (ParseException e ){ e.printStackTrace(); }
 
-        questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
-        vp_questions.setAdapter(questionPagerAdapter);
-        vp_questions.addOnPageChangeListener(vpp_questionProgress);
+
+
+
+
+        //vpp_questionProgress.setNumberOfPages(fragments.size());
+
+        //questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
+        //vp_questions.setAdapter(questionPagerAdapter);
+        //vp_questions.addOnPageChangeListener(vpp_questionProgress);
 
 
         bt_nextQuestion.setOnClickListener(new View.OnClickListener() {
@@ -79,6 +109,32 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private List<Fragment> createFragments(JSONObject entry) throws JSONException{
+        List<Fragment> fragments = new ArrayList<Fragment>();
+
+        JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions");
+
+        Iterator<String> cd_iterator = catalog_definitions.keys();
+
+        while(cd_iterator.hasNext()) {
+            String catalogueKey = cd_iterator.next();
+            JSONArray catalogue = catalog_definitions.getJSONArray(catalogueKey);
+
+
+            for(int i = 0; i < catalogue.length(); i++) {
+                JSONArray questions = catalogue.getJSONArray(i);
+                Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
+                checkin_catalogQ_fragment.setQuestion(questions, i + 1, catalogueKey);
+                checkin_catalogQ_fragment.setRetainInstance(true);
+                fragments.add(checkin_catalogQ_fragment);
+
+            }
+
+
+        }
+        return fragments;
     }
 
     @Override

@@ -4,8 +4,12 @@ import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +17,7 @@ import java.util.List;
 /**
  * Created by thunter on 14/09/15.
  */
-public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageChangeListener {
+public class ViewPagerProgress extends FlowLayout implements ViewPager.OnPageChangeListener {
 
     Context mContext;
     int numberOfPages = 0;
@@ -24,6 +28,7 @@ public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageC
         super(context, attrs);
         mContext = context;
         dots = new ArrayList<ImageButton>();
+        this.setGravity(Gravity.CENTER_HORIZONTAL);
 
 
         this.setOrientation(HORIZONTAL);
@@ -46,16 +51,15 @@ public class ViewPagerProgress extends LinearLayout implements ViewPager.OnPageC
             if(i == currentPage) ib.setSelected(true);
             dots.add(ib);
             this.addView(ib);
+            int margins = mContext.getResources().getDimensionPixelSize(R.dimen.viewpageprogress_size);
+            ((MarginLayoutParams) ib.getLayoutParams()).bottomMargin = ((MarginLayoutParams) ib.getLayoutParams()).rightMargin = margins;
+            ib.getLayoutParams().height = ib.getLayoutParams().width = mContext.getResources().getDimensionPixelSize(R.dimen.viewpageprogress_size);
         }
     }
 
     public ImageButton createDot() {
         ImageButton ib = new ImageButton(mContext);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(mContext.getResources().getDimensionPixelSize(R.dimen.viewpageprogress_size), mContext.getResources().getDimensionPixelSize(R.dimen.viewpageprogress_size));
-        int margins = mContext.getResources().getDimensionPixelSize(R.dimen.viewpageprogress_size);
-        //lp.setMargins(margins, margins, margins, margins);
-        lp.setMargins(0, margins, margins, margins);
-        ib.setLayoutParams(lp);
         Styling.setBackground(mContext, ib, R.drawable.viewpagerprogress_background);
         //ib.setBackground(ContextCompat.getDrawable(mContext, R.drawable.viewpagerprogress_background));
         return ib;

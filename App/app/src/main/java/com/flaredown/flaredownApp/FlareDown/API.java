@@ -8,10 +8,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.PreferenceKeys;
@@ -25,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +43,7 @@ public class API {
     private static final String SP_USER_EMAIL = "FlareDownAPI_useremail"; // String
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
+    public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM dd yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     private SharedPreferences sharedPreferences;
     public String getEndpointUrl(String endpoint) {
@@ -152,6 +158,35 @@ public class API {
         sp.remove(SP_USER_EMAIL);
         sp.putBoolean(SP_USER_SIGNED_IN, false);
         sp.commit();
+    }
+
+    public void entries(final Date date, final OnApiResponse onApiResponse) {
+        Map<String, String> params = addAuthenticationParams();
+        params.put("date", API_DATE_FORMAT.format(date));
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, getEndpointUrl("/entries"), new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                onApiResponse.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //return super.getParams();
+                Map<String, String> postParams = addAuthenticationParams();
+
+                postParams.put("date", API_DATE_FORMAT.format(date));
+
+                return postParams;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonRequest);
     }
 
     public boolean isLoggedIn(boolean doubleCheck) {

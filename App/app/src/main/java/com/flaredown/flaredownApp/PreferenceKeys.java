@@ -10,7 +10,7 @@ import android.util.Log;
  */
 public class PreferenceKeys {
     public static final boolean DEBUGGING = true;
-    public static final String API_DOMAIN = "https://api-staging.flaredown.com/v1";
+    //public static final String API_DOMAIN = "https://app.flaredown.com/v1";
 
     //Key values stored in sharedpreferences
     public static final String P_FIRST_RUN = "first_run";
