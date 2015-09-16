@@ -13,15 +13,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
     Context mContext;
     MainToolbarView mainToolbarView;
+    TextView tv_AccountTitle;
     TextView tv_EditAccount;
     TextView tv_SettingsLogout;
 
@@ -33,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         Styling.setFont();
 
         mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
+        tv_AccountTitle = (TextView) findViewById(R.id.tv_accountTitle);
         tv_EditAccount = (TextView) findViewById(R.id.tv_editAccount);
         tv_SettingsLogout = (TextView) findViewById(R.id.tv_settingsLogout);
 
@@ -65,8 +67,13 @@ public class SettingsActivity extends AppCompatActivity {
                 });
             }
         });
+        updateLocales();
     }
-
+    public void updateLocales() {
+        tv_AccountTitle.setText(Locales.read(mContext, "menu_item_account").createAT());
+        tv_EditAccount.setText(Locales.read(mContext, "account.edit").createAT());
+        tv_SettingsLogout.setText(Locales.read(mContext, "menu_item_logout").createAT());
+    }
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));

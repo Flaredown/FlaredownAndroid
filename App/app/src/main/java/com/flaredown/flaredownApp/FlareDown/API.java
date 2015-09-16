@@ -39,6 +39,7 @@ public class API {
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
     private static final String LOCALE_CACHE_FNAME = "localeCache";
+    private SharedPreferences sharedPreferences;
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
     }
@@ -50,11 +51,10 @@ public class API {
         }
         return url;
     }
-    public JSONObject locales = null;
 
     public API(Context context) {
         mContext = context;
-        locales = readCachedLocales();
+        sharedPreferences = PreferenceKeys.getSharedPreferences(context);
     }
     public interface OnApiResponse{
         void onSuccess(JSONObject jsonObject);
@@ -85,6 +85,7 @@ public class API {
 
                         @Override
                         public void onError() {
+                            users_sign_out_force();
                             onApiResponse.onFailure(new API_Error().setInternetConnection(true));
                         }
                     });
@@ -126,11 +127,7 @@ public class API {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/users/sign_out"), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                SharedPreferences.Editor sp = PreferenceKeys.getSharedPreferences(mContext).edit();
-                sp.remove(SP_USER_AUTHTOKEN);
-                sp.remove(SP_USER_EMAIL);
-                sp.putBoolean(SP_USER_SIGNED_IN, false);
-                sp.commit();
+                users_sign_out_force();
                 onApiResponse.onSuccess(new JSONObject());
             }
         }, new Response.ErrorListener() {
@@ -147,6 +144,14 @@ public class API {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
+    }
+
+    public void users_sign_out_force() {
+        SharedPreferences.Editor sp = sharedPreferences.edit();
+        sp.remove(SP_USER_AUTHTOKEN);
+        sp.remove(SP_USER_EMAIL);
+        sp.putBoolean(SP_USER_SIGNED_IN, false);
+        sp.commit();
     }
 
     public boolean isLoggedIn(boolean doubleCheck) {
@@ -178,25 +183,6 @@ public class API {
             params.put("user_token", sp.getString(SP_USER_AUTHTOKEN, ""));
         }
         return params;
-    }
-
-    public JSONObject readCachedLocales() {
-        File data = new File(mContext.getCacheDir().getPath() + LOCALE_CACHE_FNAME);
-        try {
-            if(data.exists()) {
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(data));
-                JSONObject jsonObject = new JSONObject((String) objectInputStream.readObject());
-                objectInputStream.close();
-                return jsonObject;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public interface OnCacheLocales {
@@ -299,27 +285,26 @@ public class API {
 
 
     public void error_503 () {
-        String errorMessage = "";
+        //String errorMessage = "";
 
-        //TODO: Get error message from locales.
         //try{
         //    errorMessage = this.locales.getJSONObject("nice_errors").getString("503");
         //} catch (Exception e) {
-            errorMessage = "server is currently unavailable";
+        //    errorMessage = "server is currently unavailable";
         //}
-        Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, Locales.read(mContext, "nice_errors.503").create(), Toast.LENGTH_LONG).show();
     }
     public void error_unknown() {
         error_500();
     }
     public void error_500() {
-        String errorMessage = "";
+        //String errorMessage = "";
         //try{
         //    errorMessage = this.locales.getJSONObject("nice_errors").getString("500");
         //} catch (Exception e) {
-            errorMessage = "Something went wrong, perhaps try again";
+        //    errorMessage = "Something went wrong, perhaps try again";
         //}
-        Toast.makeText(mContext, errorMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, Locales.read(mContext, "nice_errors.503").create(), Toast.LENGTH_LONG).show();
     }
 
 }

@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.FlareDown;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.Html;
 
 import com.flaredown.flaredownApp.PreferenceKeys;
 
@@ -74,12 +75,16 @@ public class Locales {
      * Read the shared preferences including string replacement.
      */
 
-    public static class Reader {
+    public static class Reader{
         private Context context;
         private String result;
-        public Reader(Context context, String result) {
+        private String key;
+        private boolean successful = false;
+        public Reader(Context context, String result, boolean successful, String key) {
             this.context = context;
             this.result = result;
+            this.successful = successful;
+            this.key = key;
         }
         public Reader replace(String key, String value) {
             result = result.replaceAll("\\{\\{" + key + "\\}\\}", value);
@@ -88,12 +93,28 @@ public class Locales {
         public String create() {
             return result;
         }
+        public android.text.Spanned createAT() {
+            return Html.fromHtml(result);
+        }
+        public Reader resultIfUnsuccessful(String failedResult) {
+            if(!successful)
+                result = failedResult;
+            return this;
+        }
+        public Reader useKeyIfUnsuccessful() {
+            if(!successful)
+                result = key;
+            return this;
+        }
     }
     public static Reader read(Context context, String key) {
         SharedPreferences sp = getSharedPreferences(context);
+        boolean successful = false;
+        if(sp.contains(key)) {
+            successful = true;
+        }
         String result = sp.getString(key, "_LOCALE_ERROR_");
 
-
-        return new Reader(context, result);
+        return new Reader(context, result, successful, key);
     }
 }

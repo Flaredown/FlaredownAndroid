@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONObject;
 
@@ -45,6 +46,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private final String DEBUG_TAG = "LoginActivity";
     private API flareDownAPI;
     private InternetReceiver internetReceiver;
+    private boolean localesLoaded = false;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -108,34 +110,39 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginFormView = findViewById(R.id.ll_email_login_form);
 
         flareDownAPI = new API(mContext);
-        if(flareDownAPI.locales == null) {
-            PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
-            flareDownAPI.getLocales(new API.OnCacheLocales() {
-                @Override
-                public void onSuccess(JSONObject locales) {
-                    populateLocales(savedInstanceState == null);
-                }
-
-                @Override
-                public void onError() {
-                    PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Error loading locales");
-                }
-            });
-        } else {
-            populateLocales(savedInstanceState == null);
-        }
+        //if(flareDownAPI.locales == null) {
+        PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
+        loadLocales(savedInstanceState == null);
+        //} else {
+        //    populateLocales(savedInstanceState == null);
+        //}
         // Listen out for internet connectivity
         internetReceiver = new InternetReceiver(mContext, new Handler(), new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = true;
                 setViewInternetConnectivity(true);
+                if(!localesLoaded)
+                    loadLocales(false);
             }
         }, new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = false;
                 setViewInternetConnectivity(false);
+            }
+        });
+    }
+    private void loadLocales(final boolean animate) {
+        flareDownAPI.getLocales(new API.OnCacheLocales() {
+            @Override
+            public void onSuccess(JSONObject locales) {
+                localesLoaded = true;
+                populateLocales(animate);
+            }
+            @Override
+            public void onError() {
+
             }
         });
     }
@@ -186,19 +193,22 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            //mPasswordView.setError(getString(R.string.error_invalid_password));
+            mPasswordView.setError(Locales.read(mContext, "nice_errors.field_invalid").replace("field", "Password").createAT());
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+            //mEmailView.setError(getString(R.string.error_field_required));
+            mEmailView.setError(Locales.read(mContext, "nice_errors.field_required").replace("field", "Email").createAT());
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
+            //mEmailView.setError(getString(R.string.error_invalid_email));
+            mEmailView.setError(Locales.read(mContext, "nice_errors.field_invalid").replace("field", "Email").createAT());
             focusView = mEmailView;
             cancel = true;
         }
@@ -231,12 +241,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
                     // Check for incorrect credentials
                     if(error.statusCode == 422) {
-                        String errorMessage = "";
-                        try {
-                            errorMessage = flareDownAPI.locales.getJSONObject("nice_errors").getString("bad_credentials");
-                        } catch (Exception e) {
-                            errorMessage = "Invalid Login Credentials";
-                        }
+                        String errorMessage = Locales.read(mContext, "nice_errors.bad_credentials").create();
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
                     } else if(!error.internetConnection) {
@@ -251,12 +256,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return email.contains("@") && email.contains(".");
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 1;
     }
 
     /**
