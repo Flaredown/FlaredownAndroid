@@ -156,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /**
-     * Simple pager adapter, for previewing the question pages, may need switching out when loading questions from the api.
+     * Simple pager adapter, for previewing the questions pages, may need switching out when loading questions from the api.
      */
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {

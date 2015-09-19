@@ -12,6 +12,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  * Created by thunter on 13/09/15.
  */
 public class Styling {
+    private static int uniqueId = 1;
+    public static int getUniqueId() {
+        return uniqueId++;
+    }
     public static void setFont() {
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/proximanova_regular.ttf")

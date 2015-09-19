@@ -78,4 +78,11 @@
         <item name="android:layout_width">@dimen/viewpageprogress_size</item>
         <item name="android:layout_height">@dimen/viewpageprogress_size</item>
     </style>
+    <style name="AppTheme.Checkin_Selector_Button">
+        <item name="android:background">@drawable/checkin_selector_button_background</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@drawable/checkin_selector_button_text</item>
+        <item name="android:layout_margin">3dp</item>
+    </style>
 </resources>
