@@ -15,13 +15,14 @@ import com.flaredown.flaredownApp.FlareDown.Locales;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class Checkin_catalogQ_fragment extends Fragment {
     private static final String CURRENT_VALUE = "Current_value";
+    private static final String DEBUG_KEY = "checkin_catalogQ_fragment";
+    private int UNIQUE_IDS = 400;
     JSONArray questions;
     String catalogue;
     int section;
@@ -65,20 +66,22 @@ public class Checkin_catalogQ_fragment extends Fragment {
         return fragmentRoot;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     private class SelectQuestionInflate extends BlankQuestion {
         public SelectQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
             JSONArray inputs = question.getJSONArray("inputs");
             Checkin_Selector_View checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
-            checkin_selector_view.setId(Styling.getUniqueId());
+            //checkin_selector_view.setId(Styling.getUniqueId());
+            //TODO: restore correctly
+            checkin_selector_view.setId(R.id.bt_sign_in);
 
-            this.ll_root.addView(new Checkin_Selector_View(getActivity()).setInputs(inputs));
+            this.ll_root.addView(checkin_selector_view);
+
+
+            //Checkin_Selector_View checkin_selector_view = (Checkin_Selector_View) this.ll_root.findViewById(R.id.csv_selector);
+            //checkin_selector_view.setInputs(inputs);
+
         }
     }
 

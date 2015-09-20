@@ -2,17 +2,21 @@ package com.flaredown.flaredownApp;
 
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +28,15 @@ public class Checkin_Selector_View extends LinearLayout{
 
     Context context;
     List<InputButton> buttons = new ArrayList<>();
-    private Integer value;
+    private int value = -1;
+    private final String DEBUG_TAG = "checkin_selector_view";
+
+    public Checkin_Selector_View(Context context) {
+        super(context);
+        setSaveEnabled(true);
+        this.context = context;
+        this.setOrientation(VERTICAL);
+    }
 
     public Integer getValue() {
         return value;
@@ -40,11 +52,56 @@ public class Checkin_Selector_View extends LinearLayout{
         }
     }
 
-    public Checkin_Selector_View(Context context) {
-        super(context);
-        this.context = context;
-        this.setOrientation(VERTICAL);
+    private static final int SELECTED_TRUE = 1;
+    private static final int SELECTED_FALSE = 0;
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+        if(getValue() != null)
+            ss.value = getValue();
+        PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "SAVING VIEW: " + String.valueOf(ss.value));
+        return ss;
     }
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        //if(ss.selected == SELECTED_TRUE)
+            setValue(ss.value);
+        PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "RESTORING VIEW: " + String.valueOf(ss.value));
+    }
+
+    private static class SavedState extends BaseSavedState {
+        int value;
+
+        SavedState (Parcelable superState) {
+            super(superState);
+        }
+        private SavedState(Parcel in) {
+            super(in);
+            value = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(value);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+    }
+
+
 
     public Checkin_Selector_View setInputs(JSONArray inputs) throws JSONException {
         buttons.clear();
