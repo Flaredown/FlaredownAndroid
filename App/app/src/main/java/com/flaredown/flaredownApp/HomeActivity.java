@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp;
 
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -51,6 +50,10 @@ public class HomeActivity extends AppCompatActivity {
         Styling.setFont();
         flareDownAPI = new API(mContext);
         super.onCreate(savedInstanceState);
+        if(!flareDownAPI.isLoggedIn(false)) {  // Prevent other code running if not logged in.
+            new ForceLogin(mContext, flareDownAPI);
+            return;
+        }
 
         MainToolbarView mainToolbarView;
         // Checking if user is logged in, otherwise redirect to login screen.
