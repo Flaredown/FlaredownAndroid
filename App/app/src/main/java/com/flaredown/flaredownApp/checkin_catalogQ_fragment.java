@@ -75,6 +75,7 @@ public class Checkin_catalogQ_fragment extends Fragment {
             checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
                 @Override
                 public void onClick() {
+                    PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "SOME BUTTON PRESSED");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {

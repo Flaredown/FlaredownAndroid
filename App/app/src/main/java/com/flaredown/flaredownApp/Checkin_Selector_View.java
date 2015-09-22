@@ -44,13 +44,15 @@ public class Checkin_Selector_View extends LinearLayout{
     }
 
     public void setValue(Integer value) {
-        for(int i = 0; i < buttons.size(); i++) {
+        /*for(int i = 0; i < buttons.size(); i++) {
             InputButton button= buttons.get(i);
             if(button.value == value) {
                 button.performClick();
                 return;
             }
-        }
+        }*/
+        if(value != null)
+            selectView(value);
     }
 
     @Override
@@ -107,7 +109,6 @@ public class Checkin_Selector_View extends LinearLayout{
         for(int i = 0; i < inputs.length(); i++) {
             JSONObject input = inputs.getJSONObject(i);
             InputButton button = new InputButton(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button, input.getInt("value"));
-            button.setId(Styling.getUniqueId());
             buttons.add(button);
             String label = String.valueOf(input.getInt("value") + 1);
 
@@ -120,12 +121,9 @@ public class Checkin_Selector_View extends LinearLayout{
             button.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    for(int i = 0; i < buttons.size(); i++) {
-                        buttons.get(i).setSelected(false);
-                    }
-                    v.setSelected(true);
-                    value = ((InputButton) v).value;
-                    if(onButtonClickListener != null) onButtonClickListener.onClick();
+                    PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "Selector button Press");
+                    selectView(((InputButton) v).value);
+                    if (onButtonClickListener != null) onButtonClickListener.onClick();
                 }
             });
             this.addView(button);
@@ -134,6 +132,15 @@ public class Checkin_Selector_View extends LinearLayout{
         }
         return this;
     }
+
+    private void selectView(int value) {
+        for(int i = 0; i < buttons.size(); i++) {
+            InputButton button = buttons.get(i);
+            button.setSelected(value == button.value);
+        }
+        this.value = value;
+    }
+
 
     public interface OnButtonClickListener {
         void onClick();
