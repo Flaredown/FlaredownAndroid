@@ -25,7 +25,7 @@ import java.util.List;
  * Created by thunter on 19/09/15.
  */
 public class Checkin_Selector_View extends LinearLayout{
-
+    Checkin_Selector_View t;
     Context context;
     List<InputButton> buttons = new ArrayList<>();
     private int value = -1;
@@ -36,6 +36,7 @@ public class Checkin_Selector_View extends LinearLayout{
         setSaveEnabled(true);
         this.context = context;
         this.setOrientation(VERTICAL);
+        t = this;
     }
 
     public Integer getValue() {
@@ -51,9 +52,6 @@ public class Checkin_Selector_View extends LinearLayout{
             }
         }
     }
-
-    private static final int SELECTED_TRUE = 1;
-    private static final int SELECTED_FALSE = 0;
 
     @Override
     public Parcelable onSaveInstanceState() {
@@ -127,6 +125,7 @@ public class Checkin_Selector_View extends LinearLayout{
                     }
                     v.setSelected(true);
                     value = ((InputButton) v).value;
+                    if(onButtonClickListener != null) onButtonClickListener.onClick();
                 }
             });
             this.addView(button);
@@ -134,6 +133,14 @@ public class Checkin_Selector_View extends LinearLayout{
             ((MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
         return this;
+    }
+
+    public interface OnButtonClickListener {
+        void onClick();
+    }
+    private OnButtonClickListener onButtonClickListener;
+    public void setButtonClickListener (OnButtonClickListener onButtonClickListener) {
+        this.onButtonClickListener = onButtonClickListener;
     }
 
     class InputButton extends Button {

@@ -72,6 +72,28 @@ public class Checkin_catalogQ_fragment extends Fragment {
 
             JSONArray inputs = question.getJSONArray("inputs");
             Checkin_Selector_View checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
+            checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
+                @Override
+                public void onClick() {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // Adding a dealy... allowing confirmation of seleciton.
+                                Thread.sleep(250);
+                                ((HomeActivity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ((HomeActivity) context).nextQuestion();
+                                    }
+                                });
+
+                            } catch (InterruptedException e) { e.printStackTrace(); }
+                        }
+                    }).start();
+
+                }
+            });
             //checkin_selector_view.setId(Styling.getUniqueId());
             //TODO: restore correctly
             checkin_selector_view.setId(R.id.bt_sign_in);
