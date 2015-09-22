@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 
 import org.json.JSONArray;
@@ -48,6 +49,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         mContext = this;
         Styling.setFont();
+
         flareDownAPI = new API(mContext);
         super.onCreate(savedInstanceState);
         if(!flareDownAPI.isLoggedIn(false)) {  // Prevent other code running if not logged in.
@@ -88,20 +90,11 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(API.API_Error error) {
-                    Toast.makeText(mContext, "ERROR LOADING QUESTIONS", Toast.LENGTH_LONG).show();
+                    new DefaultErrors(mContext, error);
                 }
             });
         } catch (ParseException e ){ e.printStackTrace(); }
 
-
-
-
-
-        //vpp_questionProgress.setNumberOfPages(fragments.size());
-
-        //questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragments);
-        //vp_questions.setAdapter(questionPagerAdapter);
-        //vp_questions.addOnPageChangeListener(vpp_questionProgress);
 
 
         bt_nextQuestion.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +103,6 @@ public class HomeActivity extends AppCompatActivity {
                 nextQuestion();
             }
         });
-
 
     }
 

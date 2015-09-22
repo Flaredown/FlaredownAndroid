@@ -1,6 +1,8 @@
 package com.flaredown.flaredownApp;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.flaredown.com.flaredown.R;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
@@ -37,5 +39,9 @@ public class Styling {
             view.setBackgroundDrawable(ContextCompat.getDrawable(context, resId));
         else
             view.setBackground(ContextCompat.getDrawable(context, resId));
+    }
+
+    public static void styleDialog(Dialog dialog) {
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.box_background);
     }
 }

@@ -96,6 +96,18 @@ public class Locales {
         public android.text.Spanned createAT() {
             return Html.fromHtml(result);
         }
+        public Reader capitalize1Char() {
+            if(result.length() == 1) {
+                result = result.toUpperCase();
+            } else if(result.length() > 1) {
+                result = result.substring(0, 1).toUpperCase() + result.substring(1);
+            }
+
+            if(!result.substring(result.length() - 1).equals(".")) {
+                result += ".";
+            }
+            return this;
+        }
         public Reader resultIfUnsuccessful(String failedResult) {
             if(!successful)
                 result = failedResult;

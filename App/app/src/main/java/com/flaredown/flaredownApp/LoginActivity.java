@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONObject;
@@ -134,15 +135,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         });
     }
     private void loadLocales(final boolean animate) {
-        flareDownAPI.getLocales(new API.OnCacheLocales() {
+        flareDownAPI.getLocales(new API.OnApiResponse() {
             @Override
             public void onSuccess(JSONObject locales) {
                 localesLoaded = true;
                 populateLocales(animate);
             }
-            @Override
-            public void onError() {
 
+            @Override
+            public void onFailure(API.API_Error error) {
+                new DefaultErrors(mContext, error);
             }
         });
     }
@@ -238,16 +240,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 public void onFailure(API.API_Error error) {
                     setView(VIEW_LOGIN);
                     //TODO differentiate between no internet connection and incorrect user details.
-                    PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
+                    //PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
                     // Check for incorrect credentials
                     if(error.statusCode == 422) {
                         String errorMessage = Locales.read(mContext, "nice_errors.bad_credentials").create();
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
-                    } else if(!error.internetConnection) {
-                        flareDownAPI.error_503();
-                    } else
-                        flareDownAPI.error_unknown();
+                    } else {
+                        new DefaultErrors(mContext, error);
+                    }
                 }
             });
 

@@ -83,16 +83,16 @@ public class API {
                     sp.putBoolean(SP_USER_SIGNED_IN, true);
                     sp.commit();
 
-                    getLocales(new OnCacheLocales() {
+                    getLocales(new OnApiResponse() {
                         @Override
                         public void onSuccess(JSONObject locales) {
                             onApiResponse.onSuccess(jsonResponse);
                         }
 
                         @Override
-                        public void onError() {
+                        public void onFailure(API_Error error) {
                             users_sign_out_force();
-                            onApiResponse.onFailure(new API_Error().setInternetConnection(true));
+                            onApiResponse.onFailure(error);
                         }
                     });
 
@@ -220,12 +220,8 @@ public class API {
         return params;
     }
 
-    public interface OnCacheLocales {
-        void onSuccess(JSONObject locales);
-        void onError();
-    }
-    public void getLocales(OnCacheLocales onCacheLocales) { getLocales("en", onCacheLocales);}
-    public void getLocales(final String language, final OnCacheLocales onCacheLocales) {
+    public void getLocales(OnApiResponse onCacheLocales) { getLocales("en", onCacheLocales);}
+    public void getLocales(final String language, final OnApiResponse onCacheLocales) {
         PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Refreshing locale file");
 
 
@@ -234,34 +230,20 @@ public class API {
             public void onResponse(String response) {
                 try {
                     JSONObject jsonResponse = new JSONObject(response);
-                    /*File dir = mContext.getCacheDir();
-                    if (!dir.exists())
-                        dir.mkdirs();
-                    String path = mContext.getCacheDir().getPath() + LOCALE_CACHE_FNAME;
-                    File data = new File(path);
-                    if (!data.createNewFile()) {
-                        data.delete();
-                        data.createNewFile();
-                    }
-
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(data));
-                    objectOutputStream.writeObject(jsonResponse.getJSONObject(language).toString());
-                    objectOutputStream.close();*/
-
                     // NEW LOCALE SAVE
                     if(Locales.updateSharedPreferences(mContext, jsonResponse.getJSONObject(language)))
                         onCacheLocales.onSuccess(jsonResponse.getJSONObject(language));
                     else
-                        onCacheLocales.onError();
+                        onCacheLocales.onFailure(new API_Error());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    onCacheLocales.onError();
+                    onCacheLocales.onFailure(new API_Error());
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onCacheLocales.onError();
+                onCacheLocales.onFailure(new API_Error().setVolleyError(error));
             }
         }) {
             @Override
