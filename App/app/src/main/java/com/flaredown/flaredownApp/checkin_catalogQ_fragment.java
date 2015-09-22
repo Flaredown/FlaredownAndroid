@@ -20,17 +20,13 @@ import org.json.JSONObject;
  * A placeholder fragment containing a simple view.
  */
 public class Checkin_catalogQ_fragment extends Fragment {
-    private static final String CURRENT_VALUE = "Current_value";
     private static final String DEBUG_KEY = "checkin_catalogQ_fragment";
-    private int UNIQUE_IDS = 400;
     JSONArray questions;
     String catalogue;
     int section;
     public Context context;
     private View fragmentRoot;
     private LinearLayout ll_questionHolder;
-    private int questionId = 1;
-
     public Checkin_catalogQ_fragment() {
     }
 
@@ -75,7 +71,6 @@ public class Checkin_catalogQ_fragment extends Fragment {
             checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
                 @Override
                 public void onClick() {
-                    PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "SOME BUTTON PRESSED");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -100,11 +95,6 @@ public class Checkin_catalogQ_fragment extends Fragment {
             checkin_selector_view.setId(R.id.bt_sign_in);
 
             this.ll_root.addView(checkin_selector_view);
-
-
-            //Checkin_Selector_View checkin_selector_view = (Checkin_Selector_View) this.ll_root.findViewById(R.id.csv_selector);
-            //checkin_selector_view.setInputs(inputs);
-
         }
     }
 

@@ -111,12 +111,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginFormView = findViewById(R.id.ll_email_login_form);
 
         flareDownAPI = new API(mContext);
-        //if(flareDownAPI.locales == null) {
         PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
         loadLocales(savedInstanceState == null);
-        //} else {
-        //    populateLocales(savedInstanceState == null);
-        //}
         // Listen out for internet connectivity
         internetReceiver = new InternetReceiver(mContext, new Handler(), new Runnable() {
             @Override

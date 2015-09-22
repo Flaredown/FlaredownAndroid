@@ -9,14 +9,12 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.SAXException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +42,6 @@ public class Checkin_Selector_View extends LinearLayout{
     }
 
     public void setValue(Integer value) {
-        /*for(int i = 0; i < buttons.size(); i++) {
-            InputButton button= buttons.get(i);
-            if(button.value == value) {
-                button.performClick();
-                return;
-            }
-        }*/
         if(value != null)
             selectView(value);
     }
@@ -68,8 +59,7 @@ public class Checkin_Selector_View extends LinearLayout{
     public void onRestoreInstanceState(Parcelable state) {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
-        //if(ss.selected == SELECTED_TRUE)
-            setValue(ss.value);
+        setValue(ss.value);
         PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "RESTORING VIEW: " + String.valueOf(ss.value));
     }
 

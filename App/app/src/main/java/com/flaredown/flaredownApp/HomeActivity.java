@@ -32,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
     Context mContext;
     API flareDownAPI;
 
-    private static final int NUMBER_PAGES = 5;
     private ViewPager vp_questions;
     private PagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
@@ -60,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
         MainToolbarView mainToolbarView;
         // Checking if user is logged in, otherwise redirect to login screen.
 
-        //new ForceLogin(mContext, flareDownAPI);
         setContentView(R.layout.activity_home);
 
         // FindViews

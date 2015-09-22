@@ -4,17 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.PreferenceKeys;
@@ -22,12 +18,6 @@ import com.flaredown.flaredownApp.PreferenceKeys;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -265,7 +255,6 @@ public class API {
         return false;
     }
 
-
     public class API_Error {
         public VolleyError volleyError;
         public Boolean internetConnection;
@@ -298,30 +287,4 @@ public class API {
             return "Internet Connection: " + (internetConnection ? "true" : "false") + " Status Code: " + String.valueOf(statusCode);
         }
     }
-
-
-
-    public void error_503 () {
-        //String errorMessage = "";
-
-        //try{
-        //    errorMessage = this.locales.getJSONObject("nice_errors").getString("503");
-        //} catch (Exception e) {
-        //    errorMessage = "server is currently unavailable";
-        //}
-        Toast.makeText(mContext, Locales.read(mContext, "nice_errors.503").create(), Toast.LENGTH_LONG).show();
-    }
-    public void error_unknown() {
-        error_500();
-    }
-    public void error_500() {
-        //String errorMessage = "";
-        //try{
-        //    errorMessage = this.locales.getJSONObject("nice_errors").getString("500");
-        //} catch (Exception e) {
-        //    errorMessage = "Something went wrong, perhaps try again";
-        //}
-        Toast.makeText(mContext, Locales.read(mContext, "nice_errors.503").create(), Toast.LENGTH_LONG).show();
-    }
-
 }
