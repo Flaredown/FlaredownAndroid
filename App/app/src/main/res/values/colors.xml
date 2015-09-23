@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#F2EEE8</color>
+    <color name="colorPrimaryDark">@color/background</color>
+    <!--<color name="colorPrimaryDark">#BFB19C</color>-->
+    <color name="textColor">#000000</color>
+    <color name="accent">#73C1BA</color>
+    <color name="accent_hover">#47a098</color>
+    <color name="box_background">#FFFFFF</color>
+    <color name="box_shadow">#E1D8C8</color>
+    <color name="sub_text_color">#c3b399</color>
+    <color name="edittext_borderColor">#9b9b9b</color>
+    <color name="checkin_selector_button_background">#f2f2f2</color>
+    <color name="checkin_selector_button_text">#9b9b9b</color>
+    <color name="checkin_selector_button_text_selected">#fff</color>
+</resources>

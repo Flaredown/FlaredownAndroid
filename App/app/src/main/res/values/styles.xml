@@ -1,0 +1,88 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:buttonStyle">@style/AppTheme.Button</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
+        <item name="android:textViewStyle">@style/AppTheme.TextView</item>
+        <item name="android:textSize">@dimen/font_size</item>
+        <item name="android:windowAnimationStyle">@style/AppTheme.ActivityAnimation</item>
+        <item name="android:editTextStyle">@style/AppTheme.EditText</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AppTheme.EditText</item>
+    </style>
+    <style name="AppTheme.TextView.Link">
+        <item name="android:textColor">@color/accent</item>
+    </style>
+    <style name="AppTheme.TextView.Title">
+        <item name="android:textSize">@dimen/title_font_size</item>
+    </style>
+    <style name="AppTheme.TextView.SubTitle">
+        <item name="android:textSize">@dimen/sub_title_font_size</item>
+    </style>
+    <style name="AppTheme.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/edittext_background</item>
+        <item name="android:padding">@dimen/sep_margin_small</item>
+        <item name="android:layout_marginBottom">@dimen/sep_margin_small</item>
+        <item name="android:layout_marginTop">@dimen/sep_margin_small</item>
+        <item name="android:useDefaultMargins">true</item>
+    </style>
+    <style name="AppTheme.ActivityAnimation">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
+    <style name="AppTheme.TextView">
+        <item name="android:textSize">@dimen/font_size</item>
+
+    </style>
+
+    <style name="AppTheme.Box">
+        <item name="android:padding">@dimen/box_padding</item>
+        <item name="android:background">@drawable/box_background</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/box_background</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="AppTheme.NavigationDrawList">
+        <item name="android:textViewStyle">@style/AppTheme.NavigationDrawList_TextView</item>
+    </style>
+    <style name="AppTheme.NavigationDrawList_TextView" parent="android:Widget.TextView">
+        <item name="android:layout_marginLeft">72dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.ViewPagerProgress">
+        <item name="android:imageButtonStyle">@style/AppTheme.ViewPagerProgress.Image</item>
+    </style>
+    <style name="AppTheme.ViewPagerProgress.Image">
+        <item name="android:background">@drawable/viewpagerprogress_background</item>
+        <item name="android:layout_width">@dimen/viewpageprogress_size</item>
+        <item name="android:layout_height">@dimen/viewpageprogress_size</item>
+    </style>
+    <style name="AppTheme.Checkin_Selector_Button">
+        <item name="android:background">@drawable/checkin_selector_button_background</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@drawable/checkin_selector_button_text</item>
+        <item name="android:layout_margin">3dp</item>
+    </style>
+</resources>
