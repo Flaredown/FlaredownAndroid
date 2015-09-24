@@ -18,7 +18,20 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             style="@style/AppTheme.Box">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Catalog Name"
+                android:id="@+id/tv_catalog"
+                android:textColor="@color/accent"/>
 
+            <TextView
+                android:id="@+id/tv_question"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sample Question"/>
         </LinearLayout>
     </ScrollView>
 

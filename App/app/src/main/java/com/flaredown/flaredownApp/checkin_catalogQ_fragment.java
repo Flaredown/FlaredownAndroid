@@ -28,6 +28,8 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     int section;
     public Context context;
     private View fragmentRoot;
+    private TextView tv_catalogName;
+    private TextView tv_sectionTitle;
 
     private View focusedView;
     private LinearLayout ll_questionHolder;
@@ -49,6 +51,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
 
         ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
+
+        tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
+        tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
+
+        tv_sectionTitle.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful("--").createAT());
+        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
 
         try {
             for(int i = 0; i < questions.length(); i++) {
@@ -85,7 +93,11 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
             final EditText editText = new EditText(context);
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            if(inputs.has("step") && inputs.getString("step").contains("."))
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            else
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+
             editText.setGravity(Gravity.CENTER_HORIZONTAL);
 
             if(inputs.has("value")) {
@@ -138,18 +150,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
     private class BlankQuestion {
         public LinearLayout ll_root;
-        public TextView tv_questionTitle;
-        public TextView tv_catalog;
 
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException{
             // Create root elements
             ll_root = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
-            tv_questionTitle = (TextView) ll_root.findViewById(R.id.tv_question);
-            tv_catalog = (TextView) ll_root.findViewById(R.id.tv_catalog);
-            // Set the questions
-            String questionKey = question.getString("name");
-            tv_questionTitle.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(questionKey).createAT());
-            tv_catalog.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
         }
     }
 
