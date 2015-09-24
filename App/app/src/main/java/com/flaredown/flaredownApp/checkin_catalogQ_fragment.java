@@ -2,11 +2,13 @@ package com.flaredown.flaredownApp;
 
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,13 +21,15 @@ import org.json.JSONObject;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class Checkin_catalogQ_fragment extends Fragment {
+public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private static final String DEBUG_KEY = "checkin_catalogQ_fragment";
     JSONArray questions;
     String catalogue;
     int section;
     public Context context;
     private View fragmentRoot;
+
+    private View focusedView;
     private LinearLayout ll_questionHolder;
     public Checkin_catalogQ_fragment() {
     }
@@ -34,6 +38,7 @@ public class Checkin_catalogQ_fragment extends Fragment {
         this.questions = question;
         this.catalogue = catalogue;
         this.section = section;
+        this.focusedView = null;
         return this;
     }
 
@@ -46,12 +51,9 @@ public class Checkin_catalogQ_fragment extends Fragment {
         ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
 
         try {
-            if(questions.getJSONObject(0).getString("kind").equals("select")) {
-                SelectQuestionInflate selectQuestionInflate = new SelectQuestionInflate(questions.getJSONObject(0), catalogue, section);
-                ll_questionHolder.addView(selectQuestionInflate.ll_root);
-            } else {
-                BlankQuestion blankQuestion = new BlankQuestion(questions.getJSONObject(0), catalogue, section);
-                ll_questionHolder.addView(blankQuestion.ll_root);
+            for(int i = 0; i < questions.length(); i++) {
+                JSONObject question = questions.getJSONObject(i);
+                appendQuestion(question);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -62,6 +64,41 @@ public class Checkin_catalogQ_fragment extends Fragment {
         return fragmentRoot;
     }
 
+    private void appendQuestion(JSONObject question) throws JSONException{
+        String kind = question.getString("kind");
+        if(kind.equals("select")) {
+            SelectQuestionInflate selectQuestionInflate = new SelectQuestionInflate(question, catalogue, section);
+            ll_questionHolder.addView(selectQuestionInflate.ll_root);
+        } else if(kind.equals("number")) {
+            NumberQuestionInflate numberQuestionInflate = new NumberQuestionInflate(question, catalogue, section);
+            ll_questionHolder.addView(numberQuestionInflate.ll_root);
+        } else {
+            BlankQuestion blankQuestion = new BlankQuestion(question, catalogue, section);
+            ll_questionHolder.addView(blankQuestion.ll_root);
+        }
+    }
+
+    private class NumberQuestionInflate extends BlankQuestion {
+        public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
+            super(question, catalogue, section);
+
+            JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
+
+            final EditText editText = new EditText(context);
+            editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            editText.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            if(inputs.has("value")) {
+                editText.setText(inputs.getString("value"));
+            }
+
+            this.ll_root.addView(editText);
+            //if(focusedView == null) focusedView = editText;
+
+            // Make sure it is the first quesiton which is focused
+            if(!hasFocusEditText()) setEditTextFocus(editText);
+        }
+    }
     private class SelectQuestionInflate extends BlankQuestion {
         public SelectQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);

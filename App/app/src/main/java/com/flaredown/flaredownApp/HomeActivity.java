@@ -1,5 +1,6 @@
 package com.flaredown.flaredownApp;
 
+import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
@@ -10,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -32,12 +34,15 @@ public class HomeActivity extends AppCompatActivity {
     Context mContext;
     API flareDownAPI;
 
+    private static final String DEBUG_TAG = "HomeActivity";
+
     private ViewPager vp_questions;
     private PagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
+    private int current_page = 0;
 
-    private List<Fragment> fragment_questions = new ArrayList<>();
+    private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -80,6 +85,46 @@ public class HomeActivity extends AppCompatActivity {
                         questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
                         vp_questions.setAdapter(questionPagerAdapter);
                         vp_questions.addOnPageChangeListener(vpp_questionProgress);
+                        vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
+
+                                ViewPagerFragmentBase currentPageFragment = fragment_questions.get(current_page);
+                                ViewPagerFragmentBase futurePageFragment = fragment_questions.get(position);
+
+                                // Hide/Show Keyboard depending on page contents.
+                                if(!futurePageFragment.hasFocusEditText()) { // Hide the keyboard
+                                    PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Hiding the keyboard");
+                                    View currentFocus = ((Activity)mContext).getCurrentFocus();
+                                    if(currentFocus != null) {
+                                        InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+                                    }
+                                } else { // Show the keyboard
+                                    PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Displaying the keyboard");
+                                    futurePageFragment.focusEditText();
+                                }
+
+
+
+
+
+
+                                currentPageFragment.onPageExit();
+                                futurePageFragment.onPageEnter();
+                                current_page = position;
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+
+                            }
+                        });
                     } catch (JSONException e) {
                         Toast.makeText(mContext, "ERROR PARSING JSON", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
@@ -104,8 +149,8 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private List<Fragment> createFragments(JSONObject entry) throws JSONException{
-        List<Fragment> fragments = new ArrayList<Fragment>();
+    private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
+        List<ViewPagerFragmentBase> fragments = new ArrayList<ViewPagerFragmentBase>();
 
         JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions");
 
@@ -153,8 +198,8 @@ public class HomeActivity extends AppCompatActivity {
      */
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        private List<Fragment> fragments;
-        public ScreenSlidePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+        private List<ViewPagerFragmentBase> fragments;
+        public ScreenSlidePagerAdapter(FragmentManager fm, List<ViewPagerFragmentBase> fragments) {
             super(fm);
             this.fragments = fragments;
         }
