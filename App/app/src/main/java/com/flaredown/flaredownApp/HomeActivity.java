@@ -165,7 +165,7 @@ public class HomeActivity extends AppCompatActivity {
                 JSONArray questions = catalogue.getJSONArray(i);
                 Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
                 checkin_catalogQ_fragment.setQuestion(questions, i + 1, catalogueKey);
-                checkin_catalogQ_fragment.setRetainInstance(true);
+                //checkin_catalogQ_fragment.setRetainInstance(true);
                 fragments.add(checkin_catalogQ_fragment);
 
             }

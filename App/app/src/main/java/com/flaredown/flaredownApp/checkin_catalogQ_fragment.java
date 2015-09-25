@@ -57,38 +57,39 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity();
-        fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
+        if(savedInstanceState == null) {
+            context = getActivity();
+            fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
 
-        ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
+            ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
 
-        tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
-        tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
+            tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
+            tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
 
 
-        String sectionTitle = "--";
-        try {
-            sectionTitle = questions.getJSONObject(0).getString("name");
-            if(catalogue.equals("symptoms"))
-                sectionTitle = "How active is the symptom: " + sectionTitle + "?";
-            if(catalogue.equals("conditions"))
-                sectionTitle = "How active is the condition: " + sectionTitle + "?";
-        } catch (JSONException e) {}
-        sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
-
-        tv_sectionTitle.setText(sectionTitle);
-        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
-
-        try {
-            for(int i = 0; i < questions.length(); i++) {
-                JSONObject question = questions.getJSONObject(i);
-                appendQuestion(question);
+            String sectionTitle = "--";
+            try {
+                sectionTitle = questions.getJSONObject(0).getString("name");
+                if (catalogue.equals("symptoms"))
+                    sectionTitle = "How active is the symptom: " + sectionTitle + "?";
+                if (catalogue.equals("conditions"))
+                    sectionTitle = "How active is the condition: " + sectionTitle + "?";
+            } catch (JSONException e) {
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+
+            tv_sectionTitle.setText(sectionTitle);
+            tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
+
+            try {
+                for (int i = 0; i < questions.length(); i++) {
+                    JSONObject question = questions.getJSONObject(i);
+                    appendQuestion(question);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-
-
 
         return fragmentRoot;
     }
@@ -111,11 +112,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     }
 
     private class NumberQuestionInflate extends BlankQuestion {
+        EditText editText;
         public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
-            final EditText editText = new EditText(context);
+            editText = new EditText(context);
             if(inputs.has("step") && inputs.getString("step").contains("."))
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             else
@@ -132,6 +134,16 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
             // Make sure it is the first quesiton which is focused
             if(!hasFocusEditText()) setEditTextFocus(editText);
+        }
+
+        @Override
+        public double getValue() {
+            return Double.valueOf(editText.getText().toString());
+        }
+
+        @Override
+        public void setValue(double value) {
+            editText.setText(String.valueOf(value));
         }
     }
     private class SelectQuestionInflate extends BlankQuestion {
@@ -190,8 +202,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             Spanned label = Locales.read(context, "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
 
             button.setText(label);
-            //button.setId(Styling.getUniqueId());
-
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -211,7 +221,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         @Override
         public void setValue(double value) {
-            button.setSelected(value == 1);
+            button.setSelected(value == 1.0);
         }
     }
 
@@ -231,10 +241,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             ll_root = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
         }
     }
-
-
-
-
     private void changeQuestion () {
         if(catalogue == "symptoms") {
             //tv_question.setText();
