@@ -4,7 +4,6 @@ import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
@@ -33,7 +32,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     JSONArray questions;
     String catalogue;
     int section;
-    public Context context;
+    public Context mContext;
     private View fragmentRoot;
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
@@ -57,41 +56,44 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(savedInstanceState == null) {
-            context = getActivity();
-            fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
-
-            ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
-
-            tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
-            tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
-
-
-            String sectionTitle = "--";
-            try {
-                sectionTitle = questions.getJSONObject(0).getString("name");
-                if (catalogue.equals("symptoms"))
-                    sectionTitle = "How active is the symptom: " + sectionTitle + "?";
-                if (catalogue.equals("conditions"))
-                    sectionTitle = "How active is the condition: " + sectionTitle + "?";
-            } catch (JSONException e) {
-            }
-            sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
-
-            tv_sectionTitle.setText(sectionTitle);
-            tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
-
-            try {
-                for (int i = 0; i < questions.length(); i++) {
-                    JSONObject question = questions.getJSONObject(i);
-                    appendQuestion(question);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        if(savedInstanceState == null || mContext == null) createFragment(inflater, container, savedInstanceState);
 
         return fragmentRoot;
+    }
+
+    private void createFragment (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContext = getActivity();
+        fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
+
+        ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
+
+        tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
+        tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
+
+
+        String sectionTitle;
+        try {
+            sectionTitle = questions.getJSONObject(0).getString("name");
+            if (catalogue.equals("symptoms"))
+                sectionTitle = "How active is the symptom: " + sectionTitle + "?";
+            if (catalogue.equals("conditions"))
+                sectionTitle = "How active is the condition: " + sectionTitle + "?";
+        } catch (JSONException e) {
+            sectionTitle = "--";
+        }
+        sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+
+        tv_sectionTitle.setText(sectionTitle);
+        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
+
+        try {
+            for (int i = 0; i < questions.length(); i++) {
+                JSONObject question = questions.getJSONObject(i);
+                appendQuestion(question);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void appendQuestion(JSONObject question) throws JSONException{
@@ -117,7 +119,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             super(question, catalogue, section);
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
-            editText = new EditText(context);
+            editText = new EditText(mContext);
             if(inputs.has("step") && inputs.getString("step").contains("."))
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             else
@@ -162,10 +164,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                             try {
                                 // Adding a dealy... allowing confirmation of seleciton.
                                 Thread.sleep(250);
-                                ((HomeActivity) context).runOnUiThread(new Runnable() {
+                                ((HomeActivity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        ((HomeActivity) context).nextQuestion();
+                                        ((HomeActivity) mContext).nextQuestion();
                                     }
                                 });
 
@@ -175,10 +177,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
                 }
             });
-            //checkin_selector_view.setId(Styling.getUniqueId());
-            //TODO: restore correctly
-            //checkin_selector_view.setId(R.id.bt_sign_in);
-
             this.ll_root.addView(checkin_selector_view);
         }
 
@@ -197,9 +195,9 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public CheckBoxQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
-            button = new Button(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
+            button = new Button(new ContextThemeWrapper(mContext, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
 
-            Spanned label = Locales.read(context, "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
+            Spanned label = Locales.read(mContext, "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
 
             button.setText(label);
             button.setOnClickListener(new View.OnClickListener() {
@@ -210,7 +208,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             });
 
             this.ll_root.addView(button);
-            int margins  = (int) Styling.getInDP(context, 5);
+            int margins  = (int) Styling.getInDP(mContext, 5);
             ((ViewGroup.MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
 
@@ -238,12 +236,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException{
             questionViews.add(this); // Add to the list of elements for easy restoration
             // Create root elements
-            ll_root = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
-        }
-    }
-    private void changeQuestion () {
-        if(catalogue == "symptoms") {
-            //tv_question.setText();
+            ll_root = (LinearLayout) ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
         }
     }
 }

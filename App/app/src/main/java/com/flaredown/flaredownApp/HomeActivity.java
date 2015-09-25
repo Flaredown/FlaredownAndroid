@@ -51,11 +51,16 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        createActivity();
+    }
+
+    private void createActivity() {
         mContext = this;
         Styling.setFont();
 
         flareDownAPI = new API(mContext);
-        super.onCreate(savedInstanceState);
         if(!flareDownAPI.isLoggedIn(false)) {  // Prevent other code running if not logged in.
             new ForceLogin(mContext, flareDownAPI);
             return;
@@ -64,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
         MainToolbarView mainToolbarView;
         // Checking if user is logged in, otherwise redirect to login screen.
 
-        setContentView(R.layout.activity_home);
+
 
         // FindViews
         mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
@@ -146,7 +151,6 @@ public class HomeActivity extends AppCompatActivity {
                 nextQuestion();
             }
         });
-
     }
 
     private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
