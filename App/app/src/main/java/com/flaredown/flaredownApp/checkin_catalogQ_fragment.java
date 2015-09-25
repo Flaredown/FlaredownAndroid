@@ -4,10 +4,14 @@ import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -80,6 +84,9 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         } else if(kind.equals("number")) {
             NumberQuestionInflate numberQuestionInflate = new NumberQuestionInflate(question, catalogue, section);
             ll_questionHolder.addView(numberQuestionInflate.ll_root);
+        } else if(kind.equals("checkbox")){
+            CheckBoxQuestionInflate checkBoxQuestionInflate = new CheckBoxQuestionInflate(question, catalogue, section);
+            ll_questionHolder.addView(checkBoxQuestionInflate.ll_root);
         } else {
             BlankQuestion blankQuestion = new BlankQuestion(question, catalogue, section);
             ll_questionHolder.addView(blankQuestion.ll_root);
@@ -144,6 +151,29 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             checkin_selector_view.setId(R.id.bt_sign_in);
 
             this.ll_root.addView(checkin_selector_view);
+        }
+    }
+    private class CheckBoxQuestionInflate extends BlankQuestion {
+        public CheckBoxQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
+            super(question, catalogue, section);
+
+
+            Button button = new Button(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
+
+            Spanned label = Locales.read(context, "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
+
+            button.setText(label);
+
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setSelected(!v.isSelected());
+                }
+            });
+
+            this.ll_root.addView(button);
+            int margins  = (int) Styling.getInDP(context, 5);
+            ((ViewGroup.MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
     }
 
