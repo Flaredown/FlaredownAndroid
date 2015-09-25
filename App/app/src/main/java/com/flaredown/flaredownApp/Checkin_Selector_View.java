@@ -26,7 +26,7 @@ public class Checkin_Selector_View extends LinearLayout{
     Checkin_Selector_View t;
     Context context;
     List<InputButton> buttons = new ArrayList<>();
-    private int value = -1;
+    private double value = -1;
     private final String DEBUG_TAG = "checkin_selector_view";
 
     public Checkin_Selector_View(Context context) {
@@ -37,20 +37,19 @@ public class Checkin_Selector_View extends LinearLayout{
         t = this;
     }
 
-    public Integer getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
-        if(value != null)
-            selectView(value);
+    public void setValue(double value) {
+        selectView(value);
     }
 
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState ss = new SavedState(superState);
-        if(getValue() != null)
+        if(getValue() != -1)
             ss.value = getValue();
         PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "SAVING VIEW: " + String.valueOf(ss.value));
         return ss;
@@ -64,20 +63,20 @@ public class Checkin_Selector_View extends LinearLayout{
     }
 
     private static class SavedState extends BaseSavedState {
-        int value;
+        double value;
 
         SavedState (Parcelable superState) {
             super(superState);
         }
         private SavedState(Parcel in) {
             super(in);
-            value = in.readInt();
+            value = in.readDouble();
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeInt(value);
+            out.writeDouble(value);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
@@ -123,7 +122,7 @@ public class Checkin_Selector_View extends LinearLayout{
         return this;
     }
 
-    private void selectView(int value) {
+    private void selectView(double value) {
         for(int i = 0; i < buttons.size(); i++) {
             InputButton button = buttons.get(i);
             button.setSelected(value == button.value);
@@ -141,10 +140,10 @@ public class Checkin_Selector_View extends LinearLayout{
     }
 
     class InputButton extends Button {
-        public InputButton(Context context, AttributeSet attrs, int defStyleAttr, int value) {
+        public InputButton(Context context, AttributeSet attrs, int defStyleAttr, double value) {
             super(context, attrs, defStyleAttr);
             this.value = value;
         }
-        int value;
+        double value;
     }
 }

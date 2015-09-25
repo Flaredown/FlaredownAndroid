@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity {
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
 
-        mainToolbarView.setTitle("July 13");
+        mainToolbarView.setTitle("September 16");
 
 
         try {

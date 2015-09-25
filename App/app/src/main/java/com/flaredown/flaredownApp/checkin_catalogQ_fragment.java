@@ -22,6 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -34,6 +37,9 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private View fragmentRoot;
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
+
+
+    private List<BlankQuestion> questionViews = new ArrayList<>();
 
     private View focusedView;
     private LinearLayout ll_questionHolder;
@@ -59,7 +65,18 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
         tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
 
-        tv_sectionTitle.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful("--").createAT());
+
+        String sectionTitle = "--";
+        try {
+            sectionTitle = questions.getJSONObject(0).getString("name");
+            if(catalogue.equals("symptoms"))
+                sectionTitle = "How active is the symptom: " + sectionTitle + "?";
+            if(catalogue.equals("conditions"))
+                sectionTitle = "How active is the condition: " + sectionTitle + "?";
+        } catch (JSONException e) {}
+        sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+
+        tv_sectionTitle.setText(sectionTitle);
         tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
 
         try {
@@ -96,7 +113,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private class NumberQuestionInflate extends BlankQuestion {
         public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
-
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
             final EditText editText = new EditText(context);
@@ -119,11 +135,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
     }
     private class SelectQuestionInflate extends BlankQuestion {
+        Checkin_Selector_View checkin_selector_view;
         public SelectQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
             JSONArray inputs = question.getJSONArray("inputs");
-            Checkin_Selector_View checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
+            checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
             checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
                 @Override
                 public void onClick() {
@@ -148,21 +165,32 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             });
             //checkin_selector_view.setId(Styling.getUniqueId());
             //TODO: restore correctly
-            checkin_selector_view.setId(R.id.bt_sign_in);
+            //checkin_selector_view.setId(R.id.bt_sign_in);
 
             this.ll_root.addView(checkin_selector_view);
         }
+
+        @Override
+        public double getValue() {
+            return checkin_selector_view.getValue();
+        }
+
+        @Override
+        public void setValue(double value) {
+            checkin_selector_view.setValue(value);
+        }
     }
     private class CheckBoxQuestionInflate extends BlankQuestion {
+        Button button;
         public CheckBoxQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
-
-            Button button = new Button(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
+            button = new Button(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
 
             Spanned label = Locales.read(context, "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
 
             button.setText(label);
+            //button.setId(Styling.getUniqueId());
 
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -175,13 +203,30 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             int margins  = (int) Styling.getInDP(context, 5);
             ((ViewGroup.MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
+
+        @Override
+        public double getValue() {
+            return (button.isSelected())? 1 : 0;
+        }
+
+        @Override
+        public void setValue(double value) {
+            button.setSelected(value == 1);
+        }
     }
 
 
     private class BlankQuestion {
         public LinearLayout ll_root;
+        public double getValue() {
+            return 0;
+        }
+        public void setValue(double value) {
+
+        }
 
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException{
+            questionViews.add(this); // Add to the list of elements for easy restoration
             // Create root elements
             ll_root = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
         }
