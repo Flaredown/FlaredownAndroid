@@ -36,6 +36,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private View fragmentRoot;
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
+    private static final String QUESTION_ANS = "Question answers";
 
 
     private List<BlankQuestion> questionViews = new ArrayList<>();
@@ -54,11 +55,29 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         if(savedInstanceState == null || mContext == null) createFragment(inflater, container, savedInstanceState);
+        if(savedInstanceState != null) {
+            double[] questAns = savedInstanceState.getDoubleArray(QUESTION_ANS);
+            for(int i = 0; i < questAns.length; i++) {
+                questionViews.get(i).setValue(questAns[i]);
+            }
+        }
 
         return fragmentRoot;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        double[] questAns = new double[questionViews.size()];
+
+        for(int i = 0; i < questAns.length; i++) {
+            questAns[i] = questionViews.get(i).getValue();
+        }
+
+        outState.putDoubleArray(QUESTION_ANS, questAns);
     }
 
     private void createFragment (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
