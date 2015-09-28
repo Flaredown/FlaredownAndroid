@@ -6,6 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -23,6 +24,7 @@ import java.util.List;
  * Created by thunter on 19/09/15.
  */
 public class Checkin_Selector_View extends LinearLayout{
+    boolean iconMode = false;
     Checkin_Selector_View t;
     Context context;
     List<InputButton> buttons = new ArrayList<>();
@@ -95,6 +97,8 @@ public class Checkin_Selector_View extends LinearLayout{
     public Checkin_Selector_View setInputs(JSONArray inputs) throws JSONException {
         buttons.clear();
         this.removeAllViews();
+
+
         for(int i = 0; i < inputs.length(); i++) {
             JSONObject input = inputs.getJSONObject(i);
             InputButton button = new InputButton(new ContextThemeWrapper(context, R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button, input.getInt("value"));
@@ -119,13 +123,27 @@ public class Checkin_Selector_View extends LinearLayout{
             int margins  = (int) Styling.getInDP(context, 5);
             ((MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
+        if(!inputs.getJSONObject(0).has("label")) setIconMode(inputs);
         return this;
+    }
+
+    private void setIconMode(JSONArray inputs) throws JSONException{
+        iconMode = true;
+        this.setOrientation(HORIZONTAL);
+        this.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        for(int i = 0; i < buttons.size(); i++) {
+            InputButton button = buttons.get(i);
+            button.setText("");
+            button.getLayoutParams().height = button.getLayoutParams().width = (int) Styling.getInDP(context, 30);
+            button.setMetaLabel(inputs.getJSONObject(i).getString("meta_label"));
+        }
     }
 
     private void selectView(double value) {
         for(int i = 0; i < buttons.size(); i++) {
             InputButton button = buttons.get(i);
-            button.setSelected(value == button.value);
+            button.setSelected(((iconMode && i <= value && (i!= 0 || value == 0)) || (!iconMode && value == button.value)));
         }
         this.value = value;
     }
@@ -145,5 +163,14 @@ public class Checkin_Selector_View extends LinearLayout{
             this.value = value;
         }
         double value;
+        private String metaLabel = "";
+
+        public void setMetaLabel (String metaLabel) {
+            this.metaLabel = metaLabel;
+
+            if(metaLabel.equals("smiley")) {
+                Styling.setBackground(context, this, R.drawable.button_selector_meta_smiley_selector);
+            }
+        }
     }
 }

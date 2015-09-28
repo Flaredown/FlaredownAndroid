@@ -10,7 +10,7 @@
     <color name="box_shadow">#E1D8C8</color>
     <color name="sub_text_color">#c3b399</color>
     <color name="edittext_borderColor">#9b9b9b</color>
-    <color name="checkin_selector_button_background">#f2f2f2</color>
+    <color name="checkin_selector_button_background">#eee</color>
     <color name="checkin_selector_button_text">#9b9b9b</color>
     <color name="checkin_selector_button_text_selected">#fff</color>
 </resources>
