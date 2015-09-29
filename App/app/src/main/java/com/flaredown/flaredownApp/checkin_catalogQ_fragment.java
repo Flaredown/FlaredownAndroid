@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.text.InputType;
@@ -103,7 +104,21 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
 
         tv_sectionTitle.setText(sectionTitle);
-        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).createAT());
+
+        if(catalogue.equals("conditions")) {
+            tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_conditions").resultIfUnsuccessful("Edit conditions.").capitalize1Char().createAT());
+        } else if(catalogue.equals("symptoms")) {
+            tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_symptoms").resultIfUnsuccessful("Edit symptoms.").capitalize1Char().createAT());
+        } else {
+            tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).capitalize1Char().createAT());
+        }
+
+        tv_catalogName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), AddADialogActivity.class));
+            }
+        });
 
         try {
             for (int i = 0; i < questions.length(); i++) {

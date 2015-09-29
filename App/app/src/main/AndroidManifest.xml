@@ -25,8 +25,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.flaredown.flaredownApp.HomeActivity"
-            android:label="@string/app_name"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,6 +42,10 @@
         <activity
             android:name="com.flaredown.flaredownApp.SettingsActivity"
             android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="com.flaredown.flaredownApp.AddADialogActivity"
+            android:label="@string/title_activity_add_adialog" >
         </activity>
     </application>
 
