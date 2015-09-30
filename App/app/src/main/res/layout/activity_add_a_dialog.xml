@@ -39,6 +39,13 @@
         android:layout_height="fill_parent"
         android:id="@+id/scrollView2"
         android:layout_below="@+id/et_input"
-        android:background="#fff" />
+        android:background="#fff" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ll_results"></LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

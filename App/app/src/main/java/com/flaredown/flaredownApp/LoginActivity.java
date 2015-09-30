@@ -131,7 +131,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         });
     }
     private void loadLocales(final boolean animate) {
-        flareDownAPI.getLocales(new API.OnApiResponse() {
+        flareDownAPI.getLocales(new API.OnApiResponseObject() {
             @Override
             public void onSuccess(JSONObject locales) {
                 localesLoaded = true;
@@ -223,7 +223,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //mAuthTask.execute((Void) null);
 
 
-            flareDownAPI.users_sign_in(email, password, new API.OnApiResponse() {
+            flareDownAPI.users_sign_in(email, password, new API.OnApiResponseObject() {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
                     PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");

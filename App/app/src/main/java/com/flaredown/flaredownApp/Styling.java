@@ -44,4 +44,14 @@ public class Styling {
     public static void styleDialog(Dialog dialog) {
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.box_background);
     }
+
+
+    public static String capitalise1char(String string) {
+        if(string.length() == 1) {
+            string = string.toUpperCase();
+        } else if(string.length() > 1) {
+            string = string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+        return string;
+    }
 }

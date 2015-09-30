@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 API flareDownAPI = new API(mContext);
-                flareDownAPI.users_sign_out(new API.OnApiResponse() {
+                flareDownAPI.users_sign_out(new API.OnApiResponseObject() {
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
                         Intent intent = new Intent(mContext, LoginActivity.class);

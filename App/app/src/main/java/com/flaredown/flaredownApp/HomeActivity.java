@@ -81,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         try {
-            flareDownAPI.entries(API.API_DATE_FORMAT.parse("Sep 16 2015"), new API.OnApiResponse() {
+            flareDownAPI.entries(API.API_DATE_FORMAT.parse("Sep 16 2015"), new API.OnApiResponseObject() {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
                     try {
