@@ -118,8 +118,11 @@ public class AddADialogActivity extends AppCompatActivity {
     }
 
     private RequestQueue autocompleteRequestQueue;
+    private int autoCompleteRequestToken = 0;
+    private int shownAutoCompleteRequestToken = 0;
     private void getAutocomplete(final String text) {
         if(autocompleteRequestQueue != null) autocompleteRequestQueue.stop();
+        final int requestToken = ++autoCompleteRequestToken;
         pb_loading.setVisibility(View.VISIBLE);
         Item it = new Item(context, text).setName("\"" + text + "\"").setQuantity(
                 Locales.read(context, "onboarding.add_new_condition").capitalize1Char().create()
@@ -129,6 +132,7 @@ public class AddADialogActivity extends AppCompatActivity {
         ll_results.addView(it, 0);
 
         if(text.equals("")) {
+            shownAutoCompleteRequestToken = requestToken;
             ll_results.removeAllViews();
             pb_loading.setVisibility(View.INVISIBLE);
             return;
@@ -140,22 +144,30 @@ public class AddADialogActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     pb_loading.setVisibility(View.INVISIBLE);
-                    try {
-                        if (ll_results.getChildCount() > 0) {
-                            View tmp = ll_results.getChildAt(0);
-                            ll_results.removeAllViews();
-                            ll_results.addView(tmp, 0);
-                        }
+                    if(requestToken >= shownAutoCompleteRequestToken) {
+                        shownAutoCompleteRequestToken = requestToken;
+                        try {
+                            if (ll_results.getChildCount() > 0) {
+                                View tmp = ll_results.getChildAt(0);
+                                ll_results.removeAllViews();
+                                ll_results.addView(tmp, 0);
+                                if (jsonArray.length() > 0 && jsonArray.getJSONObject(0).getString("name").toLowerCase().equals(text.toLowerCase())) {
+                                    tmp.setVisibility(View.GONE);
+                                } else {
+                                    tmp.setVisibility(View.VISIBLE);
+                                }
+                            }
 
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject item = jsonArray.getJSONObject(i);
-                            Item tv = new Item(context, item.getString("name"));
-                            tv.setName(item.getString("name"));
-                            tv.setQuantity(item.getInt("count"));
-                            ll_results.addView(tv);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject item = jsonArray.getJSONObject(i);
+                                Item tv = new Item(context, item.getString("name"));
+                                tv.setName(item.getString("name"));
+                                tv.setQuantity(item.getInt("count"));
+                                ll_results.addView(tv);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
 
