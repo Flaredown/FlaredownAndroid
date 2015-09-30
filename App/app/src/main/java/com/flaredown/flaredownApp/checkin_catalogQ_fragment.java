@@ -1,5 +1,6 @@
 package com.flaredown.flaredownApp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
@@ -33,7 +35,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     JSONArray questions;
     String catalogue;
     int section;
-    public Context mContext;
+    public Activity mContext;
     private View fragmentRoot;
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
@@ -116,7 +118,11 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         tv_catalogName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), AddADialogActivity.class));
+                if(catalogue.equals("symptoms")) {
+                    AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_a_symptom_title").capitalize1Char().create(), "/symptoms/search");
+                } else if(catalogue.equals("conditions")) {
+                    AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_condition").capitalize1Char().create(), "/conditions/search");
+                }
             }
         });
 

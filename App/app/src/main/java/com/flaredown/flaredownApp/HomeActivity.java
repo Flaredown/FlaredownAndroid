@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
@@ -170,7 +171,8 @@ public class HomeActivity extends AppCompatActivity {
                 Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
                 checkin_catalogQ_fragment.setQuestion(questions, i + 1, catalogueKey);
                 //checkin_catalogQ_fragment.setRetainInstance(true);
-                fragments.add(checkin_catalogQ_fragment);
+                if(!catalogueKey.equals("hbi") && !catalogueKey.equals("rapid3"))
+                    fragments.add(checkin_catalogQ_fragment);
 
             }
 
@@ -183,6 +185,13 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         new ForceLogin(mContext, flareDownAPI);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Toast.makeText(this, data.getStringExtra(AddADialogActivity.RESULT), Toast.LENGTH_LONG).show();
     }
 
     public void nextQuestion() {

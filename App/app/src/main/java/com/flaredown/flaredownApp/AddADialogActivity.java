@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,14 +37,29 @@ public class AddADialogActivity extends AppCompatActivity {
     API fdAPI;
     Activity context;
 
-    TextView tv_cancelButton;
+    public static final String TITLE = "title";
+    public static final String ENDPOINT = "endpoint";
+    public static final String RESULT = "result";
+
+    //TextView tv_cancelButton;
+    //TextView tv_title;
     EditText et_input;
     LinearLayout ll_results;
     ScrollView sv_results;
     ProgressBar pb_loading;
+    MainToolbarView mainToolbarView;
 
     String endpoint = "/symptoms/search";
     String title;
+
+
+    public static void startActivity(Activity context, String title, String endpoint) {
+        Intent intent = new Intent(context, AddADialogActivity.class);
+        intent.putExtra(AddADialogActivity.TITLE, title);
+        intent.putExtra(AddADialogActivity.ENDPOINT, endpoint);
+        //context.startActivity(intent);
+        context.startActivityForResult(intent, 1);
+    }
 
 
     @Override
@@ -54,19 +70,32 @@ public class AddADialogActivity extends AppCompatActivity {
         fdAPI = new API(this);
 
 
-        tv_cancelButton = (TextView) findViewById(R.id.tv_cancel_button);
+        //tv_cancelButton = (TextView) findViewById(R.id.tv_cancel_button);
+        //tv_title = (TextView) findViewById(R.id.tv_title);
         et_input = (EditText) findViewById(R.id.et_input);
         ll_results = (LinearLayout) findViewById(R.id.ll_results);
         sv_results = (ScrollView) findViewById(R.id.sv_results);
         pb_loading = (ProgressBar) findViewById(R.id.pb_loading);
+        mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
+
+        mainToolbarView.getActionBar().getMenu().clear();
+        mainToolbarView.setBackButton(true);
+
+        if(!getIntent().hasExtra(TITLE) || !getIntent().hasExtra(ENDPOINT)) {
+            finish();
+        }
+        mainToolbarView.setTitle(getIntent().getStringExtra(TITLE));
+        //tv_title.setText(getIntent().getStringExtra(TITLE));
+        endpoint = getIntent().getStringExtra(ENDPOINT);
 
 
-        tv_cancelButton.setOnClickListener(new View.OnClickListener() {
+
+        /*tv_cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
-        });
+        });*/
 
         et_input.addTextChangedListener(new TextWatcher() {
             @Override
@@ -143,8 +172,8 @@ public class AddADialogActivity extends AppCompatActivity {
         private TextView tv_name;
         private TextView tv_quantity;
         private String value = "";
-        public Item(Context context, String value) {
-            super(context);
+        public Item(Context mContext, String value) {
+            super(mContext);
             item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.activity_add_a_dialog_result_item, null);
             this.addView(item);
 
@@ -154,6 +183,16 @@ public class AddADialogActivity extends AppCompatActivity {
             setQuantity("");
 
             setValue(value);
+
+            this.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = context.getIntent();
+                    intent.putExtra(RESULT, getValue());
+                    context.setResult(RESULT_OK, intent);
+                    finish();
+                }
+            });
         }
 
         public Item setName(String name) {
