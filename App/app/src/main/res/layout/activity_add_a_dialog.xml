@@ -24,6 +24,17 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:textColor="@color/checkin_selector_button_text" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_loading"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:visibility="invisible" />
+
     </RelativeLayout>
 
     <EditText
@@ -37,7 +48,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/scrollView2"
+        android:id="@+id/sv_results"
         android:layout_below="@+id/et_input"
         android:background="#fff" >
 

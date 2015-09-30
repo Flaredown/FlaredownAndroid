@@ -15,15 +15,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class AddADialogActivity extends AppCompatActivity {
     API fdAPI;
@@ -32,6 +39,8 @@ public class AddADialogActivity extends AppCompatActivity {
     TextView tv_cancelButton;
     EditText et_input;
     LinearLayout ll_results;
+    ScrollView sv_results;
+    ProgressBar pb_loading;
 
     String endpoint = "/symptoms/search";
     String title;
@@ -48,6 +57,8 @@ public class AddADialogActivity extends AppCompatActivity {
         tv_cancelButton = (TextView) findViewById(R.id.tv_cancel_button);
         et_input = (EditText) findViewById(R.id.et_input);
         ll_results = (LinearLayout) findViewById(R.id.ll_results);
+        sv_results = (ScrollView) findViewById(R.id.sv_results);
+        pb_loading = (ProgressBar) findViewById(R.id.pb_loading);
 
 
         tv_cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -77,8 +88,10 @@ public class AddADialogActivity extends AppCompatActivity {
 
     }
 
-
+    private RequestQueue autocompleteRequestQueue;
     private void getAutocomplete(final String text) {
+        if(autocompleteRequestQueue != null) autocompleteRequestQueue.stop();
+        pb_loading.setVisibility(View.VISIBLE);
         Item it = new Item(context, text).setName("\"" + text + "\"").setQuantity(
                 Locales.read(context, "onboarding.add_new_condition").capitalize1Char().create()
         );
@@ -88,34 +101,41 @@ public class AddADialogActivity extends AppCompatActivity {
 
         if(text.equals("")) {
             ll_results.removeAllViews();
+            pb_loading.setVisibility(View.INVISIBLE);
             return;
         }
+        sv_results.scrollTo(0,0);
 
-        fdAPI.get_json_array(endpoint + "/" + text, new API.OnApiResponseArray() {
-            @Override
-            public void onSuccess(JSONArray jsonArray) {
-                try {
-                    if(ll_results.getChildCount() > 0) {
-                        View tmp = ll_results.getChildAt(0);
-                        ll_results.removeAllViews();
-                        ll_results.addView(tmp, 0);
+        try {
+            autocompleteRequestQueue = fdAPI.get_json_array(endpoint + "/" + URLEncoder.encode(text, API.CHAR_SET), new API.OnApiResponseArray() {
+                @Override
+                public void onSuccess(JSONArray jsonArray) {
+                    pb_loading.setVisibility(View.INVISIBLE);
+                    try {
+                        if (ll_results.getChildCount() > 0) {
+                            View tmp = ll_results.getChildAt(0);
+                            ll_results.removeAllViews();
+                            ll_results.addView(tmp, 0);
+                        }
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject item = jsonArray.getJSONObject(i);
+                            Item tv = new Item(context, item.getString("name"));
+                            tv.setName(item.getString("name"));
+                            tv.setQuantity(item.getInt("count"));
+                            ll_results.addView(tv);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    
-                    for(int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject item = jsonArray.getJSONObject(i);
-                        Item tv = new Item(context, item.getString("name"));
-                        tv.setName(item.getString("name"));
-                        tv.setQuantity(item.getInt("count"));
-                        ll_results.addView(tv);
-                    }
-                } catch (JSONException e) { e.printStackTrace(); }
-            }
+                }
 
-            @Override
-            public void onFailure(API.API_Error error) {
-
-            }
-        });
+                @Override
+                public void onFailure(API.API_Error error) {
+                    new DefaultErrors(context, error);
+                }
+            });
+        } catch(UnsupportedEncodingException e) { e.printStackTrace(); }
     }
 
     private class Item extends FrameLayout {

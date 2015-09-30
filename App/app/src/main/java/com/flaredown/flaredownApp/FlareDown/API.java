@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,17 +40,23 @@ public class API {
     public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM dd yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
+    public static final String CHAR_SET = "UTF-8";
     private SharedPreferences sharedPreferences;
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
     }
     public String getEndpointUrl(String endpoint, Map<String, String> params) {
-        params.putAll(addAuthenticationParams());
-        String url = API_BASE_URL + endpoint + "?";
-        for(String key: params.keySet()) {
-            url += "&" + key + "=" + params.get(key);
-        }
-        return url;
+        try {
+            //endpoint = URLEncoder.encode(endpoint, CHAR_SET);
+            params.putAll(addAuthenticationParams());
+            String url = API_BASE_URL + endpoint + "?";
+            for (String key : params.keySet()) {
+                key = URLEncoder.encode(key, CHAR_SET);
+                String value = URLEncoder.encode(params.get(key), CHAR_SET);
+                url += "&" + key + "=" + value;
+            }
+            return url;
+        } catch (UnsupportedEncodingException e) { e.printStackTrace(); return "";}
     }
 
     public API(Context context) {
@@ -158,7 +166,7 @@ public class API {
         sp.commit();
     }
 
-    public void get_json_array(String endpoint, final OnApiResponseArray onApiResponseObject) {
+    public RequestQueue get_json_array(String endpoint, final OnApiResponseArray onApiResponseObject) {
         JsonRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, getEndpointUrl(endpoint), null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -172,6 +180,7 @@ public class API {
         });
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(jsonRequest);
+        return requestQueue;
     }
 
 
