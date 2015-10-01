@@ -173,7 +173,7 @@ public class AddADialogActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(API.API_Error error) {
-                    new DefaultErrors(context, error);
+                   // new DefaultErrors(context, error);
                 }
             });
         } catch(UnsupportedEncodingException e) { e.printStackTrace(); }
