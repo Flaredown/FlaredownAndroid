@@ -46,7 +46,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private static final String IS_RESTORING = "restoring";
     private final String DEBUG_TAG = "LoginActivity";
     private API flareDownAPI;
-    private InternetReceiver internetReceiver;
     private boolean localesLoaded = false;
 
     // UI references.
@@ -114,12 +113,12 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
         loadLocales(savedInstanceState == null);
         // Listen out for internet connectivity
-        internetReceiver = new InternetReceiver(mContext, new Handler(), new Runnable() {
+        InternetStatusBroadcastReceiver.setUp(mContext, new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = true;
                 setViewInternetConnectivity(true);
-                if(!localesLoaded)
+                if (!localesLoaded)
                     loadLocales(false);
             }
         }, new Runnable() {
