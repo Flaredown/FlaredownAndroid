@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,8 @@ public class AddADialogActivity extends AppCompatActivity {
     public static final String TITLE = "title";
     public static final String ENDPOINT = "endpoint";
     public static final String RESULT = "result";
+
+    Dialog noInternetPopup;
 
     //TextView tv_cancelButton;
     //TextView tv_title;
@@ -85,17 +88,21 @@ public class AddADialogActivity extends AppCompatActivity {
             finish();
         }
         mainToolbarView.setTitle(getIntent().getStringExtra(TITLE));
-        //tv_title.setText(getIntent().getStringExtra(TITLE));
         endpoint = getIntent().getStringExtra(ENDPOINT);
 
 
-
-        /*tv_cancelButton.setOnClickListener(new View.OnClickListener() {
+        InternetStatusBroadcastReceiver.setUp(this, new Runnable() {
             @Override
-            public void onClick(View v) {
-                finish();
+            public void run() {
+                if(noInternetPopup != null)
+                    noInternetPopup.hide();
             }
-        });*/
+        }, new Runnable() {
+            @Override
+            public void run() {
+                noInternetPopup = DefaultErrors.showNoInternetDialog(context);
+            }
+        });
 
         et_input.addTextChangedListener(new TextWatcher() {
             @Override

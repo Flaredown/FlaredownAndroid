@@ -31,16 +31,16 @@ public class DefaultErrors {
             if(errorText.toString().equals("_no_message")) {
                 errorText = Locales.read(context, "nice_errors.500").resultIfUnsuccessful("Something went wrong, perhaps try again").capitalize1Char().createAT();
             }
-            showPopup("Error", errorText);
+            showPopup(context, "Error", errorText);
 
         }
 
     }
 
-    private void showPopup (String title, String text) {
-        showPopup(title, Spannable.Factory.getInstance().newSpannable(text));
+    private static Dialog showPopup (Context context, String title, String text) {
+        return showPopup(context, title, Spannable.Factory.getInstance().newSpannable(text));
     }
-    private void showPopup (String title, Spanned text) {
+    private static Dialog showPopup (Context context, String title, Spanned text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         builder.setMessage(text)
@@ -56,6 +56,25 @@ public class DefaultErrors {
         Dialog dialog = builder.create();
         Styling.styleDialog(dialog);
         dialog.show();
+        return dialog;
+    }
 
+
+    public static Dialog showNoInternetDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("No internet connection.");
+        builder.setMessage("Your phone has lost internet connection, please reconnect to continue.");
+        builder.setCancelable(false);
+
+        Dialog dialog = builder.create();
+        Styling.styleDialog(dialog);
+        dialog.show();
+        return dialog;
+
+
+        /*Dialog dialog = showPopup(context, "No internet connection", "You phone has lost internet connection, please reconnect to continue.");
+        dialog.setCancelable(false);
+        return dialog;*/
     }
 }
