@@ -195,28 +195,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
             JSONArray inputs = question.getJSONArray("inputs");
             checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
-            checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
-                @Override
-                public void onClick() {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                // Adding a dealy... allowing confirmation of seleciton.
-                                Thread.sleep(250);
-                                ((HomeActivity) mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ((HomeActivity) mContext).nextQuestion();
-                                    }
-                                });
-
-                            } catch (InterruptedException e) { e.printStackTrace(); }
-                        }
-                    }).start();
-
-                }
-            });
             this.ll_root.addView(checkin_selector_view);
         }
 
