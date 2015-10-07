@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Checkin;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,6 +19,9 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

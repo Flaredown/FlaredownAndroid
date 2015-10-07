@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

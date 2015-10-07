@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.Checkin.HomeActivity;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;

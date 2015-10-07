@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;

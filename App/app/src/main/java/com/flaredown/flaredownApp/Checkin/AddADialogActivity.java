@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Checkin;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,10 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.flaredown.com.flaredown.R;
 import android.view.View;
 import android.widget.EditText;
@@ -19,12 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,8 +1,7 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Checkin;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.text.InputType;
@@ -16,9 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

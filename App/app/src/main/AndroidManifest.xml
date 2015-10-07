@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.flaredown.flaredownApp.HomeActivity"
+            android:name="com.flaredown.flaredownApp.Checkin.HomeActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
@@ -44,7 +44,7 @@
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name="com.flaredown.flaredownApp.AddADialogActivity"
+            android:name="com.flaredown.flaredownApp.Checkin.AddADialogActivity"
             android:label="@string/title_activity_add_adialog" >
         </activity>
     </application>
