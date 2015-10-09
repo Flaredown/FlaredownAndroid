@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.Spanned;
 import android.view.ContextThemeWrapper;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.Styling;
 
@@ -39,7 +41,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
     private static final String QUESTION_ANS = "Question answers";
-
+    private API flaredownAPI;
 
     private List<BlankQuestion> questionViews = new ArrayList<>();
 
@@ -58,6 +60,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        flaredownAPI = new API(getActivity());
         if(savedInstanceState == null || mContext == null) createFragment(inflater, container, savedInstanceState);
         if(savedInstanceState != null) {
             double[] questAns = savedInstanceState.getDoubleArray(QUESTION_ANS);
@@ -117,11 +120,40 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         tv_catalogName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO Individualize
+
+                /*EditADialog editADialog = new EditADialog();
+                editADialog.setItems(new JSONArray(), "Somthing cool like.");
+                editADialog.show(mContext.getFragmentManager(), "EditADialog");*/
+
+
                 if(catalogue.equals("symptoms")) {
+
+
+
+                    flaredownAPI.getEditable(new API.OnApiResponseArray() {
+                        @Override
+                        public void onSuccess(JSONArray jsonArray) {
+                            EditADialog editADialog = new EditADialog();
+                            editADialog.setItems(jsonArray, "tmp Symptoms");
+                            editADialog.show(mContext.getFragmentManager(), "EditADialog");
+                        }
+
+                        @Override
+                        public void onFailure(API.API_Error error) {
+
+                        }
+                    }, "symptoms");
+                    // Get current symptoms
+
+                }
+
+
+                /*if(catalogue.equals("symptoms")) {
                     AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_a_symptom_title").capitalize1Char().create(), "/symptoms/search");
                 } else if(catalogue.equals("conditions")) {
                     AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_condition").capitalize1Char().create(), "/conditions/search");
-                }
+                }*/
             }
         });
 

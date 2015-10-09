@@ -158,6 +158,42 @@ public class API {
         requestQueue.add(stringRequest);
     }
 
+    public void current_user(final OnApiResponseObject onApiResponse) {
+        JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, getEndpointUrl("/current_user"), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                onApiResponse.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonRequest);
+    }
+
+    public void getEditable(final OnApiResponseArray onApiResponseArray, final String type) {
+        //TODO Think about loading from a cache instead of loading v1/current_user each time.
+        current_user(new OnApiResponseObject() {
+            @Override
+            public void onSuccess(JSONObject jsonObject) {
+                try{
+                    onApiResponseArray.onSuccess(jsonObject.getJSONArray(type));
+                } catch (JSONException e) {
+                    onApiResponseArray.onFailure(new API_Error());
+                }
+            }
+
+            @Override
+            public void onFailure(API_Error error) {
+                onApiResponseArray.onFailure(error);
+            }
+        });
+    }
+
     public void users_sign_out_force() {
         SharedPreferences.Editor sp = sharedPreferences.edit();
         sp.remove(SP_USER_AUTHTOKEN);
