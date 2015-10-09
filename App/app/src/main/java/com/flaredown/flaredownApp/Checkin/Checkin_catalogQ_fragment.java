@@ -135,7 +135,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
                             EditADialog editADialog = new EditADialog();
-                            editADialog.setItems(jsonArray, "tmp Symptoms", catalogue);
+                            editADialog.setItems(jsonArray, Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
                             editADialog.show(mContext.getFragmentManager(), "EditADialog");
                         }
 
