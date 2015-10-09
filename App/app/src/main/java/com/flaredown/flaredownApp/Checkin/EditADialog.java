@@ -4,9 +4,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,12 +29,14 @@ public class EditADialog extends DialogFragment {
     Activity context;
     JSONArray ja_items;
     String title;
+    String catalog = "";
     boolean created = false;
 
-    public void setItems(JSONArray items, String title){
+    public void setItems(JSONArray items, String title, String catalog){
         this.ja_items = items;
         this.title = title;
         this.created = true;
+        this.catalog = catalog;
     }
 
     @Override
@@ -47,6 +56,8 @@ public class EditADialog extends DialogFragment {
 
         builder.setTitle(title);
 
+        int defaultPadding = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
+
         ScrollView scrollViewRoot = new ScrollView(getActivity());
 
         LinearLayout linearLayoutRoot = new LinearLayout(getActivity());
@@ -55,14 +66,30 @@ public class EditADialog extends DialogFragment {
 
         try {
             for (int i = 0; i < ja_items.length(); i++) {
-                TextView textView = new TextView(getActivity());
-                textView.setText(ja_items.getJSONObject(i).getString("name"));
-                linearLayoutRoot.addView(textView);
+                Editable editable = new Editable(getActivity());
+                editable.setName(ja_items.getJSONObject(i).getString("name"));
+                linearLayoutRoot.addView(editable);
             }
         } catch (JSONException e) { e.printStackTrace(); }
 
+        TextView addACondition = new TextView(getActivity());
+
+        String localKey = "onboarding.";
+
+        switch (catalog) {
+            case "symptoms":
+                localKey += "add_symptom_button";
+                break;
+        }
+
+        addACondition.setText("+ " + Locales.read(getActivity(), localKey).create());
+        addACondition.setGravity(Gravity.CENTER_HORIZONTAL);
+        addACondition.setTextColor(getResources().getColor(R.color.accent));
+        linearLayoutRoot.addView(addACondition);
+
         builder.setView(scrollViewRoot);
 
+        scrollViewRoot.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
 
 
 
@@ -82,11 +109,28 @@ public class EditADialog extends DialogFragment {
         return builder.create();
     }
 
-    public class EditADialogException extends Exception {
-        public EditADialogException() { super(); }
+    public class Editable extends RelativeLayout {
+        Context context;
+        Button bt_name;
+        ImageButton bt_delete;
 
-        public EditADialogException(String detailMessage) {
-            super(detailMessage);
+        public Editable(Context context) {
+            super(context);
+            this.context = context;
+            LayoutInflater mInflater = LayoutInflater.from(context);
+            mInflater.inflate(R.layout.checkin_editable_item, this, true);
+
+            bt_name = (Button) this.findViewById(R.id.bt_name);
+            bt_delete = (ImageButton) this.findViewById(R.id.bt_delete);
+
+            int defaultSmallMargin = context.getResources().getDimensionPixelSize(R.dimen.sep_margin_small);
+            this.setPadding(0, 0, 0, defaultSmallMargin);
+        }
+
+
+        public Editable setName(String name){
+            bt_name.setText(name);
+            return this;
         }
 
     }

@@ -116,7 +116,7 @@ public class Checkin_Selector_View extends LinearLayout{
             button.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "Selector button Press");
+                    PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "Selector bt_name Press");
                     selectView(((InputButton) v).value);
                     if (onButtonClickListener != null) onButtonClickListener.onClick();
                 }
