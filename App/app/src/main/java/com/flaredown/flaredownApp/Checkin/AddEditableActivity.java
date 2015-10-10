@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class AddADialogActivity extends AppCompatActivity {
+public class AddEditableActivity extends AppCompatActivity {
     API fdAPI;
     Activity context;
 
@@ -51,9 +51,9 @@ public class AddADialogActivity extends AppCompatActivity {
 
 
     public static void startActivity(Activity context, String title, String endpoint) {
-        Intent intent = new Intent(context, AddADialogActivity.class);
-        intent.putExtra(AddADialogActivity.TITLE, title);
-        intent.putExtra(AddADialogActivity.ENDPOINT, endpoint);
+        Intent intent = new Intent(context, AddEditableActivity.class);
+        intent.putExtra(AddEditableActivity.TITLE, title);
+        intent.putExtra(AddEditableActivity.ENDPOINT, endpoint);
         //context.startActivity(intent);
         context.startActivityForResult(intent, 1);
     }

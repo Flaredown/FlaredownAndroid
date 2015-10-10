@@ -34,7 +34,7 @@ import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class HomeActivity extends AppCompatActivity {
+public class CheckinActivity extends AppCompatActivity {
     Context mContext;
     API flareDownAPI;
 
@@ -194,8 +194,8 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data != null && data.hasExtra(AddADialogActivity.RESULT))
-            Toast.makeText(this, data.getStringExtra(AddADialogActivity.RESULT), Toast.LENGTH_LONG).show();
+        if(data != null && data.hasExtra(AddEditableActivity.RESULT))
+            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();
     }
 
     public void nextQuestion() {

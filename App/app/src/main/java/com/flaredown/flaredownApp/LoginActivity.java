@@ -26,7 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Checkin.HomeActivity;
+import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
@@ -227,7 +227,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 @Override
                 public void onSuccess(JSONObject jsonObject) {
                     PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
-                    Intent intent = new Intent(mContext, HomeActivity.class);
+                    Intent intent = new Intent(mContext, CheckinActivity.class);
                     startActivity(intent);
                     finish();
                 }

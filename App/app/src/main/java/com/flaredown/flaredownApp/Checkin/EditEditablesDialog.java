@@ -25,7 +25,7 @@ import org.json.JSONException;
 /**
  * Created by thunter on 08/10/2015.
  */
-public class EditADialog extends DialogFragment {
+public class EditEditablesDialog extends DialogFragment {
     Activity context;
     JSONArray ja_items;
     String title;

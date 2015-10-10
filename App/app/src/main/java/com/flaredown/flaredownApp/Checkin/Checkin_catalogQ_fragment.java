@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.text.Spanned;
 import android.view.ContextThemeWrapper;
@@ -128,15 +127,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
 
                 if(catalogue.equals("symptoms")) {
-
-
-
                     flaredownAPI.getEditable(new API.OnApiResponseArray() {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
-                            EditADialog editADialog = new EditADialog();
-                            editADialog.setItems(jsonArray, Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
-                            editADialog.show(mContext.getFragmentManager(), "EditADialog");
+                            EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                            editEditablesDialog.setItems(jsonArray, Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
+                            editEditablesDialog.show(mContext.getFragmentManager(), "EditADialog");
                         }
 
                         @Override
@@ -145,15 +141,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                         }
                     }, "symptoms");
                     // Get current symptoms
-
                 }
-
-
-                /*if(catalogue.equals("symptoms")) {
-                    AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_a_symptom_title").capitalize1Char().create(), "/symptoms/search");
-                } else if(catalogue.equals("conditions")) {
-                    AddADialogActivity.startActivity(mContext, Locales.read(mContext, "onboarding.add_condition").capitalize1Char().create(), "/conditions/search");
-                }*/
             }
         });
 
