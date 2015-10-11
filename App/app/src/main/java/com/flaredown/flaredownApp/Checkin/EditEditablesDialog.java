@@ -1,18 +1,22 @@
 package com.flaredown.flaredownApp.Checkin;
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -30,45 +34,71 @@ public class EditEditablesDialog extends DialogFragment {
     JSONArray ja_items;
     String title;
     String catalog = "";
-    boolean created = false;
+    boolean itemSet = false;
+    LinearLayout ll_root;
+    ScrollView sv_root;
+    AlertDialog.Builder alertDialogBuilder;
 
-    public void setItems(JSONArray items, String title, String catalog){
-        this.ja_items = items;
+    public EditEditablesDialog initialize(String title, String catalog) {
         this.title = title;
-        this.created = true;
         this.catalog = catalog;
+        return this;
+    }
+
+    public void setItems(JSONArray items){
+        this.ja_items = items;
+        this.itemSet = true;
+
+        assembleDialog();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        if(!created){
-            builder.setTitle(Locales.read(getActivity(), "nice_errors.general_error").create());
-            builder.setMessage(Locales.read(getActivity(), "nice_errors.general_error_description").create());
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+        alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        sv_root = new ScrollView(getActivity());
+        ll_root = new LinearLayout(getActivity());
 
-                }
-            });
-            return builder.create();
+        alertDialogBuilder.setTitle(title);
+
+        alertDialogBuilder.setView(sv_root);
+        sv_root.addView(ll_root);
+
+        ll_root.setOrientation(LinearLayout.VERTICAL);
+
+
+        if(!itemSet){
+            ProgressBar progressBar = new ProgressBar(getActivity());
+            ll_root.addView(progressBar);
+        } else {
+            assembleDialog();
         }
+        alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-        builder.setTitle(title);
+            }
+        });
+        return alertDialogBuilder.create();
+    }
 
+    public void assembleDialog () {
+        if(ll_root == null) return;
+        ll_root.removeAllViews();
         int defaultPadding = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
 
-        ScrollView scrollViewRoot = new ScrollView(getActivity());
-
-        LinearLayout linearLayoutRoot = new LinearLayout(getActivity());
-        linearLayoutRoot.setOrientation(LinearLayout.VERTICAL);
-        scrollViewRoot.addView(linearLayoutRoot);
+        View.OnClickListener deleteButtonClick = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ll_root.removeView(v);
+            }
+        };
 
         try {
             for (int i = 0; i < ja_items.length(); i++) {
                 Editable editable = new Editable(getActivity());
                 editable.setName(ja_items.getJSONObject(i).getString("name"));
-                linearLayoutRoot.addView(editable);
+                editable.setOnDeleteClickListener(deleteButtonClick);
+                ll_root.addView(editable);
             }
         } catch (JSONException e) { e.printStackTrace(); }
 
@@ -85,28 +115,8 @@ public class EditEditablesDialog extends DialogFragment {
         addACondition.setText("+ " + Locales.read(getActivity(), localKey).create());
         addACondition.setGravity(Gravity.CENTER_HORIZONTAL);
         addACondition.setTextColor(getResources().getColor(R.color.accent));
-        linearLayoutRoot.addView(addACondition);
-
-        builder.setView(scrollViewRoot);
-
-        scrollViewRoot.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
-
-
-
-
-
-
-
-        builder.setPositiveButton(Locales.read(getActivity(), "nav.done").createAT(), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-
-
-        return builder.create();
+        ll_root.addView(addACondition);
+        sv_root.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
     }
 
     public class Editable extends RelativeLayout {
@@ -130,6 +140,17 @@ public class EditEditablesDialog extends DialogFragment {
 
         public Editable setName(String name){
             bt_name.setText(name);
+            return this;
+        }
+
+        public Editable setOnDeleteClickListener(final OnClickListener onClickListener) {
+            final Editable t = this;
+            bt_delete.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickListener.onClick(t);
+                }
+            });
             return this;
         }
 

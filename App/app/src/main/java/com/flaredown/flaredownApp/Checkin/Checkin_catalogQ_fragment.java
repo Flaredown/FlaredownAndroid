@@ -127,12 +127,15 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
 
                 if(catalogue.equals("symptoms")) {
+                    final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                    editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
+                    editEditablesDialog.show(mContext.getFragmentManager(), "symptomediteditabledialog");
+
+
                     flaredownAPI.getEditable(new API.OnApiResponseArray() {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
-                            EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
-                            editEditablesDialog.setItems(jsonArray, Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
-                            editEditablesDialog.show(mContext.getFragmentManager(), "EditADialog");
+                            editEditablesDialog.setItems(jsonArray);
                         }
 
                         @Override
