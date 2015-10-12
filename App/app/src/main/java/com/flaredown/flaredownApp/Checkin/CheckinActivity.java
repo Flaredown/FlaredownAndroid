@@ -7,7 +7,6 @@ import android.content.Context;
 import android.flaredown.com.flaredown.R;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,7 +40,7 @@ public class CheckinActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "HomeActivity";
 
     private ViewPager vp_questions;
-    private PagerAdapter questionPagerAdapter;
+    private ScreenSlidePagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
     private int current_page = 0;
@@ -92,6 +91,12 @@ public class CheckinActivity extends AppCompatActivity {
                         fragment_questions = createFragments(jsonObject.getJSONObject("entry"));
                         vpp_questionProgress.setNumberOfPages(fragment_questions.size());
                         questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
+                        questionPagerAdapter.setOnPageCountChange(new OnPageCountListener() {
+                            @Override
+                            public void onPageCountChange(int size) {
+                                vpp_questionProgress.setNumberOfPages(size);
+                            }
+                        });
                         vp_questions.setAdapter(questionPagerAdapter);
                         vp_questions.addOnPageChangeListener(vpp_questionProgress);
                         vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -128,7 +133,6 @@ public class CheckinActivity extends AppCompatActivity {
                                 futurePageFragment.onPageEnter();
                                 current_page = position;
                             }
-
                             @Override
                             public void onPageScrollStateChanged(int state) {
 
@@ -216,9 +220,31 @@ public class CheckinActivity extends AppCompatActivity {
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
+        private OnPageCountListener onPageCountListener;
         public ScreenSlidePagerAdapter(FragmentManager fm, List<ViewPagerFragmentBase> fragments) {
             super(fm);
             this.fragments = fragments;
+        }
+
+        public void addView(ViewPagerFragmentBase fragment, int index) {
+            fragments.add(index, fragment);
+            notifyDataSetChanged();
+            onPageCountChange();
+
+        }
+
+        public void removeView(int index) {
+            fragments.remove(index);
+            notifyDataSetChanged();
+            onPageCountChange();
+        }
+
+        public void setOnPageCountChange(OnPageCountListener onPageCountListener) {
+            this.onPageCountListener = onPageCountListener;
+        }
+        private void onPageCountChange() {
+            if(this.onPageCountListener != null)
+                onPageCountListener.onPageCountChange(fragments.size());
         }
 
         @Override
@@ -230,6 +256,15 @@ public class CheckinActivity extends AppCompatActivity {
         public int getCount() {
             return fragments.size();
         }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+    }
+    public interface OnPageCountListener{
+        void onPageCountChange(int size);
     }
 
 }
