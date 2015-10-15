@@ -29,8 +29,8 @@ public class MainToolbarView extends LinearLayout{
         inflater.inflate(R.layout.toolbar, this, true);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_top);
-        title = (TextView) findViewById(R.id.toolbar_title);
-        toolbar.getMenu()
+        //title = (TextView) findViewById(R.id.toolbar_title);
+        /*toolbar.getMenu()
                 .add("Settings")
                 .setIcon(R.drawable.ic_settings)
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -41,7 +41,7 @@ public class MainToolbarView extends LinearLayout{
                         return true;
                     }
                 })
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);*/
     }
     public void setBackButton(boolean show) {
         if(show) {
