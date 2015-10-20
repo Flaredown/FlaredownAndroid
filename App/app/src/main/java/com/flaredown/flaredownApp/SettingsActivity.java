@@ -153,7 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
                         alarm.set(Calendar.MINUTE, picker.getCurrentMinute());
                         alarm.clear(Calendar.SECOND);
                         tv_checkinRemindTime.setText(sdf.format(alarm.getTime()));
-                        dialog.cancel();
+                        dialog.dismiss();
                     }
                 });
 
@@ -178,7 +178,10 @@ public class SettingsActivity extends AppCompatActivity {
 
         //If reminder is already set, get it from saved prefs and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
-            tv_checkinRemindTime.setText(sp.getString("reminder_time","12:00 PM"));
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(Long.valueOf(sp.getString("reminder_time","12:00 PM")));
+            tv_checkinRemindTime.setText(sdf.format(c.getTime()));
         }
         else { //reminder not set, set blank
             tv_checkinRemindTime.setText("");
@@ -222,10 +225,10 @@ public class SettingsActivity extends AppCompatActivity {
         //Save shared prefs and alarms
         editor = sp.edit();
         if (sw_checkinReminder.isChecked()) {
-            editor.putBoolean("reminder",true);
-            editor.putString("reminder_time", tv_checkinRemindTime.getText().toString());
+            editor.putBoolean("reminder", true);
+            editor.putString("reminder_time", String.valueOf(alarm.getTimeInMillis()));
             //Set Alarm
-            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP,alarm.getTimeInMillis(),1000*60*60*24,pendingIntent);
+            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
         else {
             editor.putBoolean("reminder",false);
