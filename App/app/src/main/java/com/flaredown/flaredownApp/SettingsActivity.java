@@ -38,7 +38,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
     Context mContext;
-    //MainToolbarView mainToolbarView;
     TextView tv_AccountTitle;
     TextView tv_EditAccount;
     TextView tv_SettingsLogout;
@@ -72,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity {
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
         TextView title = (TextView) findViewById(R.id.toolbar_title);
-        title.setText("Settings");
+        title.setText(R.string.title_activity_settings);
         setSupportActionBar(mainToolbarView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -121,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (isChecked) {
                     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
                     String currentTime = sdf.format(new Date());
-                    tv_checkinRemindTime.setText(currentTime.toString());
+                    tv_checkinRemindTime.setText(currentTime);
                 } else {
                     tv_checkinRemindTime.setText("");
                     manager.cancel(pendingIntent);
@@ -180,7 +179,8 @@ public class SettingsActivity extends AppCompatActivity {
         if (sw_checkinReminder.isChecked()) { //reminder set
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
             Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(Long.valueOf(sp.getString("reminder_time","12:00 PM")));
+            c.setTimeInMillis(sp.getLong("reminder_time", 0) - getCurrentTimezoneOffset(Calendar.getInstance()));
+            alarm.setTimeInMillis(sp.getLong("reminder_time", 0) - getCurrentTimezoneOffset(Calendar.getInstance()));
             tv_checkinRemindTime.setText(sdf.format(c.getTime()));
         }
         else { //reminder not set, set blank
@@ -226,14 +226,22 @@ public class SettingsActivity extends AppCompatActivity {
         editor = sp.edit();
         if (sw_checkinReminder.isChecked()) {
             editor.putBoolean("reminder", true);
-            editor.putString("reminder_time", String.valueOf(alarm.getTimeInMillis()));
+            editor.putLong("reminder_time", alarm.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
             //Set Alarm
-            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                manager.setExact(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
+            }
+            else {
+                manager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
+            }
         }
         else {
-            editor.putBoolean("reminder",false);
-            editor.putString("reminder_time", "");
+            editor.putBoolean("reminder", false);
+            editor.putLong("reminder_time", -1);
         }
         editor.apply();
+    }
+    public int getCurrentTimezoneOffset(Calendar c) {
+        return c.getTimeZone().getOffset(c.getTimeInMillis());
     }
 }
