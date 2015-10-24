@@ -38,7 +38,7 @@ public class API {
     private static final String SP_USER_EMAIL = "FlareDownAPI_useremail"; // String
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
-    public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM dd yyyy");
+    public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     public static final String CHAR_SET = "UTF-8";
     private SharedPreferences sharedPreferences;

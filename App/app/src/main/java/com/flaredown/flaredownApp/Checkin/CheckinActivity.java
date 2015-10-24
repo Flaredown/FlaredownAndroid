@@ -26,8 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +44,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
     private int current_page = 0;
+    private Date dateDisplaying = new Date();
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
@@ -80,76 +81,73 @@ public class CheckinActivity extends AppCompatActivity {
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
 
-        mainToolbarView.setTitle("September 16");
+        mainToolbarView.setTitle(Styling.displayDateLong(dateDisplaying));
 
+        flareDownAPI.entries(dateDisplaying, new API.OnApiResponseObject() {
+            @Override
+            public void onSuccess(JSONObject jsonObject) {
+                try {
+                    fragment_questions = createFragments(jsonObject.getJSONObject("entry"));
+                    vpp_questionProgress.setNumberOfPages(fragment_questions.size());
+                    questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
+                    questionPagerAdapter.setOnPageCountChange(new OnPageCountListener() {
+                        @Override
+                        public void onPageCountChange(int size) {
+                            vpp_questionProgress.setNumberOfPages(size);
+                        }
+                    });
+                    vp_questions.setAdapter(questionPagerAdapter);
+                    vp_questions.addOnPageChangeListener(vpp_questionProgress);
+                    vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                        @Override
+                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        try {
-            flareDownAPI.entries(API.API_DATE_FORMAT.parse("Sep 16 2015"), new API.OnApiResponseObject() {
-                @Override
-                public void onSuccess(JSONObject jsonObject) {
-                    try {
-                        fragment_questions = createFragments(jsonObject.getJSONObject("entry"));
-                        vpp_questionProgress.setNumberOfPages(fragment_questions.size());
-                        questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
-                        questionPagerAdapter.setOnPageCountChange(new OnPageCountListener() {
-                            @Override
-                            public void onPageCountChange(int size) {
-                                vpp_questionProgress.setNumberOfPages(size);
-                            }
-                        });
-                        vp_questions.setAdapter(questionPagerAdapter);
-                        vp_questions.addOnPageChangeListener(vpp_questionProgress);
-                        vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                            @Override
-                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        }
 
-                            }
+                        @Override
+                        public void onPageSelected(int position) {
 
-                            @Override
-                            public void onPageSelected(int position) {
+                            ViewPagerFragmentBase currentPageFragment = fragment_questions.get(current_page);
+                            ViewPagerFragmentBase futurePageFragment = fragment_questions.get(position);
 
-                                ViewPagerFragmentBase currentPageFragment = fragment_questions.get(current_page);
-                                ViewPagerFragmentBase futurePageFragment = fragment_questions.get(position);
-
-                                // Hide/Show Keyboard depending on page contents.
-                                if(!futurePageFragment.hasFocusEditText()) { // Hide the keyboard
-                                    PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Hiding the keyboard");
-                                    View currentFocus = ((Activity)mContext).getCurrentFocus();
-                                    if(currentFocus != null) {
-                                        InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
-                                    }
-                                } else { // Show the keyboard
-                                    PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Displaying the keyboard");
-                                    futurePageFragment.focusEditText();
+                            // Hide/Show Keyboard depending on page contents.
+                            if(!futurePageFragment.hasFocusEditText()) { // Hide the keyboard
+                                PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Hiding the keyboard");
+                                View currentFocus = ((Activity)mContext).getCurrentFocus();
+                                if(currentFocus != null) {
+                                    InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
                                 }
-
-
-
-
-
-
-                                currentPageFragment.onPageExit();
-                                futurePageFragment.onPageEnter();
-                                current_page = position;
+                            } else { // Show the keyboard
+                                PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Displaying the keyboard");
+                                futurePageFragment.focusEditText();
                             }
-                            @Override
-                            public void onPageScrollStateChanged(int state) {
 
-                            }
-                        });
-                    } catch (JSONException e) {
-                        Toast.makeText(mContext, "ERROR PARSING JSON", Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                }
 
-                @Override
-                public void onFailure(API.API_Error error) {
-                    new DefaultErrors(mContext, error);
+
+
+
+
+                            currentPageFragment.onPageExit();
+                            futurePageFragment.onPageEnter();
+                            current_page = position;
+                        }
+                        @Override
+                        public void onPageScrollStateChanged(int state) {
+
+                        }
+                    });
+                } catch (JSONException e) {
+                    Toast.makeText(mContext, "ERROR PARSING JSON", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
-            });
-        } catch (ParseException e ){ e.printStackTrace(); }
+            }
+
+            @Override
+            public void onFailure(API.API_Error error) {
+                new DefaultErrors(mContext, error);
+            }
+        });
 
 
 

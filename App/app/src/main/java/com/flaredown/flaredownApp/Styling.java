@@ -8,6 +8,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.View;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -53,5 +57,17 @@ public class Styling {
             string = string.substring(0, 1).toUpperCase() + string.substring(1);
         }
         return string;
+    }
+
+    public static String displayDateLong(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+
+        SimpleDateFormat sdf;
+        if(c.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR))
+            sdf = new SimpleDateFormat("MMMM d");
+        else
+            sdf = new SimpleDateFormat("MMMM d, yyyy");
+        return sdf.format(date);
     }
 }
