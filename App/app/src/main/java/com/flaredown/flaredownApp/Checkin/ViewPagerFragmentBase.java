@@ -5,11 +5,57 @@ import android.support.v4.app.Fragment;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Created by thunter on 23/09/2015.
  */
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
+
+    Trackable trackable;
+
+
+    private static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
+        for(int i = 0; i < fragments.size(); i++) {
+            ViewPagerFragmentBase fragment = fragments.get(i);
+            if(fragment.trackable.catalogue.equals(catalogue) && Arrays.asList(fragment.trackable.questions).indexOf(question) != -1) {
+                //Found it
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    public static class Trackable {
+        String catalogue;
+        String[] questions;
+        JSONArray JA_questions = new JSONArray();
+
+        public Trackable(String catalogue, JSONArray questions) throws JSONException{
+            this.catalogue = catalogue;
+            this.JA_questions = questions;
+            createQuestionsStrArr(questions);
+        }
+
+        private void createQuestionsStrArr(JSONArray questions) throws JSONException{
+            this.questions = new String[questions.length()];
+            for(int i = 0; i < questions.length(); i++) {
+                JSONObject jo = questions.getJSONObject(i);
+                this.questions[i] = jo.getString("name");
+            }
+        }
+    }
+
+
+
     public void onPageEnter() {
 
     }
@@ -32,4 +78,7 @@ public class ViewPagerFragmentBase extends Fragment {
             inputMethodManager.showSoftInput(editTextFocus, InputMethodManager.SHOW_IMPLICIT);
         }
     }
+
+
+
 }
