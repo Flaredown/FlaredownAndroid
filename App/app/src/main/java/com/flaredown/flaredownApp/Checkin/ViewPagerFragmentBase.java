@@ -22,7 +22,7 @@ public class ViewPagerFragmentBase extends Fragment {
     Trackable trackable;
 
 
-    private static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
+    public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
         for(int i = 0; i < fragments.size(); i++) {
             ViewPagerFragmentBase fragment = fragments.get(i);
             if(fragment.trackable.catalogue.equals(catalogue) && Arrays.asList(fragment.trackable.questions).indexOf(question) != -1) {

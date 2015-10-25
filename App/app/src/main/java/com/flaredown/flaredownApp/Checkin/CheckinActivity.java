@@ -48,6 +48,14 @@ public class CheckinActivity extends AppCompatActivity {
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
+
+    public List<ViewPagerFragmentBase> getFragmentQuestions() {
+        return fragment_questions;
+    }
+    public ScreenSlidePagerAdapter getScreenSlidePagerAdapter() {
+        return questionPagerAdapter;
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -216,7 +224,7 @@ public class CheckinActivity extends AppCompatActivity {
      * Simple pager adapter, for previewing the questions pages, may need switching out when loading questions from the api.
      */
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
         private OnPageCountListener onPageCountListener;
         public ScreenSlidePagerAdapter(FragmentManager fm, List<ViewPagerFragmentBase> fragments) {

@@ -20,11 +20,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.List;
 
 /**
  * Created by thunter on 08/10/2015.
@@ -89,13 +92,32 @@ public class EditEditablesDialog extends DialogFragment {
         View.OnClickListener deleteButtonClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ll_root.removeView(v);
+                if(v instanceof Editable && getActivity() instanceof CheckinActivity){
+                    Editable editable = (Editable) v;
+                    CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                    List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
+                    ll_root.removeView(editable);
+
+                    //Get the index of the question and remove it...
+                    int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
+
+                    if(index != -1) {
+                        if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
+                            Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
+                            checkin_catalogQ_fragment.removeQuestion(editable.name);
+                        } else {
+                            checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                        }
+                    }
+
+                }
             }
         };
 
         try {
             for (int i = 0; i < ja_items.length(); i++) {
                 Editable editable = new Editable(getActivity());
+                editable.setCatalog(catalog);
                 editable.setName(ja_items.getJSONObject(i).getString("name"));
                 editable.setOnDeleteClickListener(deleteButtonClick);
                 ll_root.addView(editable);
@@ -122,6 +144,8 @@ public class EditEditablesDialog extends DialogFragment {
     public class Editable extends RelativeLayout {
         Context context;
         Button bt_name;
+        String name;
+        String catalog;
         ImageButton bt_delete;
 
         public Editable(Context context) {
@@ -139,7 +163,12 @@ public class EditEditablesDialog extends DialogFragment {
 
 
         public Editable setName(String name){
+            this.name = name;
             bt_name.setText(name);
+            return this;
+        }
+        public Editable setCatalog(String catalog) {
+            this.catalog = catalog;
             return this;
         }
 

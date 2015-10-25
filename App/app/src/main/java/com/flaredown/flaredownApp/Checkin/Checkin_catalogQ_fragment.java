@@ -60,6 +60,20 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         return this;
     }
 
+
+    public void removeQuestion(String question) {
+        if(trackable.questions.length <= 1)  { // Remove the fragment.
+            if(getActivity() instanceof CheckinActivity) {
+                CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                int index = checkinActivity.getFragmentQuestions().indexOf(this);
+                checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+            }
+        } else {
+            //TODO handle multiple questions
+        }
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         flaredownAPI = new API(getActivity());
