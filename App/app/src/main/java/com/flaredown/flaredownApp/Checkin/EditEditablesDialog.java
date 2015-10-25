@@ -132,6 +132,8 @@ public class EditEditablesDialog extends DialogFragment {
             case "symptoms":
                 localKey += "add_symptom_button";
                 break;
+            case "conditions":
+                localKey += "add_condition";
         }
 
         addACondition.setText("+ " + Locales.read(getActivity(), localKey).create());

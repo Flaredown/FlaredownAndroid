@@ -161,6 +161,23 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                         }
                     }, "symptoms");
                     // Get current symptoms
+                } else if(trackable.catalogue.equals("conditions")) {
+                    final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                    editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_conditions").create(), trackable.catalogue);
+                    editEditablesDialog.show(mContext.getFragmentManager(), "conditionediteditabledialog");
+
+
+                    flaredownAPI.getEditable(new API.OnApiResponseArray() {
+                        @Override
+                        public void onSuccess(JSONArray jsonArray) {
+                            editEditablesDialog.setItems(jsonArray);
+                        }
+
+                        @Override
+                        public void onFailure(API.API_Error error) {
+
+                        }
+                    }, "conditions");
                 }
             }
         });
