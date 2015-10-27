@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Retrieve a PendingIntent that will perform a broadcast
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmIntent = new Intent(mContext, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, 0);
+        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent,  0);
 
         //Listeners
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
@@ -229,9 +230,11 @@ public class SettingsActivity extends AppCompatActivity {
             editor.putLong("reminder_time", alarm.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
             //Set Alarm
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                manager.cancel(pendingIntent);
                 manager.setExact(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
             }
             else {
+                manager.cancel(pendingIntent);
                 manager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
             }
         }

@@ -13,36 +13,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.flaredown.com.flaredown.R;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.PreferenceKeys;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
-    Notification myNotification;
-    private static final int MY_NOTIFICATION_ID=1456465879;
-    NotificationManager notificationManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
         Long alarmTime = sp.getLong("reminder_time", 0);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+        //Intent alarmIntent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,  0);
         Calendar firingCal= Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
         firingCal.setTimeInMillis(alarmTime);
 
         if("android.intent.action.TIME_SET".equals(intent.getAction()) || "android.intent.action.TIMEZONE_CHANGED".equals(intent.getAction())){
             //reset alarms since time changes
-            manager.cancel(pendingIntent);
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                manager.setExact(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);            }
-            else {
-                manager.set(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);            }
-            }
+            cancelAlarm(manager, pendingIntent);
+            setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+        }
         else{
             //see if alarm needs to fire
             if (alarmTime > 0){
@@ -53,16 +48,16 @@ public class AlarmReceiver extends BroadcastReceiver {
                 if (diff > 60000){//yet to be triggered, do nothing
                 }
                 else if (diff < -60000){ //alarm already fired, reschedule
+                    //Reset alarm +1 day
                     firingCal.add(Calendar.DATE, 1);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        manager.setExact(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
-                    }
-                    else{
-                        manager.set(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
-                    }
+                    cancelAlarm(manager, pendingIntent);
+                    setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
                 }
                 else{ //fire now
-                    PendingIntent pi = PendingIntent.getActivity(context, 0, new Intent(context, CheckinActivity.class), 0);
+                    PendingIntent pi = PendingIntent.getActivity(context, 1, new Intent(context, CheckinActivity.class),0);
+                    NotificationManager notificationManager;
+                    Notification myNotification;
+                    int MY_NOTIFICATION_ID = 1456465879;
                     myNotification = new NotificationCompat.Builder(context)
                             .setContentTitle("FlareDown Alarm")
                             .setContentText("It's time to Check In!")
@@ -75,17 +70,35 @@ public class AlarmReceiver extends BroadcastReceiver {
                     notificationManager.notify(MY_NOTIFICATION_ID, myNotification);
                     //Reset alarm +1 day
                     firingCal.add(Calendar.DATE, 1);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        manager.setExact(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
-                    }
-                    else{
-                        manager.set(AlarmManager.RTC_WAKEUP, firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
-                    }
+                    cancelAlarm(manager, pendingIntent);
+                    setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
                 }
             }
         }
     }
-    public int getCurrentTimezoneOffset(Calendar c) {
+    private int getCurrentTimezoneOffset(Calendar c) {
         return c.getTimeZone().getOffset(c.getTimeInMillis());
+    }
+
+    private void setAlarm(Context c, Long alarmTime){
+        AlarmManager manager = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(c, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, alarmIntent, 0);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
+        else{
+            manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
+        //Update Shared Prefs
+        SharedPreferences sp = PreferenceKeys.getSharedPreferences(c);
+        SharedPreferences.Editor editor;
+        editor = sp.edit();
+        editor.putLong("reminder_time", alarmTime + getCurrentTimezoneOffset(Calendar.getInstance()));
+        editor.apply();
+    }
+
+    private void cancelAlarm(AlarmManager am, PendingIntent p){
+        am.cancel(p);
     }
 }
