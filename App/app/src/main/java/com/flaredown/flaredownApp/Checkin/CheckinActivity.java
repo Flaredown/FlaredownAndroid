@@ -10,9 +10,13 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
@@ -20,6 +24,7 @@ import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
@@ -78,18 +83,21 @@ public class CheckinActivity extends AppCompatActivity {
             return;
         }
 
-        MainToolbarView mainToolbarView;
         // Checking if user is logged in, otherwise redirect to login screen.
 
-
+        //Set Toolbar
+        Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
+        TextView title = (TextView) findViewById(R.id.toolbar_title);
+        title.setText("September 16");
+        setSupportActionBar(mainToolbarView);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // FindViews
-        mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
-
-        mainToolbarView.setTitle(Styling.displayDateLong(dateDisplaying));
+        
 
         flareDownAPI.entries(dateDisplaying, new API.OnApiResponseObject() {
             @Override
@@ -200,6 +208,28 @@ public class CheckinActivity extends AppCompatActivity {
         new ForceLogin(mContext, flareDownAPI);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_home, menu);
+    return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar summary_item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

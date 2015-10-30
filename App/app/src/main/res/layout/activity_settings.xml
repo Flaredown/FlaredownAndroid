@@ -1,52 +1,108 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.flaredown.flaredownApp.SettingsActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.flaredown.flaredownApp.SettingsActivity">
 
     <com.flaredown.flaredownApp.MainToolbarView
+        android:id="@+id/main_toolbar_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/main_toolbar_view" />
+        android:layout_height="wrap_content" />
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
 
         <LinearLayout
+            android:id="@+id/llCheckinReminder"
+            style="@style/AppTheme.Box"
             android:layout_width="@dimen/box_width"
             android:layout_height="wrap_content"
-            style="@style/AppTheme.Box"
+            android:layout_marginBottom="10dp"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_checkinRemindTitle"
+                style="@style/AppTheme.TextView.SubTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_accountTitle"
-                android:text="Account"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/sep_margin_medium"
-                style="@style/AppTheme.TextView.SubTitle" />
+                android:text="Remind me to check in" />
 
-            <TextView
+            <Switch
+                android:id="@+id/sw_checkinReminder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit Account Info"
-                android:id="@+id/tv_editAccount"
-                android:layout_marginBottom="@dimen/sep_margin_small"
-                android:layout_gravity="bottom"
-                style="@style/AppTheme.TextView.Link" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/sep_margin_small" />
 
             <TextView
+                android:id="@+id/tv_checkinRemindTime"
+                style="@style/AppTheme.TextView.Large"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_settingsLogout"
-                android:text="Logout"
-                style="@style/AppTheme.TextView.Link" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/sep_margin_small"
+                android:text="Time" />
 
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/llTreatmentReminder"
+            style="@style/AppTheme.Box"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llCheckinReminder"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_treatmentRemindTitle"
+                style="@style/AppTheme.TextView.SubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:text="Treatment Reminders" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAccount"
+            style="@style/AppTheme.Box"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llTreatmentReminder"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_accountTitle"
+                style="@style/AppTheme.TextView.SubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:text="Account" />
+
+            <TextView
+                android:id="@+id/tv_editAccount"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/sep_margin_small"
+                android:text="Edit Account Info" />
+
+            <TextView
+                android:id="@+id/tv_settingsLogout"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logout" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
