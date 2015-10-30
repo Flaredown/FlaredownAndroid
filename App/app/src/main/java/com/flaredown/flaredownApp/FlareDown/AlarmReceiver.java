@@ -88,7 +88,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         }
         else{
-            manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+            manager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
         }
         //Update Shared Prefs
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(c);
