@@ -20,6 +20,7 @@
     <dimen name="font_size">18sp</dimen>
     <dimen name="title_font_size">30sp</dimen>
     <dimen name="sub_title_font_size">24sp</dimen>
+    <dimen name="large_title_font_size">42sp</dimen>
 
 
     <dimen name="viewpageprogress_size">7.5dp</dimen>
