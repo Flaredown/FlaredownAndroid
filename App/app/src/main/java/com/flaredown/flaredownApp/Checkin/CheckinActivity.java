@@ -88,7 +88,7 @@ public class CheckinActivity extends AppCompatActivity {
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
         TextView title = (TextView) findViewById(R.id.toolbar_title);
-        title.setText("September 16");
+        title.setText(Styling.displayDateLong(dateDisplaying));
         setSupportActionBar(mainToolbarView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
