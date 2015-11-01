@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -89,26 +90,52 @@ public class EditEditablesDialog extends DialogFragment {
         ll_root.removeAllViews();
         int defaultPadding = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
 
+        // Carry out delete action.
         View.OnClickListener deleteButtonClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(v instanceof Editable && getActivity() instanceof CheckinActivity){
-                    Editable editable = (Editable) v;
-                    CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-                    List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
-                    ll_root.removeView(editable);
+                    final Editable editable = (Editable) v;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                    //Get the index of the question and remove it...
-                    int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
+                    String itemName = editable.name;
+                    String dialogTitle = Locales.read(getActivity(), "confirm_short_remove").replace("item", itemName).create();
 
-                    if(index != -1) {
-                        if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
-                            Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
-                            checkin_catalogQ_fragment.removeQuestion(editable.name);
-                        } else {
-                            checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                    builder.setTitle(dialogTitle);
+                    builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                            List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
+                            ll_root.removeView(editable);
+
+                            //Get the index of the question and remove it...
+                            int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
+
+                            if(index != -1) {
+                                if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
+                                    Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
+                                    checkin_catalogQ_fragment.removeQuestion(editable.name);
+                                } else {
+                                    checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                                }
+                            }
                         }
-                    }
+                    });
+                    builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+
+                    Dialog dialog = builder.create();
+                    //Styling.styleDialog(dialog);
+                    dialog.show();
+
+
+                    /*
+                    */
 
                 }
             }
