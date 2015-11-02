@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class EditEditablesDialog extends DialogFragment {
     Activity context;
-    JSONArray ja_items;
+    List<String> items;
     String title;
     String catalog = "";
     boolean itemSet = false;
@@ -49,8 +49,8 @@ public class EditEditablesDialog extends DialogFragment {
         return this;
     }
 
-    public void setItems(JSONArray items){
-        this.ja_items = items;
+    public void setItems(List<String> items){
+        this.items = items;
         this.itemSet = true;
 
         assembleDialog();
@@ -141,15 +141,13 @@ public class EditEditablesDialog extends DialogFragment {
             }
         };
 
-        try {
-            for (int i = 0; i < ja_items.length(); i++) {
-                Editable editable = new Editable(getActivity());
-                editable.setCatalog(catalog);
-                editable.setName(ja_items.getJSONObject(i).getString("name"));
-                editable.setOnDeleteClickListener(deleteButtonClick);
-                ll_root.addView(editable);
-            }
-        } catch (JSONException e) { e.printStackTrace(); }
+        for (int i = 0; i < items.size(); i++) {
+            Editable editable = new Editable(getActivity());
+            editable.setCatalog(catalog);
+            editable.setName(items.get(i));
+            editable.setOnDeleteClickListener(deleteButtonClick);
+            ll_root.addView(editable);
+        }
 
         TextView addACondition = new TextView(getActivity());
 

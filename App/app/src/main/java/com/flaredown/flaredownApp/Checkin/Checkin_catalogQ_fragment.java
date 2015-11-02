@@ -17,7 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
@@ -142,8 +144,38 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 editADialog.setItems(new JSONArray(), "Somthing cool like.");
                 editADialog.show(mContext.getFragmentManager(), "EditADialog");*/
 
+                String catalog = trackable.catalogue;
 
-                if(trackable.catalogue.equals("symptoms")) {
+                if(!catalog.equals("symptoms") && !catalog.equals("conditions")) { // Make sure only tested catalogs get through
+                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_KEY, catalog + " is not a valid catalog for trackables dialog");
+                    return;
+                }
+
+                String title = Locales.read(getActivity(), "onboarding.edit_" + catalog).create();
+
+                final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                editEditablesDialog.initialize(title, catalog);
+                editEditablesDialog.show(mContext.getFragmentManager(), "editabledialog");
+                flaredownAPI.getEditables(catalog, new API.OnApiResponse<List<String>>() {
+                    @Override
+                    public void onFailure(API.API_Error error) {
+                        new DefaultErrors(getActivity(), error);
+                    }
+
+                    @Override
+                    public void onSuccess(List<String> result) {
+                        editEditablesDialog.setItems(result);
+                    }
+                });
+
+
+
+
+
+
+
+
+                /*if(trackable.catalogue.equals("symptoms")) {
                     final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
                     editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_symptoms").create(), trackable.catalogue);
                     editEditablesDialog.show(mContext.getFragmentManager(), "symptomediteditabledialog");
@@ -178,7 +210,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
                         }
                     }, "conditions");
-                }
+                }*/
             }
         });
 
