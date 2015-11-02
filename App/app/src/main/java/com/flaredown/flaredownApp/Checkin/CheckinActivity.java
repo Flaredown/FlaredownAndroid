@@ -53,6 +53,14 @@ public class CheckinActivity extends AppCompatActivity {
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
+
+    public List<ViewPagerFragmentBase> getFragmentQuestions() {
+        return fragment_questions;
+    }
+    public ScreenSlidePagerAdapter getScreenSlidePagerAdapter() {
+        return questionPagerAdapter;
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -80,7 +88,7 @@ public class CheckinActivity extends AppCompatActivity {
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
         TextView title = (TextView) findViewById(R.id.toolbar_title);
-        title.setText("September 16");
+        title.setText(Styling.displayDateLong(dateDisplaying));
         setSupportActionBar(mainToolbarView);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -91,7 +99,7 @@ public class CheckinActivity extends AppCompatActivity {
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         
 
-        flareDownAPI.entries(dateDisplaying, new API.OnApiResponseObject() {
+        flareDownAPI.entries(dateDisplaying, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 try {
@@ -246,7 +254,7 @@ public class CheckinActivity extends AppCompatActivity {
      * Simple pager adapter, for previewing the questions pages, may need switching out when loading questions from the api.
      */
 
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
         private OnPageCountListener onPageCountListener;
         public ScreenSlidePagerAdapter(FragmentManager fm, List<ViewPagerFragmentBase> fragments) {

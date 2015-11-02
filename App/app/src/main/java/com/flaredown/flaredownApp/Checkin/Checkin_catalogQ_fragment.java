@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private static final String DEBUG_KEY = "checkin_catalogQ_fragment";
-    JSONArray questions;
-    String catalogue;
+    //JSONArray questions;
+    //String catalogue;
     int section;
     public Activity mContext;
     private View fragmentRoot;
@@ -49,13 +49,30 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     public Checkin_catalogQ_fragment() {
     }
 
-    public Checkin_catalogQ_fragment setQuestion(JSONArray question, int section, String catalogue) {
-        this.questions = question;
-        this.catalogue = catalogue;
-        this.section = section;
-        this.focusedView = null;
+    public Checkin_catalogQ_fragment setQuestion(JSONArray questions, int section, String catalogue) {
+        try {
+            this.trackable = new Trackable(catalogue, questions);
+            //this.questions = questions;
+            //this.catalogue = catalogue;
+            this.section = section;
+            this.focusedView = null;
+        } catch (JSONException e) { e.printStackTrace(); }
         return this;
     }
+
+
+    public void removeQuestion(String question) {
+        if(trackable.questions.length <= 1)  { // Remove the fragment.
+            if(getActivity() instanceof CheckinActivity) {
+                CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                int index = checkinActivity.getFragmentQuestions().indexOf(this);
+                checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+            }
+        } else {
+            //TODO handle multiple questions
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -96,24 +113,24 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         String sectionTitle;
         try {
-            sectionTitle = questions.getJSONObject(0).getString("name");
-            if (catalogue.equals("symptoms"))
+            sectionTitle = trackable.JA_questions.getJSONObject(0).getString("name");
+            if (trackable.catalogue.equals("symptoms"))
                 sectionTitle = "How active is the symptom: " + sectionTitle + "?";
-            if (catalogue.equals("conditions"))
+            if (trackable.catalogue.equals("conditions"))
                 sectionTitle = "How active is the condition: " + sectionTitle + "?";
         } catch (JSONException e) {
             sectionTitle = "--";
         }
-        sectionTitle = Locales.read(getActivity(), "catalogs." + catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+        sectionTitle = Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
 
         tv_sectionTitle.setText(sectionTitle);
 
-        if(catalogue.equals("conditions")) {
+        if(trackable.catalogue.equals("conditions")) {
             tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_conditions").resultIfUnsuccessful("Edit conditions.").capitalize1Char().createAT());
-        } else if(catalogue.equals("symptoms")) {
+        } else if(trackable.catalogue.equals("symptoms")) {
             tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_symptoms").resultIfUnsuccessful("Edit symptoms.").capitalize1Char().createAT());
         } else {
-            tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogue + ".catalog_description").resultIfUnsuccessful(catalogue).capitalize1Char().createAT());
+            tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".catalog_description").resultIfUnsuccessful(trackable.catalogue).capitalize1Char().createAT());
         }
 
         tv_catalogName.setOnClickListener(new View.OnClickListener() {
@@ -126,13 +143,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 editADialog.show(mContext.getFragmentManager(), "EditADialog");*/
 
 
-                if(catalogue.equals("symptoms")) {
+                if(trackable.catalogue.equals("symptoms")) {
                     final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
-                    editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_symptoms").create(), catalogue);
+                    editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_symptoms").create(), trackable.catalogue);
                     editEditablesDialog.show(mContext.getFragmentManager(), "symptomediteditabledialog");
 
 
-                    flaredownAPI.getEditable(new API.OnApiResponseArray() {
+                    flaredownAPI.getEditable(new API.OnApiResponse<JSONArray>() {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
                             editEditablesDialog.setItems(jsonArray);
@@ -144,13 +161,30 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                         }
                     }, "symptoms");
                     // Get current symptoms
+                } else if(trackable.catalogue.equals("conditions")) {
+                    final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                    editEditablesDialog.initialize(Locales.read(getActivity(), "onboarding.edit_conditions").create(), trackable.catalogue);
+                    editEditablesDialog.show(mContext.getFragmentManager(), "conditionediteditabledialog");
+
+
+                    flaredownAPI.getEditable(new API.OnApiResponse<JSONArray>() {
+                        @Override
+                        public void onSuccess(JSONArray jsonArray) {
+                            editEditablesDialog.setItems(jsonArray);
+                        }
+
+                        @Override
+                        public void onFailure(API.API_Error error) {
+
+                        }
+                    }, "conditions");
                 }
             }
         });
 
         try {
-            for (int i = 0; i < questions.length(); i++) {
-                JSONObject question = questions.getJSONObject(i);
+            for (int i = 0; i < trackable.JA_questions.length(); i++) {
+                JSONObject question = trackable.JA_questions.getJSONObject(i);
                 appendQuestion(question);
             }
         } catch (JSONException e) {
@@ -161,16 +195,16 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private void appendQuestion(JSONObject question) throws JSONException{
         String kind = question.getString("kind");
         if(kind.equals("select")) {
-            SelectQuestionInflate selectQuestionInflate = new SelectQuestionInflate(question, catalogue, section);
+            SelectQuestionInflate selectQuestionInflate = new SelectQuestionInflate(question, trackable.catalogue, section);
             ll_questionHolder.addView(selectQuestionInflate.ll_root);
         } else if(kind.equals("number")) {
-            NumberQuestionInflate numberQuestionInflate = new NumberQuestionInflate(question, catalogue, section);
+            NumberQuestionInflate numberQuestionInflate = new NumberQuestionInflate(question, trackable.catalogue, section);
             ll_questionHolder.addView(numberQuestionInflate.ll_root);
         } else if(kind.equals("checkbox")){
-            CheckBoxQuestionInflate checkBoxQuestionInflate = new CheckBoxQuestionInflate(question, catalogue, section);
+            CheckBoxQuestionInflate checkBoxQuestionInflate = new CheckBoxQuestionInflate(question, trackable.catalogue, section);
             ll_questionHolder.addView(checkBoxQuestionInflate.ll_root);
         } else {
-            BlankQuestion blankQuestion = new BlankQuestion(question, catalogue, section);
+            BlankQuestion blankQuestion = new BlankQuestion(question, trackable.catalogue, section);
             ll_questionHolder.addView(blankQuestion.ll_root);
         }
     }
