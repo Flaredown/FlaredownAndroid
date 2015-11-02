@@ -137,11 +137,11 @@ public class AddEditableActivity extends AppCompatActivity {
         sv_results.scrollTo(0,0);
 
         try {
-            autocompleteRequestQueue = fdAPI.get_json_array(endpoint + "/" + URLEncoder.encode(text, API.CHAR_SET), new API.OnApiResponseArray() {
+            autocompleteRequestQueue = fdAPI.get_json_array(endpoint + "/" + URLEncoder.encode(text, API.CHAR_SET), new API.OnApiResponse<JSONArray>() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     pb_loading.setVisibility(View.INVISIBLE);
-                    if(requestToken >= shownAutoCompleteRequestToken) {
+                    if (requestToken >= shownAutoCompleteRequestToken) {
                         shownAutoCompleteRequestToken = requestToken;
                         try {
                             if (ll_results.getChildCount() > 0) {
@@ -170,7 +170,7 @@ public class AddEditableActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(API.API_Error error) {
-                   // new DefaultErrors(context, error);
+                    // new DefaultErrors(context, error);
                 }
             });
         } catch(UnsupportedEncodingException e) { e.printStackTrace(); }

@@ -99,7 +99,7 @@ public class CheckinActivity extends AppCompatActivity {
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         
 
-        flareDownAPI.entries(dateDisplaying, new API.OnApiResponseObject() {
+        flareDownAPI.entries(dateDisplaying, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 try {

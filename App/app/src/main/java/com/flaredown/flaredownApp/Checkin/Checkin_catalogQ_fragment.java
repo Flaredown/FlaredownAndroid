@@ -149,7 +149,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                     editEditablesDialog.show(mContext.getFragmentManager(), "symptomediteditabledialog");
 
 
-                    flaredownAPI.getEditable(new API.OnApiResponseArray() {
+                    flaredownAPI.getEditable(new API.OnApiResponse<JSONArray>() {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
                             editEditablesDialog.setItems(jsonArray);
@@ -167,7 +167,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                     editEditablesDialog.show(mContext.getFragmentManager(), "conditionediteditabledialog");
 
 
-                    flaredownAPI.getEditable(new API.OnApiResponseArray() {
+                    flaredownAPI.getEditable(new API.OnApiResponse<JSONArray>() {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
                             editEditablesDialog.setItems(jsonArray);

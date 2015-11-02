@@ -63,22 +63,13 @@ public class API {
         mContext = context;
         sharedPreferences = PreferenceKeys.getSharedPreferences(context);
     }
-    public interface OnApiResponseArray extends OnApiResponseN{
-        void onSuccess(JSONArray jsonArray);
-    }
-    public interface OnApiResponseObject extends OnApiResponseN{
-        void onSuccess(JSONObject jsonObject);
-    }
-    public interface OnApiResponseN {
-        void onFailure(API_Error error);
-    }
     public interface OnApiResponse<T> {
         void onFailure(API_Error error);
         void onSuccess(T result);
     }
 
 
-    public void users_sign_in(final String email, final String password, final OnApiResponseObject onApiResponseObject) {
+    public void users_sign_in(final String email, final String password, final OnApiResponse<JSONObject> onApiResponse) {
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, getEndpointUrl("/users/sign_in"), new Response.Listener<String>() {
             @Override
             public void onResponse(String response){
@@ -93,16 +84,16 @@ public class API {
                     sp.putBoolean(SP_USER_SIGNED_IN, true);
                     sp.commit();
 
-                    getLocales(new OnApiResponseObject() {
+                    getLocales(new OnApiResponse<JSONObject>() {
                         @Override
                         public void onSuccess(JSONObject locales) {
-                            onApiResponseObject.onSuccess(jsonResponse);
+                            onApiResponse.onSuccess(jsonResponse);
                         }
 
                         @Override
                         public void onFailure(API_Error error) {
                             users_sign_out_force();
-                            onApiResponseObject.onFailure(error);
+                            onApiResponse.onFailure(error);
                         }
                     });
 
@@ -110,7 +101,7 @@ public class API {
 
                     //onApiResponse.onSuccess(jsonResponse);
                 } catch (JSONException e) {
-                    onApiResponseObject.onFailure(new API_Error().setInternetConnection(true));
+                    onApiResponse.onFailure(new API_Error().setInternetConnection(true));
                     e.printStackTrace();
                 }
             }
@@ -122,7 +113,7 @@ public class API {
                 } catch (NullPointerException e) {
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "503");
                 }
-                onApiResponseObject.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
             }
         }) {
             @Override
@@ -139,17 +130,17 @@ public class API {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void users_sign_out(final OnApiResponseObject onApiResponseObject) {
+    public void users_sign_out(final OnApiResponse<JSONObject> onApiResponse) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/users/sign_out"), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 users_sign_out_force();
-                onApiResponseObject.onSuccess(new JSONObject());
+                onApiResponse.onSuccess(new JSONObject());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponseObject.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
             }
         }) {
             @Override
@@ -162,7 +153,7 @@ public class API {
         requestQueue.add(stringRequest);
     }
 
-    public void current_user(final OnApiResponseObject onApiResponse) {
+    public void current_user(final OnApiResponse<JSONObject> onApiResponse) {
         JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, getEndpointUrl("/current_user"), null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -179,21 +170,21 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
-    public void getEditable(final OnApiResponseArray onApiResponseArray, final String type) {
+    public void getEditable(final OnApiResponse<JSONArray> onApiResponse, final String type) {
         //TODO Think about loading from a cache instead of loading v1/current_user each time.
-        current_user(new OnApiResponseObject() {
+        current_user(new OnApiResponse<JSONObject>() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 try {
-                    onApiResponseArray.onSuccess(jsonObject.getJSONArray(type));
+                    onApiResponse.onSuccess(jsonObject.getJSONArray(type));
                 } catch (JSONException e) {
-                    onApiResponseArray.onFailure(new API_Error());
+                    onApiResponse.onFailure(new API_Error());
                 }
             }
 
             @Override
             public void onFailure(API_Error error) {
-                onApiResponseArray.onFailure(error);
+                onApiResponse.onFailure(error);
             }
         });
     }
@@ -206,16 +197,16 @@ public class API {
         sp.commit();
     }
 
-    public RequestQueue get_json_array(String endpoint, final OnApiResponseArray onApiResponseObject) {
+    public RequestQueue get_json_array(String endpoint, final OnApiResponse<JSONArray> onApiResponse) {
         JsonRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, getEndpointUrl(endpoint), null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                onApiResponseObject.onSuccess(response);
+                onApiResponse.onSuccess(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponseObject.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
@@ -225,19 +216,19 @@ public class API {
 
 
 
-    public void entries(final Date date, final OnApiResponseObject onApiResponseObject) {
+    public void entries(final Date date, final OnApiResponse<JSONObject> onApiResponse) {
         Map<String, String> params = addAuthenticationParams();
         params.put("date", API_DATE_FORMAT.format(date));
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, getEndpointUrl("/entries"), new JSONObject(params), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                onApiResponseObject.onSuccess(response);
+                onApiResponse.onSuccess(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponseObject.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
             }
         }) {
             @Override
@@ -304,8 +295,8 @@ public class API {
         return params;
     }
 
-    public void getLocales(OnApiResponseObject onCacheLocales) { getLocales("en", onCacheLocales);}
-    public void getLocales(final String language, final OnApiResponseObject onCacheLocales) {
+    public void getLocales(OnApiResponse<JSONObject> onCacheLocales) { getLocales("en", onCacheLocales);}
+    public void getLocales(final String language, final OnApiResponse<JSONObject> onCacheLocales) {
         PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Refreshing locale file");
 
 
