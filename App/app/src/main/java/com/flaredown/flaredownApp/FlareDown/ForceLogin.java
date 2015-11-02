@@ -12,7 +12,7 @@ import com.flaredown.flaredownApp.PreferenceKeys;
  */
 public class ForceLogin {
     public ForceLogin(Context context, API flareDownAPI) {
-        if(!flareDownAPI.isLoggedIn(false)) {
+        if(!flareDownAPI.isLoggedIn()) {
             PreferenceKeys.log(PreferenceKeys.LOG_I, "HomeActivity", "User not logged in, redirecting to login activity");
             Intent intent = new Intent(context, LoginActivity.class);
             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

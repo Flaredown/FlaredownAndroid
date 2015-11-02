@@ -59,6 +59,10 @@ public class API {
         } catch (UnsupportedEncodingException e) { e.printStackTrace(); return "";}
     }
 
+    /**
+     * Initiates the API library which is used to communicate with the FlareDownAPI
+     * @param context
+     */
     public API(Context context) {
         mContext = context;
         sharedPreferences = PreferenceKeys.getSharedPreferences(context);
@@ -68,7 +72,13 @@ public class API {
         void onSuccess(T result);
     }
 
-
+    /**
+     * Sends API request to server to log the user in, auth token is automatically stored and for
+     * future api requests the user will be logged in.
+     * @param email Users email address.
+     * @param password Users password.
+     * @param onApiResponse Callback with the response from the endpoint /users/sign_in.
+     */
     public void users_sign_in(final String email, final String password, final OnApiResponse<JSONObject> onApiResponse) {
         StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST, getEndpointUrl("/users/sign_in"), new Response.Listener<String>() {
             @Override
@@ -130,6 +140,10 @@ public class API {
         requestQueue.add(jsonObjectRequest);
     }
 
+    /**
+     * Logs off the current user, removing only the usertoken from shareprefs.
+     * @param onApiResponse Callback with the response from the API.
+     */
     public void users_sign_out(final OnApiResponse<JSONObject> onApiResponse) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/users/sign_out"), new Response.Listener<String>() {
             @Override
@@ -153,6 +167,11 @@ public class API {
         requestQueue.add(stringRequest);
     }
 
+    /**
+     * Retrieves the end point /current_user, provides details regarding the current user. Requires
+     * user to be signed in.
+     * @param onApiResponse Callback with the response from the API.
+     */
     public void current_user(final OnApiResponse<JSONObject> onApiResponse) {
         JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, getEndpointUrl("/current_user"), null, new Response.Listener<JSONObject>() {
             @Override
@@ -189,6 +208,10 @@ public class API {
         });
     }
 
+    /**
+     * Forcefully logs the user out. No communication to the server occurs, only the
+     * sharedpreference key for the token is removed.
+     */
     public void users_sign_out_force() {
         SharedPreferences.Editor sp = sharedPreferences.edit();
         sp.remove(SP_USER_AUTHTOKEN);
@@ -197,6 +220,12 @@ public class API {
         sp.commit();
     }
 
+    /**
+     * Retrieves a JSONArray from the API using the GET method.
+     * @param endpoint The endpoint you wish to receive the JSONArray from.
+     * @param onApiResponse Callback with the response from the API server.
+     * @return Returns the volley request queue it is using.
+     */
     public RequestQueue get_json_array(String endpoint, final OnApiResponse<JSONArray> onApiResponse) {
         JsonRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, getEndpointUrl(endpoint), null, new Response.Listener<JSONArray>() {
             @Override
@@ -215,7 +244,11 @@ public class API {
     }
 
 
-
+    /**
+     * Retrieves the endpoint /entries
+     * @param date The entry date to fetch.
+     * @param onApiResponse Callback with the response from the API server.
+     */
     public void entries(final Date date, final OnApiResponse<JSONObject> onApiResponse) {
         Map<String, String> params = addAuthenticationParams();
         params.put("date", API_DATE_FORMAT.format(date));
@@ -245,6 +278,12 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
+    /**
+     * Removes trackable from user, only for the current day.
+     * @param catalog The catalog the trackable is from.
+     * @param id The id of the trackable.
+     * @param onApiResponse Callback with the response from the API server.
+     */
     public void delete_trackable(String catalog, int id, final OnApiResponse<String> onApiResponse) {
         if(catalog == null || catalog.equals("")) {
             onApiResponse.onFailure(new API_Error().setStatusCode(500));
@@ -264,7 +303,12 @@ public class API {
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
     }
-    public boolean isLoggedIn(boolean doubleCheck) {
+
+    /**
+     * Checks if the user is logged in, it does not check with the server if this is true.
+     * @return if true the user is signed in.
+     */
+    public boolean isLoggedIn() {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(mContext);
 
 
@@ -276,18 +320,20 @@ public class API {
 
 
         if(!sp.getString(SP_USER_AUTHTOKEN, "").equals("") && !sp.getString(SP_USER_EMAIL, "").equals("") && sp.getBoolean(SP_USER_SIGNED_IN, false)) {
-            if(doubleCheck) {
-                // TODO poll server to see if user logged in.
-                return true;
-            } else return true;
+            return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Creates a map with the authentication params which is sent with each api request to
+     * authenticate the user for each transaction. Which maybe added onto to add extra parameters.
+     * @return Map<String, String> of the user details.
+     */
     public Map<String, String> addAuthenticationParams() {
         Map<String, String> params = new HashMap<>();
-        if(isLoggedIn(false)) {
+        if(isLoggedIn()) {
             SharedPreferences sp = PreferenceKeys.getSharedPreferences(mContext);
             params.put("user_email", sp.getString(SP_USER_EMAIL, ""));
             params.put("user_token", sp.getString(SP_USER_AUTHTOKEN, ""));
@@ -295,8 +341,19 @@ public class API {
         return params;
     }
 
-    public void getLocales(OnApiResponse<JSONObject> onCacheLocales) { getLocales("en", onCacheLocales);}
-    public void getLocales(final String language, final OnApiResponse<JSONObject> onCacheLocales) {
+    /**
+     * Retrieves the locals from endpoint /locals/en (default is english) if another language use
+     * getLocals(language, onApiResponse).
+     * @param onApiResponse Callback with the response from the API server.
+     */
+    public void getLocales(OnApiResponse<JSONObject> onApiResponse) { getLocales("en", onApiResponse);}
+
+    /**
+     * Retrieves the locals from endpoint /locals.
+     * @param language The language prefix. Currently only en is available.
+     * @param onApiResponse Callback with the response from the API server.
+     */
+    public void getLocales(final String language, final OnApiResponse<JSONObject> onApiResponse) {
         PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Refreshing locale file");
 
 
@@ -307,18 +364,18 @@ public class API {
                     JSONObject jsonResponse = new JSONObject(response);
                     // NEW LOCALE SAVE
                     if(Locales.updateSharedPreferences(mContext, jsonResponse.getJSONObject(language)))
-                        onCacheLocales.onSuccess(jsonResponse.getJSONObject(language));
+                        onApiResponse.onSuccess(jsonResponse.getJSONObject(language));
                     else
-                        onCacheLocales.onFailure(new API_Error());
+                        onApiResponse.onFailure(new API_Error());
                 } catch (Exception e) {
                     e.printStackTrace();
-                    onCacheLocales.onFailure(new API_Error());
+                    onApiResponse.onFailure(new API_Error());
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onCacheLocales.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
             }
         }) {
             @Override
@@ -331,7 +388,10 @@ public class API {
         queue.add(stringRequest);
     }
 
-
+    /**
+     * Checks if there is an internet connection.
+     * @return returns true if the device is connected to the internet.
+     */
     public boolean checkInternet() {
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -340,11 +400,19 @@ public class API {
         return false;
     }
 
+    /**
+     * Object is returned if the API request failed. Use the default error class to handle the error.
+     */
     public class API_Error {
         public VolleyError volleyError;
         public Boolean internetConnection;
         public int statusCode = 500;
 
+        /**
+         * Automatically sets status code, internet connection fields from a VolleyError object.
+         * @param volleyError Passed from an OnApiResponse<>.onFailure();
+         * @return returns itself for easy concatenation.
+         */
         public API_Error setVolleyError(VolleyError volleyError) {
             this.volleyError = volleyError;
             //if(volleyError.networkResponse.statusCode != null)
@@ -359,10 +427,22 @@ public class API {
             }
             return this;
         }
+
+        /**
+         * Set the status code of the error.
+         * @param statusCode the HTTP status code.
+         * @return returns itself for easy concatenation.
+         */
         public API_Error setStatusCode(int statusCode) {
             this.statusCode = statusCode;
             return this;
         }
+
+        /**
+         * Set if the error was caused by no internet connection.
+         * @param internetConnection is the error caused by no internet connection.
+         * @return returns itself for easy concatentation.
+         */
         public API_Error setInternetConnection(boolean internetConnection) {
             if(!internetConnection)
                 statusCode = 503;
@@ -372,6 +452,8 @@ public class API {
                 this.internetConnection = internetConnection;
             return this;
         }
+
+        @Override
         public String toString() {
             return "Internet Connection: " + (internetConnection ? "true" : "false") + " Status Code: " + String.valueOf(statusCode);
         }

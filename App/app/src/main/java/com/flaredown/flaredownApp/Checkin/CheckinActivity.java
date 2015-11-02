@@ -78,7 +78,7 @@ public class CheckinActivity extends AppCompatActivity {
         Styling.setFont();
 
         flareDownAPI = new API(mContext);
-        if(!flareDownAPI.isLoggedIn(false)) {  // Prevent other code running if not logged in.
+        if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
             new ForceLogin(mContext, flareDownAPI);
             return;
         }
