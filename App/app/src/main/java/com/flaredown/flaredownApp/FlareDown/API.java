@@ -63,14 +63,18 @@ public class API {
         mContext = context;
         sharedPreferences = PreferenceKeys.getSharedPreferences(context);
     }
-    public interface OnApiResponseArray extends OnApiResponse{
+    public interface OnApiResponseArray extends OnApiResponseN{
         void onSuccess(JSONArray jsonArray);
     }
-    public interface OnApiResponseObject extends OnApiResponse{
+    public interface OnApiResponseObject extends OnApiResponseN{
         void onSuccess(JSONObject jsonObject);
     }
-    public interface OnApiResponse {
+    public interface OnApiResponseN {
         void onFailure(API_Error error);
+    }
+    public interface OnApiResponse<T> {
+        void onFailure(API_Error error);
+        void onSuccess(T result);
     }
 
 
@@ -180,7 +184,7 @@ public class API {
         current_user(new OnApiResponseObject() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
-                try{
+                try {
                     onApiResponseArray.onSuccess(jsonObject.getJSONArray(type));
                 } catch (JSONException e) {
                     onApiResponseArray.onFailure(new API_Error());
@@ -250,6 +254,25 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
+    public void delete_trackable(String catalog, int id, final OnApiResponse<String> onApiResponse) {
+        if(catalog == null || catalog.equals("")) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            return;
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, getEndpointUrl("/" + catalog + "/" + id), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                onApiResponse.onSuccess(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
     public boolean isLoggedIn(boolean doubleCheck) {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(mContext);
 
@@ -343,6 +366,10 @@ public class API {
                 this.statusCode = 503;
                 this.internetConnection = false;
             }
+            return this;
+        }
+        public API_Error setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
             return this;
         }
         public API_Error setInternetConnection(boolean internetConnection) {
