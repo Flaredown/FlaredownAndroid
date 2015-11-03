@@ -27,13 +27,18 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
+import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -46,13 +51,14 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_checkinRemindTime;
     TextView tv_treatmentRemindTitle;
     Switch sw_checkinReminder;
+    LinearLayout ll_treatmentReminder;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     Calendar alarm = Calendar.getInstance();
     Intent alarmIntent;
     PendingIntent pendingIntent;
     AlarmManager manager;
-
+    API flareDownAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +67,12 @@ public class SettingsActivity extends AppCompatActivity {
         mContext = this;
         Styling.setFont();
 
+        flareDownAPI = new API(mContext);
+        if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
+            new ForceLogin(mContext, flareDownAPI);
+            return;
+        }
+
         tv_AccountTitle = (TextView) findViewById(R.id.tv_accountTitle);
         tv_EditAccount = (TextView) findViewById(R.id.tv_editAccount);
         tv_SettingsLogout = (TextView) findViewById(R.id.tv_settingsLogout);
@@ -68,6 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_checkinRemindTime = (TextView) findViewById(R.id.tv_checkinRemindTime);
         tv_treatmentRemindTitle = (TextView) findViewById(R.id.tv_treatmentRemindTitle);
         sw_checkinReminder = (Switch) findViewById(R.id.sw_checkinReminder);
+        ll_treatmentReminder = (LinearLayout)findViewById(R.id.llTreatmentReminder);
 
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
@@ -85,6 +98,49 @@ public class SettingsActivity extends AppCompatActivity {
         manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmIntent = new Intent(mContext, AlarmReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent,  0);
+
+        //Get API information for treatments and display
+        flareDownAPI.entries(Calendar.getInstance().getTime(), new API.OnApiResponse<JSONObject>() {
+
+            @Override
+            public void onFailure(API.API_Error error) {
+                new DefaultErrors(mContext, error);
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try{
+                JSONObject entry = result.getJSONObject("entry");
+                JSONArray treatments = entry.getJSONArray("treatments");
+                    for(int i = 0 ; i < treatments.length(); i++){
+                        JSONObject treatment = treatments.getJSONObject(i);
+                        Iterator<String> iter = treatment.keys();
+                        while (iter.hasNext()) {
+                            String key = iter.next();
+                            if (key.equals("name")){
+                                LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                TextView tv = new TextView(mContext);
+                                tv.setTextAppearance(mContext,R.style.AppTheme_TextView_Link);
+                                tv.setLayoutParams(lparams);
+                                tv.setText(treatment.get(key).toString());
+                                ll_treatmentReminder.addView(tv);
+
+                                tv.setOnClickListener(new View.OnClickListener(){
+                                    @Override
+                                    public void onClick(View view) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (JSONException e) {
+                    Toast.makeText(mContext, "Error Getting Treatments", Toast.LENGTH_LONG).show();
+                    Log.e("JSON Error", e.getMessage());
+                }
+            }
+        });
 
         //Listeners
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         updateLocales();
+
     }
     public void updateLocales() {
         tv_AccountTitle.setText(Locales.read(mContext, "menu_item_account").createAT());

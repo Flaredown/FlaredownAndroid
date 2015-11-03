@@ -57,7 +57,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/llCheckinReminder"
             android:layout_marginBottom="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_vertical|center_horizontal">
 
             <TextView
                 android:id="@+id/tv_treatmentRemindTitle"
