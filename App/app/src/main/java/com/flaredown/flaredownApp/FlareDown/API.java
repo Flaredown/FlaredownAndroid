@@ -327,6 +327,52 @@ public class API {
     }
 
     /**
+     * Removes trackable from user, only for the current day.
+     * @param catalog The catalog the trackable is from.
+     * @param name The name of the trackable, must already be tracked otherwise it will fail with 601
+     * @param onApiResponse Callback with the response from the API server
+     */
+    public void delete_trackableByName(final String catalog, final String name, final OnApiResponse<String> onApiResponse) {
+        if(catalog == null || catalog.equals("") || name == null || name.equals("")) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            return;
+        }
+
+        current_user(new OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                onApiResponse.onFailure(error);
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    JSONArray catalogItems = result.getJSONArray(catalog);
+                    boolean found = false;
+                    for(int i = 0; i < catalogItems.length(); i++) {
+                        JSONObject catalogItem = catalogItems.getJSONObject(i);
+                        String name2 = catalogItem.getString("name");
+                        Integer id = catalogItem.getInt("id");
+                        if(name.equals(name2)) {
+                            delete_trackable(catalog, id, onApiResponse);
+                            found = true;
+                        }
+                    }
+                    if(!found){
+                        onApiResponse.onFailure(new API_Error().setStatusCode(601));
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        });
+
+    }
+
+    /**
      * Checks if the user is logged in, it does not check with the server if this is true.
      * @return if true the user is signed in.
      */

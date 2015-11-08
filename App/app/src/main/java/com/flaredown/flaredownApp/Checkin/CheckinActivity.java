@@ -49,7 +49,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
     private int current_page = 0;
-    private Date dateDisplaying = new Date();
+    private Date dateDisplaying = new Date(new Date().getTime() +  (1000*60*60*24));
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 

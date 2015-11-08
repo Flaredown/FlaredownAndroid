@@ -22,6 +22,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.Styling;
 
@@ -105,7 +107,21 @@ public class EditEditablesDialog extends DialogFragment {
                     builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                            final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+
+                            checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
+                                @Override
+                                public void onFailure(API.API_Error error) {
+                                    new DefaultErrors(checkinActivity, error);
+                                }
+
+                                @Override
+                                public void onSuccess(String result) {
+                                    Toast.makeText(checkinActivity, "IT DELETED!", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+
                             List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
                             ll_root.removeView(editable);
 
