@@ -108,6 +108,7 @@ public class EditEditablesDialog extends DialogFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                            editable.progress(true);
 
                             checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
                                 @Override
@@ -117,25 +118,23 @@ public class EditEditablesDialog extends DialogFragment {
 
                                 @Override
                                 public void onSuccess(String result) {
-                                    Toast.makeText(checkinActivity, "IT DELETED!", Toast.LENGTH_LONG).show();
+                                    editable.progress(false);
+                                    List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
+                                    ll_root.removeView(editable);
+
+                                    //Get the index of the question and remove it...
+                                    int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
+
+                                    if(index != -1) {
+                                        if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
+                                            Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
+                                            checkin_catalogQ_fragment.removeQuestion(editable.name);
+                                        } else {
+                                            checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                                        }
+                                    }
                                 }
                             });
-
-
-                            List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
-                            ll_root.removeView(editable);
-
-                            //Get the index of the question and remove it...
-                            int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
-
-                            if(index != -1) {
-                                if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
-                                    Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
-                                    checkin_catalogQ_fragment.removeQuestion(editable.name);
-                                } else {
-                                    checkinActivity.getScreenSlidePagerAdapter().removeView(index);
-                                }
-                            }
                         }
                     });
                     builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
@@ -187,6 +186,7 @@ public class EditEditablesDialog extends DialogFragment {
     public class Editable extends RelativeLayout {
         Context context;
         Button bt_name;
+        ProgressBar progressBar;
         String name;
         String catalog;
         ImageButton bt_delete;
@@ -199,6 +199,7 @@ public class EditEditablesDialog extends DialogFragment {
 
             bt_name = (Button) this.findViewById(R.id.bt_name);
             bt_delete = (ImageButton) this.findViewById(R.id.bt_delete);
+            progressBar = (ProgressBar) this.findViewById(R.id.progressBar);
 
             int defaultSmallMargin = context.getResources().getDimensionPixelSize(R.dimen.sep_margin_small);
             this.setPadding(0, 0, 0, defaultSmallMargin);
@@ -213,6 +214,15 @@ public class EditEditablesDialog extends DialogFragment {
         public Editable setCatalog(String catalog) {
             this.catalog = catalog;
             return this;
+        }
+        public void progress(boolean show) {
+            if(show) {
+                bt_delete.setVisibility(INVISIBLE);
+                progressBar.setVisibility(VISIBLE);
+            } else {
+                bt_delete.setVisibility(VISIBLE);
+                progressBar.setVisibility(INVISIBLE);
+            }
         }
 
         public Editable setOnDeleteClickListener(final OnClickListener onClickListener) {
