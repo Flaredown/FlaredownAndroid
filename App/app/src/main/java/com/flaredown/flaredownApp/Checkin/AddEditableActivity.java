@@ -50,12 +50,12 @@ public class AddEditableActivity extends AppCompatActivity {
     String title;
 
 
-    public static void startActivity(Activity context, String title, String endpoint) {
+    public static void startActivity(Activity context, String title, String endpoint, int requestCode) {
         Intent intent = new Intent(context, AddEditableActivity.class);
         intent.putExtra(AddEditableActivity.TITLE, title);
         intent.putExtra(AddEditableActivity.ENDPOINT, endpoint);
         //context.startActivity(intent);
-        context.startActivityForResult(intent, 1);
+        context.startActivityForResult(intent, requestCode);
     }
 
 
@@ -81,8 +81,8 @@ public class AddEditableActivity extends AppCompatActivity {
         if(!getIntent().hasExtra(TITLE) || !getIntent().hasExtra(ENDPOINT)) {
             finish();
         }
-        mainToolbarView.setTitle(getIntent().getStringExtra(TITLE));
-        //tv_title.setText(getIntent().getStringExtra(TITLE));
+        TextView title = (TextView) findViewById(R.id.toolbar_title);
+        title.setText(getIntent().getStringExtra(TITLE));
         endpoint = getIntent().getStringExtra(ENDPOINT);
 
 

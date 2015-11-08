@@ -234,9 +234,22 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data != null && data.hasExtra(AddEditableActivity.RESULT))
-            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();
+        /*if(data != null && data.hasExtra(AddEditableActivity.RESULT))
+            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();*/
+        if(onActivityResultListener != null) {
+            onActivityResultListener.onActivityResult(requestCode, resultCode, data);
+            onActivityResultListener = null;
+        }
     }
+
+    private OnActivityResultListener onActivityResultListener = null;
+    public void setOnActivityResultListener(OnActivityResultListener onActivityResultListener){
+        this.onActivityResultListener = onActivityResultListener;
+    }
+    public interface OnActivityResultListener {
+        void onActivityResult(int requestCode, int resultCode, Intent data);
+    }
+
 
     public void nextQuestion() {
         vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);

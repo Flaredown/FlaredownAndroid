@@ -329,7 +329,7 @@ public class API {
     /**
      * Removes trackable from user, only for the current day.
      * @param catalog The catalog the trackable is from.
-     * @param name The name of the trackable, must already be tracked otherwise it will fail with 601
+     * @param name The name of the trackable.
      * @param onApiResponse Callback with the response from the API server
      */
     public void delete_trackableByName(final String catalog, final String name, final OnApiResponse<String> onApiResponse) {
@@ -359,7 +359,7 @@ public class API {
                         }
                     }
                     if(!found){
-                        onApiResponse.onFailure(new API_Error().setStatusCode(601));
+                        onApiResponse.onSuccess("");
                     }
 
 

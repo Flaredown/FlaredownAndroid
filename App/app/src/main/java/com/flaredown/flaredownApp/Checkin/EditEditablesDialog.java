@@ -8,6 +8,7 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -93,7 +94,7 @@ public class EditEditablesDialog extends DialogFragment {
         int defaultPadding = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
 
         // Carry out delete action.
-        View.OnClickListener deleteButtonClick = new View.OnClickListener() {
+        final View.OnClickListener deleteButtonClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(v instanceof Editable && getActivity() instanceof CheckinActivity){
@@ -164,7 +165,7 @@ public class EditEditablesDialog extends DialogFragment {
             ll_root.addView(editable);
         }
 
-        TextView addACondition = new TextView(getActivity());
+        TextView addATrackable = new TextView(getActivity());
 
         String localKey = "onboarding.";
 
@@ -176,10 +177,33 @@ public class EditEditablesDialog extends DialogFragment {
                 localKey += "add_condition";
         }
 
-        addACondition.setText("+ " + Locales.read(getActivity(), localKey).create());
-        addACondition.setGravity(Gravity.CENTER_HORIZONTAL);
-        addACondition.setTextColor(getResources().getColor(R.color.accent));
-        ll_root.addView(addACondition);
+        final String addATrackableTitle = Locales.read(getActivity(), localKey).create();
+        addATrackable.setText("+ " + addATrackableTitle);
+        addATrackable.setGravity(Gravity.CENTER_HORIZONTAL);
+        addATrackable.setTextColor(getResources().getColor(R.color.accent));
+        addATrackable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int requestCode = 9987;
+                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode);
+                if (getActivity() instanceof CheckinActivity) {
+                    CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                    checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
+                        @Override
+                        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+                            if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
+                                Editable newEditable = new Editable(getActivity());
+                                newEditable.setCatalog(catalog);
+                                newEditable.setName(data.getStringExtra(AddEditableActivity.RESULT));
+                                newEditable.setOnDeleteClickListener(deleteButtonClick);
+                                ll_root.addView(newEditable, ll_root.getChildCount() - 1);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        ll_root.addView(addATrackable);
         sv_root.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
     }
 
