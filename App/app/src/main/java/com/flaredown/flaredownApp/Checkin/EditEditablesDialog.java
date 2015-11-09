@@ -1,11 +1,9 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,15 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.Styling;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.List;
 
@@ -122,6 +115,7 @@ public class EditEditablesDialog extends DialogFragment {
                                     editable.progress(false);
                                     List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
                                     ll_root.removeView(editable);
+                                    items.remove(editable.name);
 
                                     //Get the index of the question and remove it...
                                     int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
@@ -185,7 +179,7 @@ public class EditEditablesDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 int requestCode = 9987;
-                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode);
+                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
                 if (getActivity() instanceof CheckinActivity) {
                     CheckinActivity checkinActivity = (CheckinActivity) getActivity();
                     checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
@@ -193,8 +187,10 @@ public class EditEditablesDialog extends DialogFragment {
                         public void onActivityResult(int requestCode, int resultCode, Intent data) {
                             if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
                                 Editable newEditable = new Editable(getActivity());
+                                String name = data.getStringExtra(AddEditableActivity.RESULT);
+                                items.add(name);
                                 newEditable.setCatalog(catalog);
-                                newEditable.setName(data.getStringExtra(AddEditableActivity.RESULT));
+                                newEditable.setName(name);
                                 newEditable.setOnDeleteClickListener(deleteButtonClick);
                                 ll_root.addView(newEditable, ll_root.getChildCount() - 1);
                             }

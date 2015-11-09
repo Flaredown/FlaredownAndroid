@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Checkin;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,6 +30,9 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AddEditableActivity extends AppCompatActivity {
     API fdAPI;
@@ -37,6 +41,7 @@ public class AddEditableActivity extends AppCompatActivity {
     public static final String TITLE = "title";
     public static final String ENDPOINT = "endpoint";
     public static final String RESULT = "result";
+    public static final String SELECTED_TRACKABLES = "selected_trackable";
 
     //TextView tv_cancelButton;
     //TextView tv_title;
@@ -48,12 +53,16 @@ public class AddEditableActivity extends AppCompatActivity {
 
     String endpoint = "/symptoms/search";
     String title;
-
+    List<String> selectedTrackables = new ArrayList<>();
 
     public static void startActivity(Activity context, String title, String endpoint, int requestCode) {
+        startActivity(context, title, endpoint, requestCode, new ArrayList<String>());
+    }
+    public static void startActivity(Activity context, String title, String endpoint, int requestCode, List<String> items) {
         Intent intent = new Intent(context, AddEditableActivity.class);
         intent.putExtra(AddEditableActivity.TITLE, title);
         intent.putExtra(AddEditableActivity.ENDPOINT, endpoint);
+        intent.putExtra(AddEditableActivity.SELECTED_TRACKABLES, items.toArray(new String[items.size()]));
         //context.startActivity(intent);
         context.startActivityForResult(intent, requestCode);
     }
@@ -78,12 +87,14 @@ public class AddEditableActivity extends AppCompatActivity {
         mainToolbarView.getActionBar().getMenu().clear();
         mainToolbarView.setBackButton(true);
 
-        if(!getIntent().hasExtra(TITLE) || !getIntent().hasExtra(ENDPOINT)) {
+        if(!getIntent().hasExtra(TITLE) || !getIntent().hasExtra(ENDPOINT) || !getIntent().hasExtra(SELECTED_TRACKABLES)) {
             finish();
+            return;
         }
         TextView title = (TextView) findViewById(R.id.toolbar_title);
         title.setText(getIntent().getStringExtra(TITLE));
         endpoint = getIntent().getStringExtra(ENDPOINT);
+        selectedTrackables = new ArrayList<>(Arrays.asList(getIntent().getStringArrayExtra(SELECTED_TRACKABLES)));
 
 
 
@@ -124,9 +135,20 @@ public class AddEditableActivity extends AppCompatActivity {
         Item it = new Item(context, text).setName("\"" + text + "\"").setQuantity(
                 Locales.read(context, "onboarding.add_new_condition").capitalize1Char().create()
         );
-        if(ll_results.getChildCount() > 0)
+        if(selectedTrackables.indexOf(text) == -1)
+            it.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    returnResult(text);
+                }
+            });
+        else
+            it.setReadOnly(true);
+
+        if (ll_results.getChildCount() > 0)
             ll_results.removeViewAt(0);
         ll_results.addView(it, 0);
+
 
         if(text.equals("")) {
             shownAutoCompleteRequestToken = requestToken;
@@ -157,9 +179,24 @@ public class AddEditableActivity extends AppCompatActivity {
 
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject item = jsonArray.getJSONObject(i);
+                                String name = item.getString("name");
                                 Item tv = new Item(context, item.getString("name"));
+                                if(selectedTrackables.indexOf(name) != -1) {
+                                    tv.setReadOnly(true);
+                                } else {
+                                    tv.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            if(v instanceof Item) {
+                                                Item tv = (Item) v;
+                                                returnResult(tv.getValue());
+                                            }
+                                        }
+                                    });
+                                }
                                 tv.setName(item.getString("name"));
                                 tv.setQuantity(item.getInt("count"));
+
                                 ll_results.addView(tv);
                             }
                         } catch (JSONException e) {
@@ -175,12 +212,19 @@ public class AddEditableActivity extends AppCompatActivity {
             });
         } catch(UnsupportedEncodingException e) { e.printStackTrace(); }
     }
+    private void returnResult(String name) {
+        Intent intent = context.getIntent();
+        intent.putExtra(RESULT, name);
+        context.setResult(RESULT_OK, intent);
+        finish();
+    }
 
     private class Item extends FrameLayout {
         private LinearLayout item;
         private TextView tv_name;
         private TextView tv_quantity;
         private String value = "";
+        private boolean readOnly = false;
         public Item(Context mContext, String value) {
             super(mContext);
             item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.activity_add_a_dialog_result_item, null);
@@ -192,16 +236,6 @@ public class AddEditableActivity extends AppCompatActivity {
             setQuantity("");
 
             setValue(value);
-
-            this.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = context.getIntent();
-                    intent.putExtra(RESULT, getValue());
-                    context.setResult(RESULT_OK, intent);
-                    finish();
-                }
-            });
         }
 
         public Item setName(String name) {
@@ -222,6 +256,15 @@ public class AddEditableActivity extends AppCompatActivity {
         }
         public String getValue() {
             return this.value;
+        }
+
+        public Item setReadOnly(boolean readOnly) {
+            this.readOnly = readOnly;
+            if(readOnly)
+                this.setBackgroundColor(getResources().getColor(R.color.readonly_background));
+            else
+                this.setBackgroundColor(Color.TRANSPARENT);
+            return this;
         }
     }
 }
