@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:layout_marginBottom="@dimen/sep_margin_small"
                 android:text="Treatment Reminders" />
         </LinearLayout>
 
@@ -100,7 +100,7 @@
                 android:id="@+id/tv_settingsLogout"
                 style="@style/AppTheme.TextView.Link"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:text="Logout" />
 
         </LinearLayout>

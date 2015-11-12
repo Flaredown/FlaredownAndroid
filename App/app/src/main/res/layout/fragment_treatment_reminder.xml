@@ -1,0 +1,126 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/rl_TreatmentReminderFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.flaredown.flaredownApp.FragmentTreatmentReminder">
+
+        <TextView
+            android:id="@+id/tvTreatmentReminderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/sep_margin_medium"
+            android:layout_marginTop="@dimen/sep_margin_medium"
+            android:text="Treatment Reminders"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderMonday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTreatmentReminderTitle"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginLeft="@dimen/sep_margin_medium"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Monday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderTuesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_alignStart="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderMonday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Tuesday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderWednesday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderTuesday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Wednesday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderThursday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_alignStart="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderWednesday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Thursday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderFriday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_alignStart="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderThursday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Friday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderSaturday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_alignStart="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderFriday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Saturday" />
+
+        <Switch
+            android:id="@+id/swTreatmentReminderSunday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/swTreatmentReminderMonday"
+            android:layout_alignStart="@+id/swTreatmentReminderMonday"
+            android:layout_below="@+id/swTreatmentReminderSaturday"
+            android:layout_marginBottom="@dimen/sep_margin_small"
+            android:layout_marginRight="@dimen/sep_margin_small"
+            android:text="Sunday" />
+
+        <TextView
+            android:id="@+id/tvTreatmentReminderSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/swTreatmentReminderSunday"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/sep_margin_medium"
+            android:layout_marginTop="@dimen/sep_margin_medium"
+            android:text="Remind me at..."
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/tvTreatmentAddReminderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTreatmentReminderSubtitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/sep_margin_medium"
+            android:text="+ Add time"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ListView
+            android:id="@+id/lvTreatmentReminderTimes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTreatmentAddReminderTime">
+        </ListView>
+
+    </RelativeLayout>
+</ScrollView>
