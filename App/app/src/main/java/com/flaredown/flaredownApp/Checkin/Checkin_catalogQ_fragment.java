@@ -82,7 +82,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         if(savedInstanceState == null || mContext == null) createFragment(inflater, container, savedInstanceState);
         if(savedInstanceState != null) {
             double[] questAns = savedInstanceState.getDoubleArray(QUESTION_ANS);
-            for(int i = 0; i < questAns.length; i++) {
+            for(int i = 0; i < questAns.length && i < questionViews.size(); i++) {
                 questionViews.get(i).setValue(questAns[i]);
             }
         }
@@ -327,6 +327,17 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public void setValue(double value) {
             button.setSelected(value == 1.0);
         }
+    }
+
+
+    public static JSONObject getDefaultQuestionJson(String name) {
+        try {
+            JSONObject defaultQuestionJson = new JSONObject("{\"name\":\"droopy lips\",\"kind\":\"select\",\"inputs\":[{\"value\":0,\"helper\":\"basic_0\",\"meta_label\":\"smiley\"},{\"value\":1,\"helper\":\"basic_1\",\"meta_label\":null},{\"value\":2,\"helper\":\"basic_2\",\"meta_label\":null},{\"value\":3,\"helper\":\"basic_3\",\"meta_label\":null},{\"value\":4,\"helper\":\"basic_4\",\"meta_label\":null}]}");
+            defaultQuestionJson.put("name", name);
+            return defaultQuestionJson;
+        }
+        catch(JSONException e) { e.printStackTrace(); }
+        return new JSONObject();
     }
 
 

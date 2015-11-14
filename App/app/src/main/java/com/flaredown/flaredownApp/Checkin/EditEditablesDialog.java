@@ -24,6 +24,8 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
 /**
@@ -181,7 +183,7 @@ public class EditEditablesDialog extends DialogFragment {
                 int requestCode = 9987;
                 AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
                 if (getActivity() instanceof CheckinActivity) {
-                    CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                    final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
                     checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
                         @Override
                         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -193,6 +195,17 @@ public class EditEditablesDialog extends DialogFragment {
                                 newEditable.setName(name);
                                 newEditable.setOnDeleteClickListener(deleteButtonClick);
                                 ll_root.addView(newEditable, ll_root.getChildCount() - 1);
+
+                                Checkin_catalogQ_fragment newQuestionFragment = new Checkin_catalogQ_fragment();
+                                JSONArray fragmentQuestionJA = new JSONArray();
+                                fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
+
+                                newQuestionFragment.setQuestion(fragmentQuestionJA, 1, catalog);
+
+                                checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+
+
+                                //checkinActivity.getScreenSlidePagerAdapter().addView();
                             }
                         }
                     });
