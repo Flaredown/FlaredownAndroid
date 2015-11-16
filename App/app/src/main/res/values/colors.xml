@@ -13,4 +13,5 @@
     <color name="checkin_selector_button_background">#eee</color>
     <color name="checkin_selector_button_text">#9b9b9b</color>
     <color name="checkin_selector_button_text_selected">#fff</color>
+    <color name="readonly_background">#e7e7e7</color>
 </resources>

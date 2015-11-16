@@ -17,7 +17,6 @@ public class PreferenceKeys {
     //public static final String P_LOGGED_IN = "logged_in";
     //public static final String P_USER_EMAIL = "user_email";
     //public static final String P_AUTH_TOKEN = "auth_token";
-
     public static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }

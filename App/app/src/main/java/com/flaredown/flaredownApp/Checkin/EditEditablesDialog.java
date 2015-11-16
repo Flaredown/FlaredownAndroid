@@ -1,13 +1,13 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -20,13 +20,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
-import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -34,8 +34,7 @@ import java.util.List;
  * Created by thunter on 08/10/2015.
  */
 public class EditEditablesDialog extends DialogFragment {
-    Activity context;
-    JSONArray ja_items;
+    List<String> items;
     String title;
     String catalog = "";
     boolean itemSet = false;
@@ -49,8 +48,8 @@ public class EditEditablesDialog extends DialogFragment {
         return this;
     }
 
-    public void setItems(JSONArray items){
-        this.ja_items = items;
+    public void setItems(List<String> items){
+        this.items = items;
         this.itemSet = true;
 
         assembleDialog();
@@ -91,7 +90,7 @@ public class EditEditablesDialog extends DialogFragment {
         int defaultPadding = getResources().getDimensionPixelSize(R.dimen.activity_horizontal_margin);
 
         // Carry out delete action.
-        View.OnClickListener deleteButtonClick = new View.OnClickListener() {
+        final View.OnClickListener deleteButtonClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(v instanceof Editable && getActivity() instanceof CheckinActivity){
@@ -105,21 +104,37 @@ public class EditEditablesDialog extends DialogFragment {
                     builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-                            List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
-                            ll_root.removeView(editable);
+                            final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                            //editable.progress(true);
+                            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
 
-                            //Get the index of the question and remove it...
-                            int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
-
-                            if(index != -1) {
-                                if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
-                                    Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
-                                    checkin_catalogQ_fragment.removeQuestion(editable.name);
-                                } else {
-                                    checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                            checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
+                                @Override
+                                public void onFailure(API.API_Error error) {
+                                    progressDialog.hide();
+                                    new DefaultErrors(checkinActivity, error);
                                 }
-                            }
+
+                                @Override
+                                public void onSuccess(String result) {
+                                    progressDialog.hide();
+                                    List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
+                                    ll_root.removeView(editable);
+                                    items.remove(editable.name);
+
+                                    //Get the index of the question and remove it...
+                                    int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
+
+                                    if(index != -1) {
+                                        if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
+                                            Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
+                                            checkin_catalogQ_fragment.removeQuestion(editable.name);
+                                        } else {
+                                            checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                                        }
+                                    }
+                                }
+                            });
                         }
                     });
                     builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
@@ -141,17 +156,15 @@ public class EditEditablesDialog extends DialogFragment {
             }
         };
 
-        try {
-            for (int i = 0; i < ja_items.length(); i++) {
-                Editable editable = new Editable(getActivity());
-                editable.setCatalog(catalog);
-                editable.setName(ja_items.getJSONObject(i).getString("name"));
-                editable.setOnDeleteClickListener(deleteButtonClick);
-                ll_root.addView(editable);
-            }
-        } catch (JSONException e) { e.printStackTrace(); }
+        for (int i = 0; i < items.size(); i++) {
+            Editable editable = new Editable(getActivity());
+            editable.setCatalog(catalog);
+            editable.setName(items.get(i));
+            editable.setOnDeleteClickListener(deleteButtonClick);
+            ll_root.addView(editable);
+        }
 
-        TextView addACondition = new TextView(getActivity());
+        TextView addATrackable = new TextView(getActivity());
 
         String localKey = "onboarding.";
 
@@ -163,16 +176,63 @@ public class EditEditablesDialog extends DialogFragment {
                 localKey += "add_condition";
         }
 
-        addACondition.setText("+ " + Locales.read(getActivity(), localKey).create());
-        addACondition.setGravity(Gravity.CENTER_HORIZONTAL);
-        addACondition.setTextColor(getResources().getColor(R.color.accent));
-        ll_root.addView(addACondition);
+        final String addATrackableTitle = Locales.read(getActivity(), localKey).create();
+        addATrackable.setText("+ " + addATrackableTitle);
+        addATrackable.setGravity(Gravity.CENTER_HORIZONTAL);
+        addATrackable.setTextColor(getResources().getColor(R.color.accent));
+        addATrackable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int requestCode = 9987;
+                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
+                if (getActivity() instanceof CheckinActivity) {
+                    final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                    checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
+                        @Override
+                        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+                            if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
+                                final String name = data.getStringExtra(AddEditableActivity.RESULT);
+                                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
+                                checkinActivity.flareDownAPI.create_trackable(catalog, name, new API.OnApiResponse<JSONObject>() {
+                                    @Override
+                                    public void onFailure(API.API_Error error) {
+                                        progressDialog.hide();
+                                        new DefaultErrors(getActivity(), error);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(JSONObject result) {
+                                        progressDialog.hide();
+                                        Editable newEditable = new Editable(getActivity());
+                                        items.add(name);
+                                        newEditable.setCatalog(catalog);
+                                        newEditable.setName(name);
+                                        newEditable.setOnDeleteClickListener(deleteButtonClick);
+                                        ll_root.addView(newEditable, ll_root.getChildCount() - 1);
+
+                                        Checkin_catalogQ_fragment newQuestionFragment = new Checkin_catalogQ_fragment();
+                                        JSONArray fragmentQuestionJA = new JSONArray();
+                                        fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
+
+                                        newQuestionFragment.setQuestion(fragmentQuestionJA, 1, catalog);
+
+                                        checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        ll_root.addView(addATrackable);
         sv_root.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
     }
 
     public class Editable extends RelativeLayout {
         Context context;
         Button bt_name;
+        ProgressBar progressBar;
         String name;
         String catalog;
         ImageButton bt_delete;
@@ -185,6 +245,7 @@ public class EditEditablesDialog extends DialogFragment {
 
             bt_name = (Button) this.findViewById(R.id.bt_name);
             bt_delete = (ImageButton) this.findViewById(R.id.bt_delete);
+            progressBar = (ProgressBar) this.findViewById(R.id.progressBar);
 
             int defaultSmallMargin = context.getResources().getDimensionPixelSize(R.dimen.sep_margin_small);
             this.setPadding(0, 0, 0, defaultSmallMargin);
@@ -199,6 +260,15 @@ public class EditEditablesDialog extends DialogFragment {
         public Editable setCatalog(String catalog) {
             this.catalog = catalog;
             return this;
+        }
+        public void progress(boolean show) {
+            if(show) {
+                bt_delete.setVisibility(INVISIBLE);
+                progressBar.setVisibility(VISIBLE);
+            } else {
+                bt_delete.setVisibility(VISIBLE);
+                progressBar.setVisibility(INVISIBLE);
+            }
         }
 
         public Editable setOnDeleteClickListener(final OnClickListener onClickListener) {

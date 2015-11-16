@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
-import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
@@ -49,7 +48,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
     private int current_page = 0;
-    private Date dateDisplaying = new Date();
+    private Date dateDisplaying = new Date(new Date().getTime() +  (1000*60*60*24));
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
@@ -234,9 +233,22 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data != null && data.hasExtra(AddEditableActivity.RESULT))
-            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();
+        /*if(data != null && data.hasExtra(AddEditableActivity.RESULT))
+            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();*/
+        if(onActivityResultListener != null) {
+            onActivityResultListener.onActivityResult(requestCode, resultCode, data);
+            onActivityResultListener = null;
+        }
     }
+
+    private OnActivityResultListener onActivityResultListener = null;
+    public void setOnActivityResultListener(OnActivityResultListener onActivityResultListener){
+        this.onActivityResultListener = onActivityResultListener;
+    }
+    public interface OnActivityResultListener {
+        void onActivityResult(int requestCode, int resultCode, Intent data);
+    }
+
 
     public void nextQuestion() {
         vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);

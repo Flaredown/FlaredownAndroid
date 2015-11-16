@@ -24,8 +24,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -189,21 +191,41 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
-    public void getEditable(final OnApiResponse<JSONArray> onApiResponse, final String type) {
-        //TODO Think about loading from a cache instead of loading v1/current_user each time.
-        current_user(new OnApiResponse<JSONObject>() {
-            @Override
-            public void onSuccess(JSONObject jsonObject) {
-                try {
-                    onApiResponse.onSuccess(jsonObject.getJSONArray(type));
-                } catch (JSONException e) {
-                    onApiResponse.onFailure(new API_Error());
-                }
-            }
-
+    /**
+     * Gets a list of trackables/editables from the API
+     * @param catalog which catalog do you wish to filter down to.
+     * @param onApiResponse Callback with the response from the API
+     */
+    public void getEditables(final String catalog, final OnApiResponse<List<String>> onApiResponse) {
+        Date currentDate = new Date(); // Getting entries endpoint for today.
+        entries(currentDate, new OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
                 onApiResponse.onFailure(error);
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    JSONObject json_catalogsDefinitions = result.getJSONObject("entry").getJSONObject("catalog_definitions");
+                    JSONArray json_catalogDefinitions = json_catalogsDefinitions.getJSONArray(catalog);
+
+                    List<String> returnList = new ArrayList<String>();
+
+                    for (int i = 0; i < json_catalogDefinitions.length(); i++) {
+                        JSONArray editableArray = json_catalogDefinitions.getJSONArray(i);
+                        for (int j = 0; j < editableArray.length(); j++) {
+                            JSONObject editable = editableArray.getJSONObject(j);
+                            returnList.add(editable.getString("name"));
+                        }
+                    }
+                    onApiResponse.onSuccess(returnList);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, result.toString());
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
             }
         });
     }
@@ -300,6 +322,101 @@ public class API {
                 onApiResponse.onFailure(new API_Error().setVolleyError(error));
             }
         });
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
+    }
+
+    /**
+     * Removes trackable from user, only for the current day.
+     * @param catalog The catalog the trackable is from.
+     * @param name The name of the trackable.
+     * @param onApiResponse Callback with the response from the API server
+     */
+    public void delete_trackableByName(final String catalog, final String name, final OnApiResponse<String> onApiResponse) {
+        if(catalog == null || catalog.equals("") || name == null || name.equals("")) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            return;
+        }
+
+        current_user(new OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                onApiResponse.onFailure(error);
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    JSONArray catalogItems = result.getJSONArray(catalog);
+                    boolean found = false;
+                    for (int i = 0; i < catalogItems.length(); i++) {
+                        JSONObject catalogItem = catalogItems.getJSONObject(i);
+                        String name2 = catalogItem.getString("name");
+                        Integer id = catalogItem.getInt("id");
+                        if (name.equals(name2)) {
+                            delete_trackable(catalog, id, onApiResponse);
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        onApiResponse.onSuccess("");
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Creates a new trackable for the current user.
+     * @param catalog The catalog you wish to add to.
+     * @param name The new name of the trackable.
+     * @param onApiResponse Callback with the response from the API server.
+     */
+    public void create_trackable(String catalog, String name, final OnApiResponse<JSONObject> onApiResponse) {
+        switch (catalog) {
+            case "symptoms":
+            case "treatments":
+            case "conditions":
+                break;
+            default:
+                onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                return;
+        }
+        if(name == null || name.equals("")) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            return;
+        }
+        final Map<String, String> params = addAuthenticationParams();
+        params.put("name", name);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, getEndpointUrl("/" + catalog + "/"), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    onApiResponse.onSuccess(new JSONObject(response));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+               return params;
+            }
+        };
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(stringRequest);
     }
