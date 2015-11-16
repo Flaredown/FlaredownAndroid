@@ -29,7 +29,7 @@ public class DefaultErrors {
         int statusCode = this.apiError.statusCode;
 
 
-        if(apiError.volleyError != null && apiError.volleyError.networkResponse.data != null) {
+        if(apiError != null && apiError.volleyError != null && apiError.volleyError.networkResponse != null && apiError.volleyError.networkResponse.data != null) {
             try {
                 String response = new String(apiError.volleyError.networkResponse.data, "UTF-8");
                 PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_KEY, response);
