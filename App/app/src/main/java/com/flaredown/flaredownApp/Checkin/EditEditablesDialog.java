@@ -34,7 +34,6 @@ import java.util.List;
  * Created by thunter on 08/10/2015.
  */
 public class EditEditablesDialog extends DialogFragment {
-    Activity context;
     List<String> items;
     String title;
     String catalog = "";
@@ -106,17 +105,19 @@ public class EditEditablesDialog extends DialogFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-                            editable.progress(true);
+                            //editable.progress(true);
+                            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
 
                             checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
                                 @Override
                                 public void onFailure(API.API_Error error) {
+                                    progressDialog.hide();
                                     new DefaultErrors(checkinActivity, error);
                                 }
 
                                 @Override
                                 public void onSuccess(String result) {
-                                    editable.progress(false);
+                                    progressDialog.hide();
                                     List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
                                     ll_root.removeView(editable);
                                     items.remove(editable.name);
