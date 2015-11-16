@@ -25,6 +25,7 @@ import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -188,24 +189,32 @@ public class EditEditablesDialog extends DialogFragment {
                         @Override
                         public void onActivityResult(int requestCode, int resultCode, Intent data) {
                             if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
-                                Editable newEditable = new Editable(getActivity());
-                                String name = data.getStringExtra(AddEditableActivity.RESULT);
-                                items.add(name);
-                                newEditable.setCatalog(catalog);
-                                newEditable.setName(name);
-                                newEditable.setOnDeleteClickListener(deleteButtonClick);
-                                ll_root.addView(newEditable, ll_root.getChildCount() - 1);
+                                final String name = data.getStringExtra(AddEditableActivity.RESULT);
 
-                                Checkin_catalogQ_fragment newQuestionFragment = new Checkin_catalogQ_fragment();
-                                JSONArray fragmentQuestionJA = new JSONArray();
-                                fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
+                                checkinActivity.flareDownAPI.create_trackable(catalog, name, new API.OnApiResponse<JSONObject>() {
+                                    @Override
+                                    public void onFailure(API.API_Error error) {
+                                        new DefaultErrors(getActivity(), error);
+                                    }
 
-                                newQuestionFragment.setQuestion(fragmentQuestionJA, 1, catalog);
+                                    @Override
+                                    public void onSuccess(JSONObject result) {
+                                        Editable newEditable = new Editable(getActivity());
+                                        items.add(name);
+                                        newEditable.setCatalog(catalog);
+                                        newEditable.setName(name);
+                                        newEditable.setOnDeleteClickListener(deleteButtonClick);
+                                        ll_root.addView(newEditable, ll_root.getChildCount() - 1);
 
-                                checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+                                        Checkin_catalogQ_fragment newQuestionFragment = new Checkin_catalogQ_fragment();
+                                        JSONArray fragmentQuestionJA = new JSONArray();
+                                        fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
 
+                                        newQuestionFragment.setQuestion(fragmentQuestionJA, 1, catalog);
 
-                                //checkinActivity.getScreenSlidePagerAdapter().addView();
+                                        checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+                                    }
+                                });
                             }
                         }
                     });

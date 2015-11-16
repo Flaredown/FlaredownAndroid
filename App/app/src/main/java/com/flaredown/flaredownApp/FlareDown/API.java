@@ -349,16 +349,16 @@ public class API {
                 try {
                     JSONArray catalogItems = result.getJSONArray(catalog);
                     boolean found = false;
-                    for(int i = 0; i < catalogItems.length(); i++) {
+                    for (int i = 0; i < catalogItems.length(); i++) {
                         JSONObject catalogItem = catalogItems.getJSONObject(i);
                         String name2 = catalogItem.getString("name");
                         Integer id = catalogItem.getInt("id");
-                        if(name.equals(name2)) {
+                        if (name.equals(name2)) {
                             delete_trackable(catalog, id, onApiResponse);
                             found = true;
                         }
                     }
-                    if(!found){
+                    if (!found) {
                         onApiResponse.onSuccess("");
                     }
 
@@ -370,6 +370,49 @@ public class API {
             }
         });
 
+    }
+
+    public void create_trackable(String catalog, String name, final OnApiResponse<JSONObject> onApiResponse) {
+        switch (catalog) {
+            case "symptoms":
+            case "treatments":
+            case "conditions":
+                break;
+            default:
+                onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                return;
+        }
+        if(name == null || name.equals("")) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            return;
+        }
+        final Map<String, String> params = addAuthenticationParams();
+        params.put("name", name);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, getEndpointUrl("/" + catalog + "/"), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    onApiResponse.onSuccess(new JSONObject(response));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+               return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(stringRequest);
     }
 
     /**
