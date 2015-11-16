@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -190,15 +191,17 @@ public class EditEditablesDialog extends DialogFragment {
                         public void onActivityResult(int requestCode, int resultCode, Intent data) {
                             if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
                                 final String name = data.getStringExtra(AddEditableActivity.RESULT);
-
+                                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
                                 checkinActivity.flareDownAPI.create_trackable(catalog, name, new API.OnApiResponse<JSONObject>() {
                                     @Override
                                     public void onFailure(API.API_Error error) {
+                                        progressDialog.hide();
                                         new DefaultErrors(getActivity(), error);
                                     }
 
                                     @Override
                                     public void onSuccess(JSONObject result) {
+                                        progressDialog.hide();
                                         Editable newEditable = new Editable(getActivity());
                                         items.add(name);
                                         newEditable.setCatalog(catalog);

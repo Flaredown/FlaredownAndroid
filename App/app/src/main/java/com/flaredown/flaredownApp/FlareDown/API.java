@@ -372,6 +372,12 @@ public class API {
 
     }
 
+    /**
+     * Creates a new trackable for the current user.
+     * @param catalog The catalog you wish to add to.
+     * @param name The new name of the trackable.
+     * @param onApiResponse Callback with the response from the API server.
+     */
     public void create_trackable(String catalog, String name, final OnApiResponse<JSONObject> onApiResponse) {
         switch (catalog) {
             case "symptoms":
