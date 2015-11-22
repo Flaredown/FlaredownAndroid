@@ -228,7 +228,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 public void onSuccess(JSONObject jsonObject) {
                     PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
                     Intent intent = new Intent(mContext, CheckinActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
+                    overridePendingTransition(0,0);
                     finish();
                 }
 

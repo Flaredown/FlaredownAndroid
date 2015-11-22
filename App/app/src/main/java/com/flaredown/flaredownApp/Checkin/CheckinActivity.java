@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.Checkin;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +45,53 @@ public class CheckinActivity extends AppCompatActivity {
     Context mContext;
     API flareDownAPI;
 
+    private enum Views {
+        SPLASH_SCREEN, CHECKIN
+    }
+    private Views currentView = null;
+    private static final int ANIMATION_DURATION = 250;
+    private void setView(Views showView) {
+        if(currentView == Views.SPLASH_SCREEN && showView != Views.SPLASH_SCREEN) { // HIDE SPLASH SCREEN
+            ll_splashScreen.animate()
+                    .alpha(0)
+                    .translationY(-Styling.getInDP(this, 100))
+                    .setDuration(ANIMATION_DURATION)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            ll_splashScreen.setVisibility(View.GONE);
+                        }
+                    });
+        } if(currentView != Views.SPLASH_SCREEN && showView == Views.SPLASH_SCREEN) {
+            ll_splashScreen.setVisibility((showView == Views.SPLASH_SCREEN) ? View.VISIBLE : View.GONE);
+        }
+
+        if(currentView == Views.CHECKIN && showView != Views.CHECKIN) {
+            rl_checkin.setVisibility((showView == Views.CHECKIN) ? View.VISIBLE : View.GONE);
+        } else if(currentView != Views.CHECKIN && showView == Views.CHECKIN) {
+            rl_checkin.setAlpha(0);
+            rl_checkin.setVisibility(View.VISIBLE);
+            rl_checkin.animate()
+                    .setStartDelay(ANIMATION_DURATION)
+                    .alpha(1)
+                    .setDuration(ANIMATION_DURATION);
+        }
+        currentView = showView;
+    }
+
+
+
+
+
+
     private static final String DEBUG_TAG = "HomeActivity";
 
     private ViewPager vp_questions;
     private ScreenSlidePagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
     private ViewPagerProgress vpp_questionProgress;
+    private LinearLayout ll_splashScreen;
+    private RelativeLayout rl_checkin;
     private int current_page = 0;
     private Date dateDisplaying = new Date(new Date().getTime() +  (1000*60*60*24));
 
@@ -96,12 +141,17 @@ public class CheckinActivity extends AppCompatActivity {
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
-        
+        ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
+        rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
+
+        setView(Views.SPLASH_SCREEN);
+
 
         flareDownAPI.entries(dateDisplaying, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 try {
+                    setView(Views.CHECKIN);
                     fragment_questions = createFragments(jsonObject.getJSONObject("entry"));
                     vpp_questionProgress.setNumberOfPages(fragment_questions.size());
                     questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
