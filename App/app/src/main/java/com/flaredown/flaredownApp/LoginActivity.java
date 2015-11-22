@@ -140,7 +140,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             @Override
             public void onFailure(API.API_Error error) {
-                new DefaultErrors(mContext, error);
+                if(flareDownAPI.checkInternet())
+                    new DefaultErrors(mContext, error);
             }
         });
     }
@@ -353,29 +354,5 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
-    }
-
-    public static class InternetReceiver extends BroadcastReceiver {
-        private final Handler handler; // Handler used to execute code on the UI thread;
-        private Runnable doOnConnect;
-        private Runnable doOnDisconnect;
-        private boolean isConnected = true;
-
-        public InternetReceiver(Context context, Handler handler, Runnable doOnConnect, Runnable doOnDisconnect) {
-            this.handler = handler;
-            this.doOnConnect = doOnConnect;
-            this.doOnDisconnect = doOnDisconnect;
-            context.registerReceiver(this, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        }
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            API flareDownAPI = new API(context);
-            if(flareDownAPI.checkInternet() && !isConnected)
-                handler.post(doOnConnect);
-            else if(!flareDownAPI.checkInternet() && isConnected)
-                handler.post(doOnDisconnect);
-            isConnected = flareDownAPI.checkInternet();
-        }
     }
 }

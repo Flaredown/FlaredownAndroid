@@ -3,7 +3,10 @@ package com.flaredown.flaredownApp.Checkin;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
 import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
@@ -86,6 +90,7 @@ public class CheckinActivity extends AppCompatActivity {
 
     private static final String DEBUG_TAG = "HomeActivity";
 
+    private boolean isConnected = true;
     private ViewPager vp_questions;
     private ScreenSlidePagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
@@ -94,6 +99,8 @@ public class CheckinActivity extends AppCompatActivity {
     private RelativeLayout rl_checkin;
     private int current_page = 0;
     private Date dateDisplaying = new Date(new Date().getTime() +  (1000*60*60*24));
+    private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
+    private Menu menu;
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
@@ -123,14 +130,14 @@ public class CheckinActivity extends AppCompatActivity {
 
         flareDownAPI = new API(mContext);
         if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
-            new ForceLogin(mContext, flareDownAPI);
+            new ForceLogin(this, flareDownAPI);
             return;
         }
 
         // Checking if user is logged in, otherwise redirect to login screen.
 
         //Set Toolbar
-        Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
+        final Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
         TextView title = (TextView) findViewById(R.id.toolbar_title);
         title.setText(Styling.displayDateLong(dateDisplaying));
         setSupportActionBar(mainToolbarView);
@@ -146,8 +153,31 @@ public class CheckinActivity extends AppCompatActivity {
 
         setView(Views.SPLASH_SCREEN);
 
+        // Check for internet status
+        internetStatusBroadcastReceiver = new InternetStatusBroadcastReceiver(this, new Handler())
+            .addOnConnect(new Runnable() {
+                @Override
+                public void run() {
+                    isConnected = true;
+                    if(menu != null) {
+                        MenuItem menuItem = menu.findItem(R.id.action_offline);
+                        menuItem.setVisible(false);
+                    }
+                }
+            })
+            .addOnDisconnect(new Runnable() {
+                @Override
+                public void run() {
+                    isConnected = false;
+                    if(menu != null) {
+                        MenuItem menuItem = menu.findItem(R.id.action_offline);
+                        menuItem.setVisible(true);
+                    }
+                }
+            });
 
-        flareDownAPI.entries(dateDisplaying, new API.OnApiResponse<JSONObject>() {
+
+        final API.OnApiResponse<JSONObject> entriesResponse = new API.OnApiResponse<JSONObject>() {
             @Override
             public void onSuccess(JSONObject jsonObject) {
                 try {
@@ -212,7 +242,20 @@ public class CheckinActivity extends AppCompatActivity {
             public void onFailure(API.API_Error error) {
                 new DefaultErrors(mContext, error);
             }
-        });
+        };
+
+        if(!flareDownAPI.checkInternet()) {
+            final TextView tv_noInternetConnection = (TextView) findViewById(R.id.tv_noInternetConnection);
+            tv_noInternetConnection.setVisibility(View.VISIBLE);
+            internetStatusBroadcastReceiver.addOnConnect(new Runnable() {
+                @Override
+                public void run() {
+                    tv_noInternetConnection.setVisibility(View.GONE);
+                    flareDownAPI.entries(dateDisplaying, entriesResponse);
+                }
+            });
+        } else
+            flareDownAPI.entries(dateDisplaying, entriesResponse);
 
 
 
@@ -254,14 +297,15 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        new ForceLogin(mContext, flareDownAPI);
+        new ForceLogin(this, flareDownAPI);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_home, menu);
-    return true;
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        this.menu = menu;
+        return true;
     }
 
     @Override
@@ -364,5 +408,4 @@ public class CheckinActivity extends AppCompatActivity {
     public interface OnPageCountListener{
         void onPageCountChange(int size);
     }
-
 }

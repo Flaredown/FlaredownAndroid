@@ -8,4 +8,11 @@
         android:title="Settings"
         android:icon="@drawable/ic_settings"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_offline"
+        android:orderInCategory="90"
+        android:title="Offline"
+        android:icon="@drawable/ic_cloud_off_black_24dp"
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>
