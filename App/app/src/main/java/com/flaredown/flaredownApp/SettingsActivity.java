@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.flaredown.com.flaredown.R;
 import android.net.Uri;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -121,21 +121,29 @@ public class SettingsActivity extends AppCompatActivity {
                             String key = iter.next();
                             if (key.equals("name")){
                                 LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                lparams.setMargins(0,0,0, (int) getResources().getDimension(R.dimen.sep_margin_small));
+                                lparams.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.sep_margin_small));
                                 TextView tv = new TextView(mContext);
-                                tv.setTextAppearance(mContext,R.style.AppTheme_TextView_Link);
+                                tv.setTextAppearance(mContext, R.style.AppTheme_TextView_Link);
                                 tv.setLayoutParams(lparams);
                                 tv.setText(treatment.get(key).toString());
+                                Bundle bundle = new Bundle();
+                                bundle.putString("treatment_title",treatment.get(key).toString());
                                 ll_treatmentReminder.addView(tv);
                                 tv.setOnClickListener(new View.OnClickListener(){
+                                    private Bundle bundleTitle;
                                     @Override
                                     public void onClick(View view) {
                                         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                                         FragmentTreatmentReminder frag = new FragmentTreatmentReminder();
+                                        frag.setArguments(bundleTitle);
                                         ft.attach(frag);
                                         frag.show(ft,"dialog");
                                     }
-                                });
+                                    private View.OnClickListener init(Bundle bundle){
+                                        bundleTitle = bundle;
+                                        return this;
+                                    }
+                                }.init(bundle));
                             }
                         }
                     }

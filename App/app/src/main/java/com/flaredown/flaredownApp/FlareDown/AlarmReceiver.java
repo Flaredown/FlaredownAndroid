@@ -20,25 +20,87 @@ import com.flaredown.flaredownApp.PreferenceKeys;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
+
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
-        Long alarmTime = sp.getLong("reminder_time", 0);
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        //Intent alarmIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent,  0);
         Calendar firingCal= Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
-        firingCal.setTimeInMillis(alarmTime);
 
+        //Reset alarm if time zone changed
         if("android.intent.action.TIME_SET".equals(intent.getAction()) || "android.intent.action.TIMEZONE_CHANGED".equals(intent.getAction())){
             //reset alarms since time changes
             cancelAlarm(manager, pendingIntent);
-            setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            setNewCheckinAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            //TODO:reset all treatment alarms
         }
+
+        //treatment reminder
+        if (intent.getStringExtra("title").contains("treatment_reminder_")){
+            Realm realm = Realm.getInstance(context);
+            Alarm alarm;
+            RealmQuery<Alarm> query = realm.where(Alarm.class);
+            query.equalTo("id", intent.getIntExtra("id",0));
+            alarm = query.findFirst();
+            firingCal.setTimeInMillis(alarm.getTime());
+
+            //see if alarm needs to fire
+            //Get diff between current time and alarm time
+            //negative value is alarm in past, postive value is alarm in future
+            Long diff = (firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
+            //Figure out if alarm has already been triggered within 60 seconds
+            if (diff > 60000){//yet to be triggered, do nothing
+            }
+            else if (diff < -60000){ //alarm already fired, reschedule
+                //Reset alarm +7 day
+                firingCal.add(Calendar.DATE, 7);
+                cancelAlarm(manager, pendingIntent);
+                setNewTreatmentAlarm(context,alarm.getId(),alarm.getTitle(),firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                //save alarm in realm
+                realm.beginTransaction();
+                alarm.setTime(firingCal.getTimeInMillis());
+                Alarm newAlarm = realm.copyToRealmOrUpdate(alarm);
+                realm.commitTransaction();
+            }
+            else{ //fire now
+                PendingIntent pi = PendingIntent.getActivity(context, 1, new Intent(context, CheckinActivity.class),0);
+                NotificationManager notificationManager;
+                Notification myNotification;
+                int MY_NOTIFICATION_ID = new Random().nextInt();
+                myNotification = new NotificationCompat.Builder(context)
+                        .setContentTitle("Treatment Alarm")
+                        .setContentText("Treatment: " + alarm.getTitle().substring(alarm.getTitle().toString().lastIndexOf("_") + 1))
+                        .setContentIntent(pi)
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setAutoCancel(true)
+                        .setSmallIcon(R.drawable.logo)
+                        .build();
+                notificationManager =(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.notify(MY_NOTIFICATION_ID, myNotification);
+                //Reset alarm +7 day
+                firingCal.add(Calendar.DATE, 7);
+                cancelAlarm(manager, pendingIntent);
+                setNewTreatmentAlarm(context,alarm.getId(),alarm.getTitle(),firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                //save alarm in realm
+                realm.beginTransaction();
+                alarm.setTime(firingCal.getTimeInMillis());
+                Alarm newAlarm = realm.copyToRealmOrUpdate(alarm);
+                realm.commitTransaction();
+            }
+        }
+        //Checkin Reminder
         else{
+            Long alarmTime = sp.getLong("reminder_time", 0);
+            firingCal.setTimeInMillis(alarmTime);
+
             //see if alarm needs to fire
             if (alarmTime > 0){
                 //Get diff between current time and alarm time
@@ -51,13 +113,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                     //Reset alarm +1 day
                     firingCal.add(Calendar.DATE, 1);
                     cancelAlarm(manager, pendingIntent);
-                    setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                    setNewCheckinAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
                 }
                 else{ //fire now
                     PendingIntent pi = PendingIntent.getActivity(context, 1, new Intent(context, CheckinActivity.class),0);
                     NotificationManager notificationManager;
                     Notification myNotification;
-                    int MY_NOTIFICATION_ID = 1456465879;
+                    int MY_NOTIFICATION_ID = new Random().nextInt();
                     myNotification = new NotificationCompat.Builder(context)
                             .setContentTitle("FlareDown Alarm")
                             .setContentText("It's time to Check In!")
@@ -71,7 +133,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     //Reset alarm +1 day
                     firingCal.add(Calendar.DATE, 1);
                     cancelAlarm(manager, pendingIntent);
-                    setAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                    setNewCheckinAlarm(context,firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
                 }
             }
         }
@@ -80,7 +142,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         return c.getTimeZone().getOffset(c.getTimeInMillis());
     }
 
-    private void setAlarm(Context c, Long alarmTime){
+    private void setNewCheckinAlarm(Context c, Long alarmTime){
         AlarmManager manager = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(c, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, alarmIntent, 0);
@@ -96,6 +158,19 @@ public class AlarmReceiver extends BroadcastReceiver {
         editor = sp.edit();
         editor.putLong("reminder_time", alarmTime + getCurrentTimezoneOffset(Calendar.getInstance()));
         editor.apply();
+    }
+    private void setNewTreatmentAlarm(Context c, int id, String title, Long alarmTime){
+        AlarmManager manager = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent(c, AlarmReceiver.class);
+        alarmIntent.putExtra("id",id);
+        alarmIntent.putExtra("title",title);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(c, id, alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
+        else{
+            manager.set(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+        }
     }
 
     private void cancelAlarm(AlarmManager am, PendingIntent p){
