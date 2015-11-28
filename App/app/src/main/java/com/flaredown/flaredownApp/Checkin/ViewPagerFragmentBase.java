@@ -19,7 +19,7 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    Trackable trackable;
+    Trackable trackable = new Trackable();
 
 
     public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
@@ -40,24 +40,15 @@ public class ViewPagerFragmentBase extends Fragment {
         return -1;
     }
 
-    /*public static int indexOfEndOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
-        boolean startOfCatalogDetected = false;
-        for(int i = 0; i < fragments.size(); i++) {
-            ViewPagerFragmentBase fragment = fragments.get(i);
-            if(fragment.trackable.catalogue.equals(catalogue)) {
-                startOfCatalogDetected = true;
-            }
-            if(!fragment.trackable.catalogue.equals(catalogue) && startOfCatalogDetected)
-                return i;
-        }
-        return fragments.size();
-    }*/
-
-
     public static class Trackable {
         String catalogue;
         String[] questions;
         JSONArray JA_questions = new JSONArray();
+
+        public Trackable() {
+            catalogue = "";
+            questions = new String[0];
+        }
 
         public Trackable(String catalogue, JSONArray questions) throws JSONException{
             this.catalogue = catalogue;
