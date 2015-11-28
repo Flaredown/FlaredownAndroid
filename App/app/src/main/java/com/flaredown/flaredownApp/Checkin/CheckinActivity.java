@@ -3,9 +3,7 @@ package com.flaredown.flaredownApp.Checkin;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
@@ -268,7 +266,7 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
-        List<ViewPagerFragmentBase> fragments = new ArrayList<ViewPagerFragmentBase>();
+        List<ViewPagerFragmentBase> fragments = new ArrayList<>();
 
         JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions");
 
@@ -278,15 +276,21 @@ public class CheckinActivity extends AppCompatActivity {
             String catalogueKey = cd_iterator.next();
             JSONArray catalogue = catalog_definitions.getJSONArray(catalogueKey);
 
-
-            for(int i = 0; i < catalogue.length(); i++) {
-                JSONArray questions = catalogue.getJSONArray(i);
+            if(catalogueKey.equals("symptoms") || catalogueKey.equals("conditions") || catalogueKey.equals("treatments")) {
                 Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
-                checkin_catalogQ_fragment.setQuestion(questions, i + 1, catalogueKey);
-                //checkin_catalogQ_fragment.setRetainInstance(true);
-                if(!catalogueKey.equals("hbi") && !catalogueKey.equals("rapid3"))
-                    fragments.add(checkin_catalogQ_fragment);
+                checkin_catalogQ_fragment.setQuestions(catalogue, 0, catalogueKey);
+                fragments.add(checkin_catalogQ_fragment);
+            } else {
+                for (int i = 0; i < catalogue.length(); i++) { // Display each question on a separate display.
+                    JSONArray questions = new JSONArray();
+                    questions.put(catalogue.getJSONArray(i));
+                    Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
+                    checkin_catalogQ_fragment.setQuestions(questions, i + 1, catalogueKey);
+                    //checkin_catalogQ_fragment.setRetainInstance(true);
+                    //if (!catalogueKey.equals("hbi") && !catalogueKey.equals("rapid3"))
+                        fragments.add(checkin_catalogQ_fragment);
 
+                }
             }
 
 

@@ -197,7 +197,7 @@ public class API {
      * @param onApiResponse Callback with the response from the API
      */
     public void getEditables(final String catalog, final OnApiResponse<List<String>> onApiResponse) {
-        Date currentDate = new Date(); // Getting entries endpoint for today.
+        Date currentDate = new Date(new Date().getTime() +  (1000*60*60*24)); // Getting entries endpoint for today.
         entries(currentDate, new OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {

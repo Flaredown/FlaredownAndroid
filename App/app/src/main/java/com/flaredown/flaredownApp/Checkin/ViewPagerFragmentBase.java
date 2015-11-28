@@ -61,8 +61,11 @@ public class ViewPagerFragmentBase extends Fragment {
         private void createQuestionsStrArr(JSONArray questions) throws JSONException{
             this.questions = new String[questions.length()];
             for(int i = 0; i < questions.length(); i++) {
-                JSONObject jo = questions.getJSONObject(i);
-                this.questions[i] = jo.getString("name");
+                JSONArray ja = questions.getJSONArray(i);
+                for(int j = 0; j < ja.length(); j++) {
+                    JSONObject jo = ja.getJSONObject(j);
+                    this.questions[i] = jo.getString("name");
+                }
             }
         }
     }

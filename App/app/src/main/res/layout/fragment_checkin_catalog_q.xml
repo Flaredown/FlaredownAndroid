@@ -26,12 +26,12 @@
                 android:id="@+id/tv_catalog"
                 android:textColor="@color/accent"/>
 
-            <TextView
+            <!--TextView
                 android:id="@+id/tv_question"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sample Question"/>
+                android:text="Sample Question"/>-->
         </LinearLayout>
     </ScrollView>
 

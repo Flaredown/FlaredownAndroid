@@ -214,7 +214,7 @@ public class EditEditablesDialog extends DialogFragment {
                                         JSONArray fragmentQuestionJA = new JSONArray();
                                         fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
 
-                                        newQuestionFragment.setQuestion(fragmentQuestionJA, 1, catalog);
+                                        newQuestionFragment.setQuestions(fragmentQuestionJA, 1, catalog);
 
                                         checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
                                     }
