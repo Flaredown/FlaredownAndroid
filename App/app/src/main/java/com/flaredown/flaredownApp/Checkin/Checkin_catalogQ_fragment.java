@@ -42,6 +42,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private View fragmentRoot;
     private LinearLayout ll_questionHolder;
     private TextView tv_catalogName;
+    private TextView tv_sectionTitle;
 
     private List<BlankQuestion> questionViews = new ArrayList<>();
 
@@ -84,6 +85,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
             ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
             tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
+            tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);
             viewCreated = true;
             if(questionSet) createView();
 
@@ -110,6 +112,20 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".catalog_description").resultIfUnsuccessful(trackable.catalogue).capitalize1Char().createAT());
                 break;
         }
+        String sectionTitle = "--";
+        try {
+            sectionTitle = trackable.JA_questions.getJSONArray(0).getJSONObject(0).getString("name");
+            if (trackable.catalogue.equals("symptoms"))
+                sectionTitle = Locales.read(getActivity(), "how_active_were_your_symptoms").create();
+            else if (trackable.catalogue.equals("conditions"))
+                sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
+            else
+                sectionTitle = Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+
+        } catch (JSONException e) {
+        }
+        tv_sectionTitle.setText(sectionTitle);
+
 
         try {
             for(int i = 0; i < trackable.JA_questions.length(); i++) {
@@ -299,8 +315,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             tv_question = (TextView) ll_root.findViewById(R.id.tv_question);
             if (catalogue.equals("symptoms") || catalogue.equals("conditions")) {
                 tv_question.setText(question.getString("name"));
-            } else
+            } else {
                 tv_question.setVisibility(View.GONE);
+            }
+                //tv_question.setVisibility(View.GONE);
         }
     }
 

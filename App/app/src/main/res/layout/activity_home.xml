@@ -5,7 +5,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/rl_checkin">
         <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
             android:layout_height="wrap_content"
