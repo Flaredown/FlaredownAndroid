@@ -96,7 +96,7 @@ public class CheckinActivity extends AppCompatActivity {
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
     private int current_page = 0;
-    private Date dateDisplaying = new Date(new Date().getTime() +  (1000*60*60*24));
+    private Date dateDisplaying = API.currentDate;
     private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
     private Menu menu;
 

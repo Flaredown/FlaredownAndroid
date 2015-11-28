@@ -43,6 +43,7 @@ public class API {
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     public static final String CHAR_SET = "UTF-8";
+    public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
     private SharedPreferences sharedPreferences;
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
@@ -197,7 +198,7 @@ public class API {
      * @param onApiResponse Callback with the response from the API
      */
     public void getEditables(final String catalog, final OnApiResponse<List<String>> onApiResponse) {
-        Date currentDate = new Date(new Date().getTime() +  (1000*60*60*24)); // Getting entries endpoint for today.
+        Date currentDate = API.currentDate; // Getting entries endpoint for today.
         entries(currentDate, new OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {

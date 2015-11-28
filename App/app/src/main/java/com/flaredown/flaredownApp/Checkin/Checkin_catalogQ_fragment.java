@@ -58,7 +58,19 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         return this;
     }
     public void removeQuestion(String questionName) {
-
+        int index = indexOfQuestion(questionName);
+        if(index != -1) {
+            ll_questionHolder.removeView(questionViews.get(index).ll_root);
+            questionViews.remove(index);
+        }
+    }
+    public int indexOfQuestion(String questionName) {
+        for (int i = 0; i < questionViews.size(); i++) {
+            if(questionViews.get(i).getName().equals(questionName)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
 
@@ -147,7 +159,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         outState.putDoubleArray(SAVEINSTANCE_DQUESTIONANS, questionAns);
     }
 
-    private void appendQuestion(JSONObject question) throws JSONException{
+    public void appendQuestion(JSONObject question) throws JSONException{
         String kind = question.getString("kind");
         switch (kind) {
             case "select":
@@ -259,15 +271,20 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private class BlankQuestion {
         public LinearLayout ll_root;
         public TextView tv_question;
+        private String name;
         public double getValue() {
             return 0;
         }
         public void setValue(double value) {
 
         }
+        public String getName() {
+            return name;
+        }
 
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException {
             questionViews.add(this); // Add to the list of elements for easy restoration
+            name = question.getString("name");
             // Create root elements
             ll_root = (LinearLayout) ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
             tv_question = (TextView) ll_root.findViewById(R.id.tv_question);

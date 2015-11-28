@@ -33,7 +33,14 @@ public class ViewPagerFragmentBase extends Fragment {
         return -1;
     }
 
-    public static int indexOfEndOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
+    public static int indexOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
+        for (int i = 0; i < fragments.size(); i++) {
+            if(fragments.get(i).trackable.catalogue.equals(catalogue)) return i;
+        }
+        return -1;
+    }
+
+    /*public static int indexOfEndOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
         boolean startOfCatalogDetected = false;
         for(int i = 0; i < fragments.size(); i++) {
             ViewPagerFragmentBase fragment = fragments.get(i);
@@ -44,7 +51,7 @@ public class ViewPagerFragmentBase extends Fragment {
                 return i;
         }
         return fragments.size();
-    }
+    }*/
 
 
     public static class Trackable {

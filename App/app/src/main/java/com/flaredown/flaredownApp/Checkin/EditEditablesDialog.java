@@ -20,12 +20,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -124,7 +126,6 @@ public class EditEditablesDialog extends DialogFragment {
 
                                     //Get the index of the question and remove it...
                                     int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
-
                                     if(index != -1) {
                                         if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
                                             Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
@@ -203,6 +204,7 @@ public class EditEditablesDialog extends DialogFragment {
                                     @Override
                                     public void onSuccess(JSONObject result) {
                                         progressDialog.hide();
+                                        // Create item in dialog
                                         Editable newEditable = new Editable(getActivity());
                                         items.add(name);
                                         newEditable.setCatalog(catalog);
@@ -210,13 +212,16 @@ public class EditEditablesDialog extends DialogFragment {
                                         newEditable.setOnDeleteClickListener(deleteButtonClick);
                                         ll_root.addView(newEditable, ll_root.getChildCount() - 1);
 
-                                        Checkin_catalogQ_fragment newQuestionFragment = new Checkin_catalogQ_fragment();
-                                        JSONArray fragmentQuestionJA = new JSONArray();
-                                        fragmentQuestionJA.put(Checkin_catalogQ_fragment.getDefaultQuestionJson(name));
+                                        //Alter the checkin pages.
 
-                                        newQuestionFragment.setQuestions(fragmentQuestionJA, 1, catalog);
+                                        Checkin_catalogQ_fragment catalogueFragment = (Checkin_catalogQ_fragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
 
-                                        checkinActivity.getScreenSlidePagerAdapter().addView(newQuestionFragment, ViewPagerFragmentBase.indexOfEndOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+                                        JSONObject question = Checkin_catalogQ_fragment.getDefaultQuestionJson(name);
+                                        try {
+                                            catalogueFragment.appendQuestion(question);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 });
                             }
