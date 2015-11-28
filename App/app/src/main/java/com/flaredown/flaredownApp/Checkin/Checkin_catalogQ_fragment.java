@@ -180,6 +180,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
     private class NumberQuestionInflate extends BlankQuestion {
         EditText editText;
+        double oldValue;
         public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
@@ -205,11 +206,19 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         @Override
         public double getValue() {
-            return Double.valueOf(editText.getText().toString());
+            double value;
+
+            try {
+                value = Double.valueOf(editText.getText().toString());
+            } catch (NumberFormatException e) {
+                value = oldValue;
+            }
+            return value;
         }
 
         @Override
         public void setValue(double value) {
+            oldValue = value;
             editText.setText(String.valueOf(value));
         }
     }
