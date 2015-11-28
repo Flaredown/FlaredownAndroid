@@ -92,6 +92,7 @@ public class CheckinActivity extends AppCompatActivity {
     private ViewPager vp_questions;
     private ScreenSlidePagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
+    private Button bt_prevQuestion;
     private ViewPagerProgress vpp_questionProgress;
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
@@ -145,6 +146,7 @@ public class CheckinActivity extends AppCompatActivity {
         // FindViews
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
+        bt_prevQuestion = (Button) findViewById(R.id.bt_prevQuestion);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
@@ -263,6 +265,32 @@ public class CheckinActivity extends AppCompatActivity {
                 nextQuestion();
             }
         });
+        bt_prevQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previousQuestion();
+            }
+        });
+        vp_questions.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0) bt_prevQuestion.setVisibility(View.INVISIBLE);
+                else bt_prevQuestion.setVisibility(View.VISIBLE);
+
+                if(fragment_questions.size() - 1 <= position) bt_nextQuestion.setVisibility(View.INVISIBLE);
+                else bt_nextQuestion.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
@@ -349,7 +377,15 @@ public class CheckinActivity extends AppCompatActivity {
 
 
     public void nextQuestion() {
-        vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);
+        int index = vp_questions.getCurrentItem() + 1;
+        if(index < fragment_questions.size())
+            vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);
+    }
+    public void previousQuestion() {
+        int index = vp_questions.getCurrentItem() - 1;
+        if(index >= 0) {
+             vp_questions.setCurrentItem(index);
+        }
     }
 
     @Override
@@ -357,7 +393,7 @@ public class CheckinActivity extends AppCompatActivity {
         if(vp_questions.getCurrentItem() == 0)
             super.onBackPressed();
         else
-            vp_questions.setCurrentItem(vp_questions.getCurrentItem() - 1);
+            previousQuestion();
     }
 
     /**
