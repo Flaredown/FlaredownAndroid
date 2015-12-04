@@ -22,12 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.Alarm;
 import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
@@ -41,7 +43,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Random;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -54,13 +60,13 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_treatmentRemindTitle;
     Switch sw_checkinReminder;
     LinearLayout ll_treatmentReminder;
-    SharedPreferences sp;
-    SharedPreferences.Editor editor;
-    Calendar alarm = Calendar.getInstance();
     Intent alarmIntent;
     PendingIntent pendingIntent;
     AlarmManager manager;
     API flareDownAPI;
+    Realm mRealm;
+    Alarm mAlarm;
+    Alarm mProxyAlarm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         mContext = this;
         Styling.setFont();
+        mRealm = Realm.getInstance(mContext);
 
         flareDownAPI = new API(mContext);
         if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
@@ -92,14 +99,21 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        //Get shared prefs and see if reminder already set
-        sp = PreferenceKeys.getSharedPreferences(mContext);
-        sw_checkinReminder.setChecked(sp.getBoolean("reminder", false));
+        //Get checkin reminder from realm if one exists
+        RealmQuery<Alarm> query = mRealm.where(Alarm.class);
+        query.contains("title", "checkin_reminder");
+        mProxyAlarm = query.findFirst();
 
-        // Retrieve a PendingIntent that will perform a broadcast
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmIntent = new Intent(mContext, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent,  0);
+        if (mProxyAlarm != null){
+            mAlarm = new Alarm();
+            mAlarm.setTime(mProxyAlarm.getTime());
+            mAlarm.setId(mProxyAlarm.getId());
+            mAlarm.setTitle(mProxyAlarm.getTitle());
+            sw_checkinReminder.setChecked(true);
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            String time = sdf.format(mAlarm.getTime());
+            tv_checkinRemindTime.setText(time);
+        }
 
         //Get API information for treatments and display
         flareDownAPI.entries(Calendar.getInstance().getTime(), new API.OnApiResponse<JSONObject>() {
@@ -188,12 +202,17 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
+                    mAlarm = new Alarm();
                     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-                    String currentTime = sdf.format(new Date());
+                    Calendar cal = Calendar.getInstance();
+                    String currentTime = sdf.format(cal.getTimeInMillis());
                     tv_checkinRemindTime.setText(currentTime);
-                } else {
+                    mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
+                    mAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+                    mAlarm.setTitle("checkin_reminder");
+                }
+                else {
                     tv_checkinRemindTime.setText("");
-                    manager.cancel(pendingIntent);
                 }
             }
         });
@@ -218,10 +237,12 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-                        alarm.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-                        alarm.set(Calendar.MINUTE, picker.getCurrentMinute());
-                        alarm.clear(Calendar.SECOND);
-                        tv_checkinRemindTime.setText(sdf.format(alarm.getTime()));
+                        Calendar cal = Calendar.getInstance();
+                        cal.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
+                        cal.set(Calendar.MINUTE, picker.getCurrentMinute());
+                        cal.clear(Calendar.SECOND);
+                        mAlarm.setTime(cal.getTimeInMillis() + + getCurrentTimezoneOffset(Calendar.getInstance()));
+                        tv_checkinRemindTime.setText(sdf.format(cal.getTimeInMillis()));
                         dialog.dismiss();
                     }
                 });
@@ -239,6 +260,20 @@ public class SettingsActivity extends AppCompatActivity {
         updateLocales();
 
     }
+
+    private void addUpdateAlarm(){
+        mRealm.beginTransaction();
+        Alarm realmAlarm = mRealm.copyToRealmOrUpdate(mAlarm);
+        mRealm.commitTransaction();
+    }
+
+    private void removeAlarm(){
+        mRealm.beginTransaction();
+        mRealm.where(Alarm.class).equalTo("title","checkin_reminder").findAll().clear();
+        mRealm.commitTransaction();
+    }
+
+
     public void updateLocales() {
         tv_AccountTitle.setText(Locales.read(mContext, "menu_item_account").createAT());
         tv_EditAccount.setText(Locales.read(mContext, "account.edit").createAT());
@@ -246,12 +281,11 @@ public class SettingsActivity extends AppCompatActivity {
         tv_checkinRemindTitle.setText(R.string.checkin_remind_title);
         tv_treatmentRemindTitle.setText(R.string.treatment_remind_title);
 
-        //If reminder is already set, get it from saved prefs and populate
+        //If reminder is already set, get it from realm and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
             Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(sp.getLong("reminder_time", 0) - getCurrentTimezoneOffset(Calendar.getInstance()));
-            alarm.setTimeInMillis(sp.getLong("reminder_time", 0) - getCurrentTimezoneOffset(Calendar.getInstance()));
+            c.setTimeInMillis(mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()));
             tv_checkinRemindTime.setText(sdf.format(c.getTime()));
         }
         else { //reminder not set, set blank
@@ -293,26 +327,26 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void save(){
-        //Save shared prefs and alarms
-        editor = sp.edit();
+        manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        alarmIntent = new Intent(mContext, AlarmReceiver.class);
+        alarmIntent.putExtra("id",mAlarm.getId());
+        alarmIntent.putExtra("title",mAlarm.getTitle());
+        //Save alarms in Realm and create pending intent
         if (sw_checkinReminder.isChecked()) {
-            editor.putBoolean("reminder", true);
-            editor.putLong("reminder_time", alarm.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+            addUpdateAlarm();
             //Set Alarm
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, mAlarm.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                manager.cancel(pendingIntent);
-                manager.setExact(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
-            }
-            else {
-                manager.cancel(pendingIntent);
-                manager.set(AlarmManager.RTC_WAKEUP, alarm.getTimeInMillis(), pendingIntent);
+                manager.setExact(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
+            } else {
+                manager.set(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
             }
         }
-        else {
-            editor.putBoolean("reminder", false);
-            editor.putLong("reminder_time", -1);
+        else { //delete alarm in realm and remove pending intent
+            removeAlarm();
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, mAlarm.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+            manager.cancel(pendingIntent);
         }
-        editor.apply();
     }
     public int getCurrentTimezoneOffset(Calendar c) {
         return c.getTimeZone().getOffset(c.getTimeInMillis());
