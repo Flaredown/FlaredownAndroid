@@ -329,13 +329,19 @@ public class SettingsActivity extends AppCompatActivity {
     private void save(){
         manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         alarmIntent = new Intent(mContext, AlarmReceiver.class);
-        alarmIntent.putExtra("id",mAlarm.getId());
-        alarmIntent.putExtra("title",mAlarm.getTitle());
+        PendingIntent pendingIntent;
+        if (mAlarm != null) {
+            alarmIntent.putExtra("id", mAlarm.getId());
+            alarmIntent.putExtra("title", mAlarm.getTitle());
+            pendingIntent = PendingIntent.getBroadcast(mContext, mAlarm.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        else{
+            pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         //Save alarms in Realm and create pending intent
         if (sw_checkinReminder.isChecked()) {
             addUpdateAlarm();
             //Set Alarm
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, mAlarm.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                 manager.setExact(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
             } else {
@@ -344,7 +350,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
         else { //delete alarm in realm and remove pending intent
             removeAlarm();
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, mAlarm.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
             manager.cancel(pendingIntent);
         }
     }
