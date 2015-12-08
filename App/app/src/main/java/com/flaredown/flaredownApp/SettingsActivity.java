@@ -6,23 +6,19 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.flaredown.com.flaredown.R;
 import android.net.Uri;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -41,13 +37,11 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Random;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -61,7 +55,6 @@ public class SettingsActivity extends AppCompatActivity {
     Switch sw_checkinReminder;
     LinearLayout ll_treatmentReminder;
     Intent alarmIntent;
-    PendingIntent pendingIntent;
     AlarmManager manager;
     API flareDownAPI;
     Realm mRealm;
@@ -163,8 +156,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 }
                 catch (JSONException e) {
-                    Toast.makeText(mContext, "Error Getting Treatments", Toast.LENGTH_LONG).show();
-                    Log.e("JSON Error", e.getMessage());
+                    Toast.makeText(mContext, Locales.read(mContext,"nice_errors.api_error_description").create(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -223,7 +215,6 @@ public class SettingsActivity extends AppCompatActivity {
                 //Popup time picker
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
                 alertDialog.setTitle("");
-                alertDialog.setMessage("Pick a reminder time");
 
                 final TimePicker picker = new TimePicker(mContext);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -233,7 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
                 picker.setCurrentMinute(Calendar.getInstance().get(Calendar.MINUTE));
                 alertDialog.setView(picker);
 
-                alertDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                alertDialog.setPositiveButton(Locales.read(mContext,"nav.done").create(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
@@ -247,7 +238,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alertDialog.setNegativeButton(Locales.read(mContext,"nav.cancel").create(), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
@@ -278,8 +269,8 @@ public class SettingsActivity extends AppCompatActivity {
         tv_AccountTitle.setText(Locales.read(mContext, "menu_item_account").createAT());
         tv_EditAccount.setText(Locales.read(mContext, "account.edit").createAT());
         tv_SettingsLogout.setText(Locales.read(mContext, "menu_item_logout").createAT());
-        tv_checkinRemindTitle.setText(R.string.checkin_remind_title);
-        tv_treatmentRemindTitle.setText(R.string.treatment_remind_title);
+        tv_checkinRemindTitle.setText(Locales.read(mContext,"forms.checkin_remind_title").create());
+        tv_treatmentRemindTitle.setText(Locales.read(mContext,"forms.treatment_remind_title").create());
 
         //If reminder is already set, get it from realm and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
@@ -320,7 +311,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (id == R.id.action_save){
             save();
-            Toast.makeText(this, "Settings Saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, Locales.read(mContext,"confirmation_messages.settings_saved").create(), Toast.LENGTH_LONG).show();
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);

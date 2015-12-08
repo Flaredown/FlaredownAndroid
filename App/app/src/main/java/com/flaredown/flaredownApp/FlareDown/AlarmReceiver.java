@@ -44,7 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 if (alarms.size() > 0){
                     for (Alarm x: alarms){
                         pendingIntent = PendingIntent.getBroadcast(context,x.getId(),intent,PendingIntent.FLAG_UPDATE_CURRENT);
-                        cancelAlarm(manager,pendingIntent);
+                        cancelAlarm(manager, pendingIntent);
                         setNewAlarm(context, x.getId(), x.getTitle(), x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()));
                     }
                 }
@@ -82,8 +82,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                         Notification myNotification;
                         int MY_NOTIFICATION_ID = new Random().nextInt();
                         myNotification = new NotificationCompat.Builder(context)
-                                .setContentTitle("Treatment Alarm")
-                                .setContentText("Treatment: " + alarm.getTitle().substring(alarm.getTitle().lastIndexOf("_") + 1))
+                                .setContentTitle(Locales.read(context,"treatment_reminder_title").create())
+                                .setContentText(Locales.read(context,"treatment_reminder_text").create() + alarm.getTitle().substring(alarm.getTitle().lastIndexOf("_") + 1))
                                 .setContentIntent(pi)
                                 .setDefaults(Notification.DEFAULT_ALL)
                                 .setAutoCancel(true)
@@ -128,8 +128,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                         Notification myNotification;
                         int MY_NOTIFICATION_ID = new Random().nextInt();
                         myNotification = new NotificationCompat.Builder(context)
-                                .setContentTitle("FlareDown Alarm")
-                                .setContentText("It's time to Check In!")
+                                .setContentTitle(Locales.read(context,"alarm_reminder_title").create())
+                                .setContentText(Locales.read(context,"alarm_reminder_text").create())
                                 .setContentIntent(pi)
                                 .setDefaults(Notification.DEFAULT_ALL)
                                 .setAutoCancel(true)

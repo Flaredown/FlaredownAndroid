@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Alarm;
 import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     private View mView;
     private ListView mlvTreatmentReminders;
     private ReminderListAdapter<String> mAdapter;
-    private List<String> mTimes = new ArrayList<String>();
+    private List<String> mTimes = new ArrayList<>();
     private Realm mRealm;
     private String mTreatmentTitle;
     private RelativeLayout mrlTreatmentReminderFragment;
@@ -59,6 +61,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
 
 
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -219,253 +222,28 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                 TimePickerDialog time = new TimePickerDialog(getActivity(), this,Calendar.getInstance().get(Calendar.HOUR_OF_DAY),Calendar.getInstance().get(Calendar.MINUTE), false);
                 time.show();
                 break;
-/*
-            case R.id.swTreatmentReminderSunday:
-                Switch swSunday = (Switch) view.findViewById(R.id.swTreatmentReminderSunday);
-                if (mTimes.size() > 0) {
-                    if (swSunday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("sunday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("sunday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swSunday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderMonday:
-                Switch swMonday = (Switch) view.findViewById(R.id.swTreatmentReminderMonday);
-                if (mTimes.size() > 0) {
-                    if (swMonday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("monday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("monday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swMonday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderTuesday:
-                Switch swTuesday = (Switch) view.findViewById(R.id.swTreatmentReminderTuesday);
-                if (mTimes.size() > 0) {
-                    if (swTuesday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("tuesday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("tuesday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swTuesday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderWednesday:
-                Switch swWednesday = (Switch) view.findViewById(R.id.swTreatmentReminderWednesday);
-                if (mTimes.size() > 0) {
-                    if (swWednesday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("wednesday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("wednesday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swWednesday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderThursday:
-                Switch swThursday = (Switch) view.findViewById(R.id.swTreatmentReminderThursday);
-                if (mTimes.size() > 0) {
-                    if (swThursday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("thursday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("thursday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swThursday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderFriday:
-                Switch swFriday = (Switch) view.findViewById(R.id.swTreatmentReminderFriday);
-                if (mTimes.size() > 0) {
-                    if (swFriday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("friday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("friday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time firste", Toast.LENGTH_SHORT).show();
-                    swFriday.setChecked(false);
-                }
-                break;
-            case R.id.swTreatmentReminderSaturday:
-                Switch swSaturday = (Switch) view.findViewById(R.id.swTreatmentReminderSaturday);
-                if (mTimes.size() > 0) {
-                    if (swSaturday.isChecked()) {
-                        for (Long x : mTimes) {
-                            Alarm newAlarm = new Alarm();
-                            newAlarm.setTitle("treatment_reminder_" + mTreatmentTitle);
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(x);
-                            cal.clear(Calendar.SECOND);
-                            cal.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
-                            newAlarm.setTime(cal.getTimeInMillis());
-                            newAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                            newAlarm.setDayOfWeek("saturday");
-                            addUpdateOneAlarm(newAlarm);
-                        }
-                    } else {
-                        for (int i = 0; i < mAlarms.size(); i++) {
-                            Alarm x = mAlarms.get(i);
-                            if (x.getDayOfWeek().contentEquals("saturday") && x.getTitle().contentEquals(mTreatmentTitle)) {
-                                mRealm.beginTransaction();
-                                x.removeFromRealm();//remove from db
-                                mRealm.commitTransaction();
-                            }
-                        }
-                    }
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please add an alarm time first", Toast.LENGTH_SHORT).show();
-                    swSaturday.setChecked(false);
-                }
-                break;
-*/
         }
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+        Context context = getActivity().getApplicationContext();
         // Save/Update all alarms
         if (mTimes.size() > 0){
             if (updateAllAlarms() && scheduleAllAlarms()){
-                Toast.makeText(getActivity(), "Alarms Saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,Locales.read(context,"confirmation_message.alarms_saved").create(), Toast.LENGTH_SHORT).show();
             }
             else{
-                Toast.makeText(getActivity(), "Oops alarms not saved. Try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,Locales.read(context,"nice_errors.general_error_description").create(), Toast.LENGTH_SHORT).show();
             }
         }
         else { //they removed all times or alarms
             if (removeAllAlarms()&& unscheduleAllAlarms()){
-                Toast.makeText(getActivity(), "Alarms Saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, Locales.read(context, "confirmation_message.alarms_saved").create(), Toast.LENGTH_SHORT).show();
             }
             else{
-                Toast.makeText(getActivity(), "Oops alarms not saved. Try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,Locales.read(context,"nice_errors.general_error_description").create(), Toast.LENGTH_SHORT).show();
             }
         }
     }

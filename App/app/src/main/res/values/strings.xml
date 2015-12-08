@@ -10,6 +10,4 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_locales_test">LocalesTest</string>
     <string name="title_activity_add_adialog">AddADialogActivity</string>
-    <string name="checkin_remind_title">Remind me to check in</string>
-    <string name="treatment_remind_title">Treatment Reminders</string>
 </resources>
