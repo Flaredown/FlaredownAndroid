@@ -110,5 +110,22 @@
                 android:text="Logout" />
         </LinearLayout>
     </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/terms"
+        android:text="Terms and Conditions"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/sep_margin_small"
+        android:textColor="@color/sub_text_color" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/privacy_policy"
+        android:text="Privacy Policy"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/sep_margin_small"
+        android:textColor="@color/sub_text_color"
+        android:layout_marginBottom="@dimen/sep_margin_large" />
 </LinearLayout>
 </ScrollView>

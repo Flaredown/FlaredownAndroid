@@ -54,6 +54,8 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_treatmentRemindTitle;
     Switch sw_checkinReminder;
     LinearLayout ll_treatmentReminder;
+    TextView tv_terms;
+    TextView tv_policy;
     Intent alarmIntent;
     AlarmManager manager;
     API flareDownAPI;
@@ -83,6 +85,8 @@ public class SettingsActivity extends AppCompatActivity {
         tv_treatmentRemindTitle = (TextView) findViewById(R.id.tv_treatmentRemindTitle);
         sw_checkinReminder = (Switch) findViewById(R.id.sw_checkinReminder);
         ll_treatmentReminder = (LinearLayout)findViewById(R.id.llTreatmentReminder);
+        tv_terms = (TextView)findViewById(R.id.terms);
+        tv_policy = (TextView)findViewById(R.id.privacy_policy);
 
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
@@ -118,15 +122,15 @@ public class SettingsActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(JSONObject result) {
-                try{
-                JSONObject entry = result.getJSONObject("entry");
-                JSONArray treatments = entry.getJSONArray("treatments");
-                    for(int i = 0 ; i < treatments.length(); i++){
+                try {
+                    JSONObject entry = result.getJSONObject("entry");
+                    JSONArray treatments = entry.getJSONArray("treatments");
+                    for (int i = 0; i < treatments.length(); i++) {
                         JSONObject treatment = treatments.getJSONObject(i);
                         Iterator<String> iter = treatment.keys();
                         while (iter.hasNext()) {
                             String key = iter.next();
-                            if (key.equals("name")){
+                            if (key.equals("name")) {
                                 LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                                 lparams.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.sep_margin_small));
                                 TextView tv = new TextView(mContext);
@@ -134,19 +138,21 @@ public class SettingsActivity extends AppCompatActivity {
                                 tv.setLayoutParams(lparams);
                                 tv.setText(treatment.get(key).toString());
                                 Bundle bundle = new Bundle();
-                                bundle.putString("treatment_title",treatment.get(key).toString());
+                                bundle.putString("treatment_title", treatment.get(key).toString());
                                 ll_treatmentReminder.addView(tv);
-                                tv.setOnClickListener(new View.OnClickListener(){
+                                tv.setOnClickListener(new View.OnClickListener() {
                                     private Bundle bundleTitle;
+
                                     @Override
                                     public void onClick(View view) {
                                         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                                         FragmentTreatmentReminder frag = new FragmentTreatmentReminder();
                                         frag.setArguments(bundleTitle);
                                         ft.attach(frag);
-                                        frag.show(ft,"dialog");
+                                        frag.show(ft, "dialog");
                                     }
-                                    private View.OnClickListener init(Bundle bundle){
+
+                                    private View.OnClickListener init(Bundle bundle) {
                                         bundleTitle = bundle;
                                         return this;
                                     }
@@ -154,9 +160,8 @@ public class SettingsActivity extends AppCompatActivity {
                             }
                         }
                     }
-                }
-                catch (JSONException e) {
-                    Toast.makeText(mContext, Locales.read(mContext,"nice_errors.api_error_description").create(), Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    Toast.makeText(mContext, Locales.read(mContext, "nice_errors.api_error_description").create(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -202,8 +207,7 @@ public class SettingsActivity extends AppCompatActivity {
                     mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
                     mAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
                     mAlarm.setTitle("checkin_reminder");
-                }
-                else {
+                } else {
                     tv_checkinRemindTime.setText("");
                 }
             }
@@ -224,7 +228,7 @@ public class SettingsActivity extends AppCompatActivity {
                 picker.setCurrentMinute(Calendar.getInstance().get(Calendar.MINUTE));
                 alertDialog.setView(picker);
 
-                alertDialog.setPositiveButton(Locales.read(mContext,"nav.done").create(), new DialogInterface.OnClickListener() {
+                alertDialog.setPositiveButton(Locales.read(mContext, "nav.done").create(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
@@ -232,19 +236,37 @@ public class SettingsActivity extends AppCompatActivity {
                         cal.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
                         cal.set(Calendar.MINUTE, picker.getCurrentMinute());
                         cal.clear(Calendar.SECOND);
-                        mAlarm.setTime(cal.getTimeInMillis() + + getCurrentTimezoneOffset(Calendar.getInstance()));
+                        mAlarm.setTime(cal.getTimeInMillis() + +getCurrentTimezoneOffset(Calendar.getInstance()));
                         tv_checkinRemindTime.setText(sdf.format(cal.getTimeInMillis()));
                         dialog.dismiss();
                     }
                 });
 
-                alertDialog.setNegativeButton(Locales.read(mContext,"nav.cancel").create(), new DialogInterface.OnClickListener() {
+                alertDialog.setNegativeButton(Locales.read(mContext, "nav.cancel").create(), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
 
                 alertDialog.show();
+            }
+        });
+
+        tv_policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, PolicyWebView.class);
+                intent.putExtra("Identifier","policy");
+                startActivity(intent);
+            }
+        });
+
+        tv_terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext, PolicyWebView.class);
+                intent.putExtra("Identifier","terms");
+                startActivity(intent);
             }
         });
 
@@ -271,6 +293,8 @@ public class SettingsActivity extends AppCompatActivity {
         tv_SettingsLogout.setText(Locales.read(mContext, "menu_item_logout").createAT());
         tv_checkinRemindTitle.setText(Locales.read(mContext,"forms.checkin_remind_title").create());
         tv_treatmentRemindTitle.setText(Locales.read(mContext,"forms.treatment_remind_title").create());
+        //tv_terms.setText(Locales.read(mContext,"terms_of_service").create());
+        //tv_policy.setText(Locales.read(mContext,"privacy_policy").create());
 
         //If reminder is already set, get it from realm and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
