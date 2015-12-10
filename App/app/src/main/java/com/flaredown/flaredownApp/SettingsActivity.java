@@ -93,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity {
         TextView title = (TextView) findViewById(R.id.toolbar_title);
         title.setText(R.string.title_activity_settings);
         setSupportActionBar(mainToolbarView);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //Get checkin reminder from realm if one exists
@@ -204,11 +204,12 @@ public class SettingsActivity extends AppCompatActivity {
                     Calendar cal = Calendar.getInstance();
                     String currentTime = sdf.format(cal.getTimeInMillis());
                     tv_checkinRemindTime.setText(currentTime);
+                    tv_checkinRemindTime.setAlpha((float)1);
                     mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
                     mAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
                     mAlarm.setTitle("checkin_reminder");
                 } else {
-                    tv_checkinRemindTime.setText("");
+                    tv_checkinRemindTime.setAlpha((float).20);
                 }
             }
         });

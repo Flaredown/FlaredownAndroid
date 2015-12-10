@@ -24,8 +24,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':volley')
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'org.apmem.tools:layouts:1.9@aar'
     compile 'io.realm:realm-android:0.84.2'
+    compile 'com.android.support:design:22.2.1'
 }

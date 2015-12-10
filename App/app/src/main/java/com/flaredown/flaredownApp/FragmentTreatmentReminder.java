@@ -82,6 +82,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         mAdapter = new ReminderListAdapter<>(mTimes);
         mlvTreatmentReminders.setAdapter(mAdapter);
         mlvTreatmentReminders.setOnItemClickListener(this);
+        TextView tvTreatmentReminderTitle = (TextView) mView.findViewById(R.id.tvTreatmentReminderTitle);
 
         //Listeners
         swMonday.setOnClickListener(this);
@@ -96,6 +97,8 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         //Get all known treatment alarms
         mTreatmentTitle = getArguments().getString("treatment_title");
         if (!mTreatmentTitle.isEmpty() || null != mTreatmentTitle){
+            //Set Title
+            tvTreatmentReminderTitle.setText(mTreatmentTitle + " Reminder");
             RealmQuery<Alarm> query = mRealm.where(Alarm.class);
             query.equalTo("title", "treatment_reminder_" + mTreatmentTitle);
             mAlarms = query.findAll();

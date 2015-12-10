@@ -52,7 +52,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/sep_margin_small"
-                android:text="Time" />
+                android:text="Time"
+                android:textColor="@color/accent" />
 
         </LinearLayout>
 

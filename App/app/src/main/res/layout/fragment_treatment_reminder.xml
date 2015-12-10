@@ -105,22 +105,24 @@
             android:text="Remind me at..."
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/tvTreatmentAddReminderTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvTreatmentReminderSubtitle"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/sep_margin_medium"
-            android:text="+ Add time"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ListView
             android:id="@+id/lvTreatmentReminderTimes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tvTreatmentAddReminderTime">
+            android:layout_below="@+id/tvTreatmentReminderSubtitle">
         </ListView>
+
+        <TextView
+            android:id="@+id/tvTreatmentAddReminderTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lvTreatmentReminderTimes"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/sep_margin_medium"
+            android:text="+ Add time"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/accent" />
 
     </RelativeLayout>
 </ScrollView>
