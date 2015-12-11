@@ -14,12 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
@@ -91,7 +89,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         }
         if(savedInstanceState != null) {
-            double[] questionAnswers = savedInstanceState.getDoubleArray(SAVEINSTANCE_DQUESTIONANS);
+            String[] questionAnswers = savedInstanceState.getStringArray(SAVEINSTANCE_DQUESTIONANS);
             for(int i = 0; i< questionAnswers.length && i < questionViews.size(); i++) {
                 questionViews.get(i).setValue(questionAnswers[i]);
             }
@@ -168,28 +166,32 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        double[] questionAns = new double[questionViews.size()];
+        String[] questionAns = new String[questionViews.size()];
         for (int i = 0; i < questionViews.size(); i++) {
             questionAns[i] = questionViews.get(i).getValue();
         }
-        outState.putDoubleArray(SAVEINSTANCE_DQUESTIONANS, questionAns);
+        outState.putStringArray(SAVEINSTANCE_DQUESTIONANS, questionAns);
     }
 
     public void appendQuestion(JSONObject question) throws JSONException{
         String kind = question.getString("kind");
+        BlankQuestion questionView = null;
         switch (kind) {
             case "select":
-                SelectQuestionInflate selectQuestionInflate = new SelectQuestionInflate(question, trackable.catalogue, section);
-                ll_questionHolder.addView(selectQuestionInflate.ll_root);
+                questionView = new SelectQuestionInflate(question, trackable.catalogue, section);
                 break;
             case "number":
-                NumberQuestionInflate numberQuestionInflate = new NumberQuestionInflate(question, trackable.catalogue, section);
-                ll_questionHolder.addView(numberQuestionInflate.ll_root);
+                questionView = new NumberQuestionInflate(question, trackable.catalogue, section);
                 break;
             case "checkbox":
-                CheckBoxQuestionInflate checkBoxQuestionInflate = new CheckBoxQuestionInflate(question, trackable.catalogue, section);
-                ll_questionHolder.addView(checkBoxQuestionInflate.ll_root);
+                questionView = new CheckBoxQuestionInflate(question, trackable.catalogue, section);
                 break;
+        }
+        if(questionView != null) {
+            ll_questionHolder.addView(questionView.ll_root);
+            if(question.has("response") && !question.getString("response").equals("")) {
+                questionView.setValue(question.getString("response"));
+            }
         }
     }
 
@@ -221,19 +223,17 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
 
         @Override
-        public double getValue() {
-            double value;
-
-            try {
-                value = Double.valueOf(editText.getText().toString());
-            } catch (NumberFormatException e) {
-                value = oldValue;
-            }
-            return value;
+        public String getValue() {
+            return editText.getText().toString();
         }
 
         @Override
-        public void setValue(double value) {
+        public void setValue(String value) {
+            try {
+                setValue(Double.parseDouble(value));
+            } catch (NumberFormatException e) {}
+        }
+        public void setValue(Double value) {
             oldValue = value;
             editText.setText(String.valueOf(value));
         }
@@ -249,11 +249,16 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
 
         @Override
-        public double getValue() {
-            return checkin_selector_view.getValue();
+        public String getValue() {
+            return String.valueOf(checkin_selector_view.getValue());
         }
 
         @Override
+        public void setValue(String value) {
+            try {
+                setValue(Double.parseDouble(value));
+            } catch(NumberFormatException e) {}
+        }
         public void setValue(double value) {
             checkin_selector_view.setValue(value);
         }
@@ -281,11 +286,18 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
 
         @Override
-        public double getValue() {
-            return (button.isSelected())? 1 : 0;
+        public String getValue() {
+            return String.valueOf((button.isSelected())? 1 : 0);
         }
 
         @Override
+        public void setValue(String value) {
+            try {
+                setValue(Double.parseDouble(value));
+            } catch (NumberFormatException e) {
+
+            }
+        }
         public void setValue(double value) {
             button.setSelected(value == 1.0);
         }
@@ -297,10 +309,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public LinearLayout ll_root;
         public TextView tv_question;
         private String name;
-        public double getValue() {
-            return 0;
+        public String getValue() {
+            return "";
         }
-        public void setValue(double value) {
+        public void setValue(String value) {
 
         }
         public String getName() {
@@ -318,7 +330,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             } else {
                 tv_question.setVisibility(View.GONE);
             }
-                //tv_question.setVisibility(View.GONE);
         }
     }
 

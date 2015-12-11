@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.FlareDown.ResponseReader;
 import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
 import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.SettingsActivity;
@@ -295,14 +296,25 @@ public class CheckinActivity extends AppCompatActivity {
 
     private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
-
-        JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions");
-
-        Iterator<String> cd_iterator = catalog_definitions.keys();
+        JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions"); // The question descriptions.
+        ResponseReader responses = new ResponseReader(entry.getJSONArray("responses"));
+        Iterator<String> cd_iterator = catalog_definitions.keys(); // Used to iterate through the catalogues.
 
         while(cd_iterator.hasNext()) {
             String catalogueKey = cd_iterator.next();
             JSONArray catalogue = catalog_definitions.getJSONArray(catalogueKey);
+
+            if(!responses.isEmpty()) {
+                for(int i = 0; i < catalogue.length(); i++) {
+                    JSONArray ja = catalogue.getJSONArray(i);
+                    for(int j = 0; j < ja.length(); j++) {
+                        JSONObject question = ja.getJSONObject(j);
+                        String response = responses.getResponse(catalogueKey, question.getString("name"));
+                        if (response != "")
+                            question.put("response", response);
+                    }
+                }
+            }
 
             if(catalogueKey.equals("symptoms") || catalogueKey.equals("conditions") || catalogueKey.equals("treatments")) {
                 Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
@@ -314,9 +326,7 @@ public class CheckinActivity extends AppCompatActivity {
                     questions.put(catalogue.getJSONArray(i));
                     Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
                     checkin_catalogQ_fragment.setQuestions(questions, i + 1, catalogueKey);
-                    //checkin_catalogQ_fragment.setRetainInstance(true);
-                    //if (!catalogueKey.equals("hbi") && !catalogueKey.equals("rapid3"))
-                        fragments.add(checkin_catalogQ_fragment);
+                    fragments.add(checkin_catalogQ_fragment);
 
                 }
             }

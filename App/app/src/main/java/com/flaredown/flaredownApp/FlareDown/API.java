@@ -43,7 +43,8 @@ public class API {
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     public static final String CHAR_SET = "UTF-8";
-    public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
+    //public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
+    public static final Date currentDate = new Date();
     private SharedPreferences sharedPreferences;
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
