@@ -161,11 +161,8 @@ public class CheckinActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
-    String test = "NOPE";
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        Toast.makeText(this, test, Toast.LENGTH_SHORT).show();
-        test = "YUP";
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mContext = this;
