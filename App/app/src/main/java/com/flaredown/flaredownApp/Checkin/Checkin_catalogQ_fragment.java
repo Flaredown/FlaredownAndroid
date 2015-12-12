@@ -16,8 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
@@ -35,7 +37,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private static final String DEBUG_KEY = "checkin_catalogQ_fragment";
     private int section;
     private API api;
-    private static final String SAVEINSTANCE_DQUESTIONANS = "double question answers";
+    private static final String SI_DQUESTIONANS = "double question answers";
+    private static final String SI_questionsJson = "question json";
+    private static final String SI_section = "section";
+    private static final String SI_catalogue = "catalogue";
 
     private View fragmentRoot;
     private LinearLayout ll_questionHolder;
@@ -48,6 +53,8 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private boolean questionSet = false;
 
     public Checkin_catalogQ_fragment setQuestions(JSONArray questions, int section, String catalog) {
+        if(this.trackable != null)
+            return this;
         try {
             this.trackable = new Trackable(catalog, questions);
             this.section = section;
@@ -76,8 +83,8 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_KEY, (savedInstanceState == null) ? "created" : "reused");
         api = new API(getActivity());
-
         if(fragmentRoot == null) {
             fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
 
@@ -89,10 +96,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         }
         if(savedInstanceState != null) {
-            String[] questionAnswers = savedInstanceState.getStringArray(SAVEINSTANCE_DQUESTIONANS);
+            String[] questionAnswers = savedInstanceState.getStringArray(SI_DQUESTIONANS);
             for(int i = 0; i< questionAnswers.length && i < questionViews.size(); i++) {
                 questionViews.get(i).setValue(questionAnswers[i]);
             }
+            try {
+                setQuestions(new JSONArray(savedInstanceState.getString(SI_questionsJson)), savedInstanceState.getInt(SI_section), savedInstanceState.getString(SI_catalogue));
+            } catch (JSONException e){}
         }
         return fragmentRoot;
     }
@@ -148,7 +158,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                     editEditablesDialog.show(getActivity().getFragmentManager(), "editablesdialog");
                     api.getEditables(catalog, new API.OnApiResponse<List<String>>() {
                         @Override
-                        public void onFailure(API.API_Error error) {
+                        public void onFailure(API_Error error) {
                             new DefaultErrors(getActivity(), error);
                         }
 
@@ -170,7 +180,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         for (int i = 0; i < questionViews.size(); i++) {
             questionAns[i] = questionViews.get(i).getValue();
         }
-        outState.putStringArray(SAVEINSTANCE_DQUESTIONANS, questionAns);
+        outState.putStringArray(SI_DQUESTIONANS, questionAns);
+        outState.putString(SI_questionsJson, trackable.JA_questions.toString());
+        outState.putString(SI_catalogue, trackable.catalogue);
+        outState.putInt(SI_section, section);
     }
 
     public void appendQuestion(JSONObject question) throws JSONException{

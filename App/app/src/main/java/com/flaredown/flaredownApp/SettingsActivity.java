@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +25,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
@@ -108,7 +108,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(API.API_Error error) {
+                    public void onFailure(API_Error error) {
                         Toast.makeText(mContext, "Failed to logout", Toast.LENGTH_LONG).show();
                     }
                 });

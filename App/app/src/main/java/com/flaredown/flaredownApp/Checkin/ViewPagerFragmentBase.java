@@ -19,7 +19,7 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    Trackable trackable = new Trackable();
+    Trackable trackable = null;
 
 
     public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {

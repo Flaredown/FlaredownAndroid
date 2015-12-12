@@ -2,18 +2,15 @@ package com.flaredown.flaredownApp;
 
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.flaredown.com.flaredown.R;
 import android.net.Uri;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -28,6 +25,7 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
@@ -139,7 +137,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
 
             @Override
-            public void onFailure(API.API_Error error) {
+            public void onFailure(API_Error error) {
                 if(flareDownAPI.checkInternet())
                     new DefaultErrors(mContext, error);
             }
@@ -237,7 +235,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
 
                 @Override
-                public void onFailure(API.API_Error error) {
+                public void onFailure(API_Error error) {
                     setView(VIEW_LOGIN);
                     //TODO differentiate between no internet connection and incorrect user details.
                     //PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");

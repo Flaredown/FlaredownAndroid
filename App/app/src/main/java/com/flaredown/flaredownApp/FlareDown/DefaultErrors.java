@@ -15,13 +15,13 @@ import org.json.JSONObject;
  * Created by thunter on 22/09/2015.
  */
 public class DefaultErrors {
-    API.API_Error apiError;
+    API_Error apiError;
     Context context;
 
     private static String DEBUG_KEY = "FlareDown.DefaultErrors";
 
 
-    public DefaultErrors(Context context, API.API_Error apiError) {
+    public DefaultErrors(Context context, API_Error apiError) {
         this.apiError = apiError;
         this.context = context;
         boolean popupShown = false;

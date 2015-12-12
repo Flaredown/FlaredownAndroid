@@ -20,13 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -112,7 +111,7 @@ public class EditEditablesDialog extends DialogFragment {
 
                             checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
                                 @Override
-                                public void onFailure(API.API_Error error) {
+                                public void onFailure(API_Error error) {
                                     progressDialog.hide();
                                     new DefaultErrors(checkinActivity, error);
                                 }
@@ -196,7 +195,7 @@ public class EditEditablesDialog extends DialogFragment {
                                 final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
                                 checkinActivity.flareDownAPI.create_trackable(catalog, name, new API.OnApiResponse<JSONObject>() {
                                     @Override
-                                    public void onFailure(API.API_Error error) {
+                                    public void onFailure(API_Error error) {
                                         progressDialog.hide();
                                         new DefaultErrors(getActivity(), error);
                                     }

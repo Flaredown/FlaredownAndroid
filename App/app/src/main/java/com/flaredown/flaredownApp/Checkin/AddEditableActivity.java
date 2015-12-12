@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.Styling;
@@ -206,7 +207,7 @@ public class AddEditableActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(API.API_Error error) {
+                public void onFailure(API_Error error) {
                     // new DefaultErrors(context, error);
                 }
             });
