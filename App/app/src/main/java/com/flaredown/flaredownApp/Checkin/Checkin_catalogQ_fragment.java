@@ -96,13 +96,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         }
         if(savedInstanceState != null) {
+            try {
+                setQuestions(new JSONArray(savedInstanceState.getString(SI_questionsJson)), savedInstanceState.getInt(SI_section), savedInstanceState.getString(SI_catalogue));
+            } catch (JSONException e){}
             String[] questionAnswers = savedInstanceState.getStringArray(SI_DQUESTIONANS);
             for(int i = 0; i< questionAnswers.length && i < questionViews.size(); i++) {
                 questionViews.get(i).setValue(questionAnswers[i]);
             }
-            try {
-                setQuestions(new JSONArray(savedInstanceState.getString(SI_questionsJson)), savedInstanceState.getInt(SI_section), savedInstanceState.getString(SI_catalogue));
-            } catch (JSONException e){}
         }
         return fragmentRoot;
     }
