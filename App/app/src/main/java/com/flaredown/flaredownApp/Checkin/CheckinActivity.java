@@ -174,9 +174,7 @@ public class CheckinActivity extends AppCompatActivity {
             return;
         }
         initialiseUI();
-        if(savedInstanceState == null)
-            createActivity();
-        else {
+        if(savedInstanceState != null && savedInstanceState.getString(SI_currentView, "").equals(Views.CHECKIN.toString()) && savedInstanceState.containsKey(SI_entriesEndpoint)){
             if(savedInstanceState.containsKey(SI_entriesEndpoint))
                 try {
                     entriesJSONObject = new JSONObject(savedInstanceState.getString(SI_entriesEndpoint));
@@ -184,7 +182,8 @@ public class CheckinActivity extends AppCompatActivity {
                 } catch(JSONException e) { e.printStackTrace(); }
 
             setView(Views.CHECKIN);
-
+        } else {
+            createActivity();
         }
     }
 
@@ -373,11 +372,14 @@ public class CheckinActivity extends AppCompatActivity {
 
 
     private static final String SI_entriesEndpoint = "entries endpoint string";
+    private static final String SI_currentView = "current view";
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SI_entriesEndpoint, entriesJSONObject.toString());
+        if(entriesJSONObject != null)
+            outState.putString(SI_entriesEndpoint, entriesJSONObject.toString());
+        outState.putString(SI_currentView, currentView.toString());
     }
 
     @Override
