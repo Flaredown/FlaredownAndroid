@@ -5,6 +5,7 @@
             <stroke android:color="@color/edittext_borderColor"
                 android:width="0.5dp"/>
             <corners android:radius="8dp"/>
+            <solid android:color="@color/box_background"/>
         </shape>
     </item>
 </selector>
