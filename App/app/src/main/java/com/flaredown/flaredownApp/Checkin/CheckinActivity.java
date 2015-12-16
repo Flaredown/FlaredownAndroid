@@ -181,7 +181,7 @@ public class CheckinActivity extends AppCompatActivity {
                     initialisePages(entriesJSONObject);
                 } catch(JSONException e) { e.printStackTrace(); }
 
-            setView(Views.CHECKIN);
+            setView(Views.CHECKIN, false);
         } else {
             createActivity();
         }
