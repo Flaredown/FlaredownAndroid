@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.flaredown.com.flaredown.R;
@@ -17,13 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
@@ -412,7 +409,6 @@ public class CheckinActivity extends AppCompatActivity {
             outState.putString(SI_entriesEndpoint, entriesJSONObject.toString());
         outState.putString(SI_currentView, currentView.toString());
         outState.putString(SI_responseJson, responseJSONObject.toString());
-        Toast.makeText(this, responseJSONObject.toString(), Toast.LENGTH_LONG).show();
     }
 
     public void updateResponseJson(ViewPagerFragmentBase.Trackable trackable, String questionName, Object value) {
