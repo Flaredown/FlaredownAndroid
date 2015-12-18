@@ -94,5 +94,7 @@ public class ViewPagerFragmentBase extends Fragment {
     }
 
 
-
+    public JSONArray getResponse() throws JSONException{
+        return null;
+    }
 }

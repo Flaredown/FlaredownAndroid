@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
@@ -208,6 +209,18 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
     }
 
+    @Override
+    public JSONArray getResponse() throws JSONException{
+        JSONArray output = new JSONArray();
+        for (BlankQuestion questionView : questionViews) {
+            JSONObject answer = new JSONObject();
+            answer.put("catalog", trackable.catalogue);
+            answer.put("value", questionView.getValue());
+            answer.put("name", questionView.getName());
+            output.put(answer);
+        }
+        return output;
+    }
 
     private class NumberQuestionInflate extends BlankQuestion {
         EditText editText;
@@ -223,6 +236,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
             editText.setGravity(Gravity.CENTER_HORIZONTAL);
+            editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    Toast.makeText(getActivity(), hasFocus? "Has focus" : "Hasn't focus", Toast.LENGTH_SHORT).show();
+                    updateResponse(Double.parseDouble(getValue()));
+                }
+            });
 
             if(inputs.has("value")) {
                 editText.setText(inputs.getString("value"));
@@ -233,6 +253,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
             // Make sure it is the first quesiton which is focused
             if(!hasFocusEditText()) setEditTextFocus(editText);
+        }
+
+        public void updateResponse(double value){
+            if(getActivity() instanceof CheckinActivity){
+                CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                checkinActivity.updateResponseJson(trackable, getName(), value);
+            }
         }
 
         @Override
@@ -249,6 +276,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public void setValue(Double value) {
             oldValue = value;
             editText.setText(String.valueOf(value));
+            updateResponse(value);
         }
     }
     private class SelectQuestionInflate extends BlankQuestion {
@@ -258,8 +286,22 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
             JSONArray inputs = question.getJSONArray("inputs");
             checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
+            checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
+                @Override
+                public void onClick(double value) {
+                    updateResponse(value);
+                }
+            });
             this.ll_root.addView(checkin_selector_view);
         }
+
+        private void updateResponse(double value) {
+            if(getActivity() instanceof CheckinActivity) {
+                CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                checkinActivity.updateResponseJson(trackable, getName(), value);
+            }
+        }
+
 
         @Override
         public String getValue() {
@@ -270,6 +312,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public void setValue(String value) {
             try {
                 setValue(Double.parseDouble(value));
+                updateResponse(Double.parseDouble(value));
             } catch(NumberFormatException e) {}
         }
         public void setValue(double value) {
@@ -290,6 +333,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 @Override
                 public void onClick(View v) {
                     v.setSelected(!v.isSelected());
+                    updateResponse(v.isSelected());
                 }
             });
 
@@ -297,7 +341,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             int margins  = (int) Styling.getInDP(getActivity(), 5);
             ((ViewGroup.MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
-
+        public void updateResponse(boolean isSelected) {
+            if(getActivity() instanceof CheckinActivity) {
+                CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+                checkinActivity.updateResponseJson(trackable, getName(), isSelected ? 1 : 0);
+            }
+        }
         @Override
         public String getValue() {
             return String.valueOf((button.isSelected())? 1 : 0);
@@ -313,6 +362,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
         public void setValue(double value) {
             button.setSelected(value == 1.0);
+            updateResponse(value == 1.0);
         }
     }
 
@@ -331,7 +381,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public String getName() {
             return name;
         }
-
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException {
             questionViews.add(this); // Add to the list of elements for easy restoration
             name = question.getString("name");

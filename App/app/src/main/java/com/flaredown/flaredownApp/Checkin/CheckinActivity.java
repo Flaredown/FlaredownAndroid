@@ -146,6 +146,7 @@ public class CheckinActivity extends AppCompatActivity {
     private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
     private Menu menu;
     private JSONObject entriesJSONObject = null;
+    private JSONObject responseJSONObject = new JSONObject();
 
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
 
@@ -168,6 +169,13 @@ public class CheckinActivity extends AppCompatActivity {
         mContext = this;
         Styling.setFont();
 
+        // Set default structure to the responseJSONObject.
+        try {
+            responseJSONObject.put("responses", new JSONArray());
+            responseJSONObject.put("tags", new JSONArray());
+            responseJSONObject.put("treatments", new JSONArray());
+        } catch (JSONException e) { e.printStackTrace(); }
+
         flareDownAPI = new API(mContext);
         if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
             new ForceLogin(this, flareDownAPI);
@@ -180,6 +188,10 @@ public class CheckinActivity extends AppCompatActivity {
                     entriesJSONObject = new JSONObject(savedInstanceState.getString(SI_entriesEndpoint));
                     initialisePages(entriesJSONObject);
                 } catch(JSONException e) { e.printStackTrace(); }
+            if(savedInstanceState.containsKey(SI_responseJson))
+                try {
+                    responseJSONObject = new JSONObject(savedInstanceState.getString(SI_responseJson));
+                } catch (JSONException e) { e.printStackTrace(); }
 
             setView(Views.CHECKIN, false);
         } else {
@@ -328,6 +340,24 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
+    private JSONObject getResponse() {
+        try {
+            JSONObject output = new JSONObject();
+            JSONArray responses = new JSONArray();
+            for (ViewPagerFragmentBase fragment_question : fragment_questions) {
+                JSONArray fragmentResponse = fragment_question.getResponse();
+                //Toast.makeText(this, fragmentResponse.toString(), Toast.LENGTH_SHORT).show();
+                for(int i = 0; i < fragmentResponse.length(); i++) {
+                    responses.put(fragmentResponse.get(i));
+                }
+            }
+            output.put("responses", responses);
+            return output;
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
     private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions"); // The question descriptions.
@@ -372,6 +402,7 @@ public class CheckinActivity extends AppCompatActivity {
 
 
     private static final String SI_entriesEndpoint = "entries endpoint string";
+    private static final String SI_responseJson = "responseJson";
     private static final String SI_currentView = "current view";
 
     @Override
@@ -380,6 +411,28 @@ public class CheckinActivity extends AppCompatActivity {
         if(entriesJSONObject != null)
             outState.putString(SI_entriesEndpoint, entriesJSONObject.toString());
         outState.putString(SI_currentView, currentView.toString());
+        outState.putString(SI_responseJson, responseJSONObject.toString());
+        Toast.makeText(this, responseJSONObject.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    public void updateResponseJson(ViewPagerFragmentBase.Trackable trackable, String questionName, Object value) {
+        try {
+            JSONArray responses = responseJSONObject.getJSONArray("responses");
+            for(int i = 0; i < responses.length(); i++) {
+                JSONObject response = responses.getJSONObject(i);
+                if(response.getString("name").equals(questionName) && response.getString("catalog").equals(trackable.catalogue)) {
+                    response.put("value", value);
+                    return;
+                }
+            }
+
+            JSONObject response = new JSONObject();
+            response.put("name", questionName);
+            response.put("catalog", trackable.catalogue);
+            response.put("value", value);
+            responses.put(response);
+
+        } catch (JSONException e) { e.printStackTrace(); }
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.PreferenceKeys;
@@ -118,7 +119,7 @@ public class Checkin_Selector_View extends LinearLayout{
                 public void onClick(View v) {
                     PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_TAG, "Selector bt_name Press");
                     selectView(((InputButton) v).value);
-                    if (onButtonClickListener != null) onButtonClickListener.onClick();
+                    if (onButtonClickListener != null) onButtonClickListener.onClick(getValue());
                 }
             });
             this.addView(button);
@@ -152,7 +153,7 @@ public class Checkin_Selector_View extends LinearLayout{
 
 
     public interface OnButtonClickListener {
-        void onClick();
+        void onClick(double value);
     }
     private OnButtonClickListener onButtonClickListener;
     public void setButtonClickListener (OnButtonClickListener onButtonClickListener) {
