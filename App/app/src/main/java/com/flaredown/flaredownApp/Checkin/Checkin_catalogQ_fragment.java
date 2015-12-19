@@ -239,8 +239,11 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    Toast.makeText(getActivity(), hasFocus? "Has focus" : "Hasn't focus", Toast.LENGTH_SHORT).show();
-                    updateResponse(Double.parseDouble(getValue()));
+                    try {
+                        updateResponse(Double.parseDouble(getValue()));
+                    } catch (NumberFormatException e) {
+                        updateResponse(null);
+                    }
                 }
             });
 
@@ -255,10 +258,19 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             if(!hasFocusEditText()) setEditTextFocus(editText);
         }
 
-        public void updateResponse(double value){
+        public void updateResponse(Double value){
             if(getActivity() instanceof CheckinActivity){
                 CheckinActivity checkinActivity = (CheckinActivity) getActivity();
                 checkinActivity.updateResponseJson(trackable, getName(), value);
+            }
+        }
+
+        @Override
+        public void saveResponse() {
+            try {
+                updateResponse(Double.valueOf(getValue()));
+            } catch(NumberFormatException e) {
+                updateResponse(null);
             }
         }
 
@@ -295,13 +307,21 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             this.ll_root.addView(checkin_selector_view);
         }
 
-        private void updateResponse(double value) {
+        private void updateResponse(Double value) {
             if(getActivity() instanceof CheckinActivity) {
                 CheckinActivity checkinActivity = (CheckinActivity) getActivity();
                 checkinActivity.updateResponseJson(trackable, getName(), value);
             }
         }
 
+        @Override
+        public void saveResponse() {
+            try {
+                updateResponse(Double.valueOf(getValue()));
+            } catch (NumberFormatException e) {
+                updateResponse(null);
+            }
+        }
 
         @Override
         public String getValue() {
@@ -341,7 +361,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             int margins  = (int) Styling.getInDP(getActivity(), 5);
             ((ViewGroup.MarginLayoutParams) button.getLayoutParams()).setMargins(margins, margins, margins, margins);
         }
-        public void updateResponse(boolean isSelected) {
+        public void updateResponse(Boolean isSelected) {
             if(getActivity() instanceof CheckinActivity) {
                 CheckinActivity checkinActivity = (CheckinActivity) getActivity();
                 checkinActivity.updateResponseJson(trackable, getName(), isSelected ? 1 : 0);
@@ -353,11 +373,20 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
 
         @Override
+        public void saveResponse() {
+            try {
+                updateResponse(getValue().equals("1"));
+            } catch (NumberFormatException e) {
+                updateResponse(null);
+            }
+        }
+
+        @Override
         public void setValue(String value) {
             try {
                 setValue(Double.parseDouble(value));
             } catch (NumberFormatException e) {
-
+                updateResponse(null);
             }
         }
         public void setValue(double value) {
@@ -366,7 +395,12 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
     }
 
-
+    @Override
+    public void onPageExit() {
+        for (BlankQuestion questionView : questionViews) {
+            questionView.saveResponse();
+        }
+    }
 
     private class BlankQuestion {
         public LinearLayout ll_root;
@@ -392,6 +426,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             } else {
                 tv_question.setVisibility(View.GONE);
             }
+        }
+
+        /**
+         * Implemented in all classes that extends BlankQuestion, tells an object to submit it's response.
+         */
+        public void saveResponse() {
+
         }
     }
 
