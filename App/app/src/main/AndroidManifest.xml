@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Permission to start Alarm on device reboot -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -39,7 +39,7 @@
             android:name="com.flaredown.flaredownApp.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
+            android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
             android:name="com.flaredown.flaredownApp.SettingsActivity"
             android:label="@string/title_activity_settings">
@@ -49,15 +49,24 @@
         </activity>
         <activity
             android:name="com.flaredown.flaredownApp.Checkin.AddEditableActivity"
-            android:label="@string/title_activity_add_adialog"></activity>
+            android:label="@string/title_activity_add_adialog" />
 
         <receiver android:name="com.flaredown.flaredownApp.FlareDown.AlarmReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.TIME_SET"/>
-                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.flaredown.flaredownApp.PolicyWebView"
+            android:label="@string/title_activity_policy_web_view"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.flaredown.flaredownApp.SettingsActivity" />
+        </activity>
     </application>
 
 </manifest>
