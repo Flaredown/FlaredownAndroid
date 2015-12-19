@@ -15,13 +15,13 @@ import org.json.JSONObject;
  * Created by thunter on 22/09/2015.
  */
 public class DefaultErrors {
-    API.API_Error apiError;
+    API_Error apiError;
     Context context;
 
     private static String DEBUG_KEY = "FlareDown.DefaultErrors";
 
 
-    public DefaultErrors(Context context, API.API_Error apiError) {
+    public DefaultErrors(Context context, API_Error apiError) {
         this.apiError = apiError;
         this.context = context;
         boolean popupShown = false;
@@ -38,8 +38,8 @@ public class DefaultErrors {
                     JSONObject jError = new JSONObject(response).getJSONObject("errors");
 
                     if (jError.has("title") && jError.has("description")) {
-                        String title = Locales.read(context, "nice_errors." + jError.getString("title")).create();
-                        String description = Locales.read(context, "nice_errors." + jError.get("description")).create();
+                        String title = Locales.read(context, "nice_errors." + jError.getString("title")).resultIfUnsuccessful("Opps!").create();
+                        String description = Locales.read(context, "nice_errors." + jError.get("description")).resultIfUnsuccessful("Something went wrong, perhaps try again").create();
 
 
                         showPopup(title, description);

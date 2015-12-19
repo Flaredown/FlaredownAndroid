@@ -2,18 +2,15 @@ package com.flaredown.flaredownApp;
 
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.flaredown.com.flaredown.R;
 import android.net.Uri;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -28,6 +25,7 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
@@ -139,8 +137,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
 
             @Override
-            public void onFailure(API.API_Error error) {
-                new DefaultErrors(mContext, error);
+            public void onFailure(API_Error error) {
+                if(flareDownAPI.checkInternet())
+                    new DefaultErrors(mContext, error);
             }
         });
     }
@@ -228,12 +227,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 public void onSuccess(JSONObject jsonObject) {
                     PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
                     Intent intent = new Intent(mContext, CheckinActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
+                    overridePendingTransition(0,0);
                     finish();
                 }
 
                 @Override
-                public void onFailure(API.API_Error error) {
+                public void onFailure(API_Error error) {
                     setView(VIEW_LOGIN);
                     //TODO differentiate between no internet connection and incorrect user details.
                     //PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
@@ -350,29 +352,5 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
-    }
-
-    public static class InternetReceiver extends BroadcastReceiver {
-        private final Handler handler; // Handler used to execute code on the UI thread;
-        private Runnable doOnConnect;
-        private Runnable doOnDisconnect;
-        private boolean isConnected = true;
-
-        public InternetReceiver(Context context, Handler handler, Runnable doOnConnect, Runnable doOnDisconnect) {
-            this.handler = handler;
-            this.doOnConnect = doOnConnect;
-            this.doOnDisconnect = doOnDisconnect;
-            context.registerReceiver(this, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        }
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            API flareDownAPI = new API(context);
-            if(flareDownAPI.checkInternet() && !isConnected)
-                handler.post(doOnConnect);
-            else if(!flareDownAPI.checkInternet() && isConnected)
-                handler.post(doOnDisconnect);
-            isConnected = flareDownAPI.checkInternet();
-        }
     }
 }

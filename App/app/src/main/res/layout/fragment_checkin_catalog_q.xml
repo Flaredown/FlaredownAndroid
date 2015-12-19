@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/viewpageprogress_size"
-        android:id="@+id/scrollView">
+        android:id="@+id/scrollView"
+        android:requiresFadingEdge="vertical">
 
         <LinearLayout
             android:orientation="vertical"
@@ -31,7 +32,10 @@
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sample Question"/>
+                android:text="Sample Question"
+                android:textSize="25dp"
+                android:layout_marginBottom="@dimen/sep_margin_small"
+                android:layout_marginTop="@dimen/sep_margin_small" />
         </LinearLayout>
     </ScrollView>
 

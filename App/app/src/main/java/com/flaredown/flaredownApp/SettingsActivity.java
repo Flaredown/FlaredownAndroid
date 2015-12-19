@@ -25,6 +25,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.Alarm;
 import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
@@ -73,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         flareDownAPI = new API(mContext);
         if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
-            new ForceLogin(mContext, flareDownAPI);
+            new ForceLogin(this, flareDownAPI);
             return;
         }
 
@@ -116,7 +117,7 @@ public class SettingsActivity extends AppCompatActivity {
         flareDownAPI.entries(Calendar.getInstance().getTime(), new API.OnApiResponse<JSONObject>() {
 
             @Override
-            public void onFailure(API.API_Error error) {
+            public void onFailure(API_Error error) {
                 new DefaultErrors(mContext, error);
             }
 
@@ -188,7 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(API.API_Error error) {
+                    public void onFailure(API_Error error) {
                         Toast.makeText(mContext, "Failed to logout", Toast.LENGTH_LONG).show();
                     }
                 });

@@ -19,7 +19,7 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    Trackable trackable;
+    Trackable trackable = null;
 
 
     public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
@@ -33,24 +33,22 @@ public class ViewPagerFragmentBase extends Fragment {
         return -1;
     }
 
-    public static int indexOfEndOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
-        boolean startOfCatalogDetected = false;
-        for(int i = 0; i < fragments.size(); i++) {
-            ViewPagerFragmentBase fragment = fragments.get(i);
-            if(fragment.trackable.catalogue.equals(catalogue)) {
-                startOfCatalogDetected = true;
-            }
-            if(!fragment.trackable.catalogue.equals(catalogue) && startOfCatalogDetected)
-                return i;
+    public static int indexOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
+        for (int i = 0; i < fragments.size(); i++) {
+            if(fragments.get(i).trackable.catalogue.equals(catalogue)) return i;
         }
-        return fragments.size();
+        return -1;
     }
-
 
     public static class Trackable {
         String catalogue;
         String[] questions;
         JSONArray JA_questions = new JSONArray();
+
+        public Trackable() {
+            catalogue = "";
+            questions = new String[0];
+        }
 
         public Trackable(String catalogue, JSONArray questions) throws JSONException{
             this.catalogue = catalogue;
@@ -61,8 +59,11 @@ public class ViewPagerFragmentBase extends Fragment {
         private void createQuestionsStrArr(JSONArray questions) throws JSONException{
             this.questions = new String[questions.length()];
             for(int i = 0; i < questions.length(); i++) {
-                JSONObject jo = questions.getJSONObject(i);
-                this.questions[i] = jo.getString("name");
+                JSONArray ja = questions.getJSONArray(i);
+                for(int j = 0; j < ja.length(); j++) {
+                    JSONObject jo = ja.getJSONObject(j);
+                    this.questions[i] = jo.getString("name");
+                }
             }
         }
     }
@@ -93,5 +94,7 @@ public class ViewPagerFragmentBase extends Fragment {
     }
 
 
-
+    public JSONArray getResponse() throws JSONException{
+        return null;
+    }
 }
