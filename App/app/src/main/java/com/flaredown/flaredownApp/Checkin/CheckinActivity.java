@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
@@ -257,6 +258,12 @@ public class CheckinActivity extends AppCompatActivity {
                 previousQuestion();
             }
         });
+        bt_submitCheckin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitCheckin();
+            }
+        });
         vp_questions.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -341,6 +348,22 @@ public class CheckinActivity extends AppCompatActivity {
             API_Error apiError = new API_Error();
             DefaultErrors defaultErrors = new DefaultErrors(this, new API_Error().setStatusCode(500));
         }
+    }
+
+    private void submitCheckin() {
+        final CheckinActivity activity = this;
+        flareDownAPI.submitEntry(dateDisplaying, responseJSONObject, new API.OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                new DefaultErrors(activity, error);
+                Toast.makeText(activity, "Checkin submition failed", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                Toast.makeText(activity, "Checkin submission was a success.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private JSONObject getResponse() {
