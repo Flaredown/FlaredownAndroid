@@ -28,7 +28,6 @@ import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.FlareDown.ResponseReader;
 import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
-import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 
@@ -135,6 +134,7 @@ public class CheckinActivity extends AppCompatActivity {
     private ScreenSlidePagerAdapter questionPagerAdapter;
     private Button bt_nextQuestion;
     private Button bt_prevQuestion;
+    private Button bt_submitCheckin;
     private ViewPagerProgress vpp_questionProgress;
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
@@ -230,6 +230,7 @@ public class CheckinActivity extends AppCompatActivity {
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         bt_prevQuestion = (Button) findViewById(R.id.bt_prevQuestion);
+        bt_submitCheckin = (Button) findViewById(R.id.bt_submitCheckin);
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
@@ -264,12 +265,19 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) bt_prevQuestion.setVisibility(View.INVISIBLE);
-                else bt_prevQuestion.setVisibility(View.VISIBLE);
-
-                if (fragment_questions.size() - 1 <= position)
-                    bt_nextQuestion.setVisibility(View.INVISIBLE);
-                else bt_nextQuestion.setVisibility(View.VISIBLE);
+                if(position <= 0) {
+                    bt_prevQuestion.setVisibility(View.INVISIBLE);
+                    bt_submitCheckin.setVisibility(View.GONE);
+                    bt_nextQuestion.setVisibility(View.VISIBLE);
+                } else if (position >= fragment_questions.size() - 1) {
+                    bt_nextQuestion.setVisibility(View.GONE);
+                    bt_prevQuestion.setVisibility(View.VISIBLE);
+                    bt_submitCheckin.setVisibility(View.VISIBLE);
+                } else {
+                    bt_submitCheckin.setVisibility(View.GONE);
+                    bt_nextQuestion.setVisibility(View.VISIBLE);
+                    bt_prevQuestion.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -306,14 +314,12 @@ public class CheckinActivity extends AppCompatActivity {
 
                     // Hide/Show Keyboard depending on page contents.
                     if(!futurePageFragment.hasFocusEditText()) { // Hide the keyboard
-                        PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Hiding the keyboard");
                         View currentFocus = ((Activity)mContext).getCurrentFocus();
                         if(currentFocus != null) {
                             InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                             inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
                         }
                     } else { // Show the keyboard
-                        PreferenceKeys.log(PreferenceKeys.LOG_V, DEBUG_TAG, "Displaying the keyboard");
                         futurePageFragment.focusEditText();
                     }
 
