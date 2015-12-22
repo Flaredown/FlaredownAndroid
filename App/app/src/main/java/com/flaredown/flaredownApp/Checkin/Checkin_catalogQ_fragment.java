@@ -70,6 +70,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
             ll_questionHolder.removeView(questionViews.get(index).ll_root);
             questionViews.remove(index);
         }
+        updateSectionTitle();
     }
     public int indexOfQuestion(String questionName) {
         for (int i = 0; i < questionViews.size(); i++) {
@@ -108,6 +109,28 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         return fragmentRoot;
     }
 
+    public void updateSectionTitle() {
+        String sectionTitle = "--";
+        switch(trackable.catalogue) {
+            case "symptoms":
+                if(questionViews.size() == 0)
+                    sectionTitle = Locales.read(getActivity(), "oops_no_symptoms_being_tracked").create();
+                else
+                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
+                break;
+            case "conditions":
+                if(questionViews.size() == 0)
+                    sectionTitle = Locales.read(getActivity(), "oops_no_conditions_being_tracked").create();
+                else
+                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_symptoms").create();
+                break;
+            default:
+                sectionTitle = Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+                break;
+        }
+        tv_sectionTitle.setText(sectionTitle);
+    }
+
     public void createView() {
         // Set the catalog title.
         switch (trackable.catalogue) {
@@ -121,19 +144,8 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".catalog_description").resultIfUnsuccessful(trackable.catalogue).capitalize1Char().createAT());
                 break;
         }
-        String sectionTitle = "--";
-        try {
-            sectionTitle = trackable.JA_questions.getJSONArray(0).getJSONObject(0).getString("name");
-            if (trackable.catalogue.equals("symptoms"))
-                sectionTitle = Locales.read(getActivity(), "how_active_were_your_symptoms").create();
-            else if (trackable.catalogue.equals("conditions"))
-                sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
-            else
-                sectionTitle = Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
 
-        } catch (JSONException e) {
-        }
-        tv_sectionTitle.setText(sectionTitle);
+        updateSectionTitle();
 
 
         try {
@@ -207,6 +219,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 questionView.setValue(question.getString("response"));
             }
         }
+        updateSectionTitle();
     }
 
     @Override
