@@ -1,15 +1,14 @@
 package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
-import android.flaredown.com.flaredown.R;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.R;
 
 import org.apmem.tools.layouts.FlowLayout;
 

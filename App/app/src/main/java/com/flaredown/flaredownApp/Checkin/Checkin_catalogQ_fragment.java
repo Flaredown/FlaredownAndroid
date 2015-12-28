@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
-import android.flaredown.com.flaredown.R;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.Spanned;
@@ -21,6 +20,7 @@ import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;

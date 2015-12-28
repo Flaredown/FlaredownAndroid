@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.flaredown.com.flaredown.R;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -23,6 +22,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
