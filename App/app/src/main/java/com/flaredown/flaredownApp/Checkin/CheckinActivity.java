@@ -26,6 +26,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.FlareDown.ResponseReader;
 import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
 import com.flaredown.flaredownApp.SettingsActivity;
@@ -48,7 +49,7 @@ public class CheckinActivity extends AppCompatActivity {
     API flareDownAPI;
 
     private enum Views {
-        SPLASH_SCREEN, CHECKIN
+        SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET;
     }
     private Views currentView = null;
     private static final int ANIMATION_DURATION = 250;
@@ -60,18 +61,20 @@ public class CheckinActivity extends AppCompatActivity {
                 switch (currentView) {
                     case CHECKIN:
                         if(animate) {
-                            rl_checkin.setAlpha(0);
+                            rl_checkin.setAlpha(1);
                             rl_checkin.setTranslationY(0);
                             rl_checkin.setVisibility(View.VISIBLE);
                             rl_checkin.animate()
-                                    .alpha(1)
+                                    .alpha(0)
                                     .translationY(Styling.getInDP(this, 100))
                                     .setDuration(ANIMATION_DURATION)
                                     .setListener(new AnimatorListenerAdapter() {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
                                             super.onAnimationEnd(animation);
+                                            rl_checkin.setVisibility(View.GONE);
                                             rl_checkin.setTranslationY(0);
+                                            rl_checkin.setAlpha(1);
                                         }
                                     });
                         } else
@@ -96,6 +99,28 @@ public class CheckinActivity extends AppCompatActivity {
                                     });
                         } else
                             ll_splashScreen.setVisibility(View.GONE);
+                        break;
+                    case NOT_CHECKED_IN_YET:
+                        if(animate) {
+                            ll_not_checked_in.setAlpha(1);
+                            ll_not_checked_in.setTranslationY(0);
+                            ll_not_checked_in.setVisibility(View.VISIBLE);
+                            ll_not_checked_in.animate()
+                                    .alpha(0)
+                                    .translationY(Styling.getInDP(this, 100))
+                                    .setDuration(ANIMATION_DURATION)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            ll_not_checked_in.setVisibility(View.GONE);
+                                            ll_not_checked_in.setTranslationY(0);
+                                            ll_not_checked_in.setAlpha(1);
+                                        }
+                                    });
+                        } else {
+                            ll_not_checked_in.setVisibility(View.GONE);
+                        }
                         break;
                 }
             }
@@ -123,6 +148,19 @@ public class CheckinActivity extends AppCompatActivity {
                     } else
                         ll_splashScreen.setVisibility(View.VISIBLE);
                     break;
+                case NOT_CHECKED_IN_YET:
+                    if(animate) {
+                        ll_not_checked_in.setAlpha(0);
+                        ll_not_checked_in.setTranslationY(Styling.getInDP(this, 100));
+                        ll_not_checked_in.setVisibility(View.VISIBLE);
+                        ll_not_checked_in.animate()
+                                .alpha(1)
+                                .translationY(0)
+                                .setDuration(ANIMATION_DURATION);
+                    } else {
+                        ll_not_checked_in.setVisibility(View.VISIBLE);
+                    }
+                    break;
             }
         }
         currentView = showView;
@@ -136,6 +174,9 @@ public class CheckinActivity extends AppCompatActivity {
     private Button bt_nextQuestion;
     private Button bt_prevQuestion;
     private Button bt_submitCheckin;
+    private LinearLayout ll_not_checked_in;
+    private Button bt_not_checked_in_checkin;
+    private TextView tv_not_checked_in_checkin;
     private ViewPagerProgress vpp_questionProgress;
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
@@ -203,7 +244,7 @@ public class CheckinActivity extends AppCompatActivity {
             public void onSuccess(JSONObject jsonObject) {
                 entriesJSONObject = jsonObject;
                 initialisePages(jsonObject);
-                setView(Views.CHECKIN);
+                setView(Views.NOT_CHECKED_IN_YET);
             }
 
             @Override
@@ -235,8 +276,15 @@ public class CheckinActivity extends AppCompatActivity {
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
+        ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
+        tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
+        bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
         final Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
         TextView title = (TextView) findViewById(R.id.toolbar_title);
+
+
+        bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
+        tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
 
         // Set up the toolbar.
         title.setText(Styling.displayDateLong(dateDisplaying));
@@ -272,7 +320,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position <= 0) {
+                if (position <= 0) {
                     bt_prevQuestion.setVisibility(View.INVISIBLE);
                     bt_submitCheckin.setVisibility(View.GONE);
                     bt_nextQuestion.setVisibility(View.VISIBLE);
@@ -290,6 +338,12 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+        bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setView(Views.CHECKIN);
             }
         });
     }
