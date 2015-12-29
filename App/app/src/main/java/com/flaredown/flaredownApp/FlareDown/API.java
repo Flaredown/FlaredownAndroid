@@ -50,10 +50,17 @@ public class API {
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
     }
+    public String getEndpointUrl(String endpoint, Boolean authparams) {
+        return getEndpointUrl(endpoint, new HashMap<String, String>(), authparams);
+    }
     public String getEndpointUrl(String endpoint, Map<String, String> params) {
+        return getEndpointUrl(endpoint, params, true);
+    }
+    public String getEndpointUrl(String endpoint, Map<String, String> params, Boolean authprams) {
         try {
             //endpoint = URLEncoder.encode(endpoint, CHAR_SET);
-            params.putAll(addAuthenticationParams());
+            if(authprams)
+                params.putAll(addAuthenticationParams());
             String url = API_BASE_URL + endpoint + "?";
             for (String key : params.keySet()) {
                 key = URLEncoder.encode(key, CHAR_SET);
@@ -305,6 +312,41 @@ public class API {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(jsonRequest);
+    }
+
+    public void submitEntry(final Date date, final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("entry", response.toString());
+
+        JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.PUT, getEndpointUrl("/entries/" + API_DATE_FORMAT.format(date) + ".json", params), response, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.has("success") && response.getBoolean("success") == true) {
+                        onApiResponse.onSuccess(response);
+                    } else {
+                        onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    }
+                } catch (JSONException e) {
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //return super.getParams();
+                Map<String, String> postParams = addAuthenticationParams();
+                return postParams;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(putRequest);
     }
 
     /**

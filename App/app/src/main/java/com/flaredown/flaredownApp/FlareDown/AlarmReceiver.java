@@ -10,11 +10,11 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.flaredown.com.flaredown.R;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

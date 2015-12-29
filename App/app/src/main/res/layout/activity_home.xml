@@ -65,6 +65,19 @@
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
                     android:layout_weight="0.5" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="SUBMIT"
+                    android:id="@+id/bt_submitCheckin"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/accent"
+                    android:background="@android:color/transparent"
+                    android:layout_weight="0.5"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <!--<Button
@@ -124,6 +137,47 @@
             android:visibility="gone"
             android:layout_margin="@dimen/sep_margin_large" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/ll_not_checked_in"
+        android:background="@color/background"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:animateLayoutChanges="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+            <TextView
+                android:id="@+id/tv_not_checked_in_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You haven&apos;t checked in yet today"
+                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:textSize="@dimen/sub_title_font_size" />
+
+            <Button
+                android:id="@+id/bt_not_checked_in_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check-in"
+                android:paddingLeft="@dimen/sep_margin_medium"
+                android:paddingRight="@dimen/sep_margin_medium"
+                android:paddingTop="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small" />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

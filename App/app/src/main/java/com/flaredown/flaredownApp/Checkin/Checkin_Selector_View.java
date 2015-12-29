@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
-import android.flaredown.com.flaredown.R;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

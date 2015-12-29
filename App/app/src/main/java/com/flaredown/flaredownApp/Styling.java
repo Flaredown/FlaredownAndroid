@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.flaredown.com.flaredown.R;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;

@@ -3,7 +3,6 @@ package com.flaredown.flaredownApp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.flaredown.com.flaredown.R;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
