@@ -45,7 +45,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             //Reset alarm if time zone changed
             if ("android.intent.action.TIME_SET".equals(intent.getAction()) || "android.intent.action.TIMEZONE_CHANGED".equals(intent.getAction()) || "android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
                 RealmQuery<Alarm> query = mRealm.where(Alarm.class);
-                query.contains("title", "_reminder_");
+                query.contains("title", "reminder");
                 RealmResults<Alarm> alarms = query.findAll();
                 if (alarms.size() > 0) {
                     for (Alarm x : alarms) {
