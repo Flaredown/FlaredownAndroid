@@ -116,13 +116,13 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 if(questionViews.size() == 0)
                     sectionTitle = Locales.read(getActivity(), "oops_no_symptoms_being_tracked").create();
                 else
-                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
+                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_symptoms").create();
                 break;
             case "conditions":
                 if(questionViews.size() == 0)
                     sectionTitle = Locales.read(getActivity(), "oops_no_conditions_being_tracked").create();
                 else
-                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_symptoms").create();
+                    sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
                 break;
             default:
                 sectionTitle = Locales.read(getActivity(), "catalogs." + trackable.catalogue + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
