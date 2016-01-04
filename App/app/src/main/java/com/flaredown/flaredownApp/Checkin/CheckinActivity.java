@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -49,7 +50,7 @@ public class CheckinActivity extends AppCompatActivity {
     API flareDownAPI;
 
     private enum Views {
-        SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET;
+        SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY;
     }
     private Views currentView = null;
     private static final int ANIMATION_DURATION = 250;
@@ -122,6 +123,24 @@ public class CheckinActivity extends AppCompatActivity {
                             ll_not_checked_in.setVisibility(View.GONE);
                         }
                         break;
+                    case SUMMARY:
+                        if(animate) {
+                            fl_checkin_summary.setAlpha(1);
+                            fl_checkin_summary.setTranslationY(0);
+                            fl_checkin_summary.setVisibility(View.VISIBLE);
+                            fl_checkin_summary.animate()
+                                    .alpha(0)
+                                    .setListener(new AnimatorListenerAdapter() {
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            super.onAnimationEnd(animation);
+                                            fl_checkin_summary.setVisibility(View.GONE);
+                                            fl_checkin_summary.setAlpha(1);
+                                        }
+                                    });
+                        } else
+                            fl_checkin_summary.setVisibility(View.GONE);
+                        break;
                 }
             }
             // Show animations
@@ -161,6 +180,18 @@ public class CheckinActivity extends AppCompatActivity {
                         ll_not_checked_in.setVisibility(View.VISIBLE);
                     }
                     break;
+                case SUMMARY:
+                    if(animate) {
+                        fl_checkin_summary.setAlpha(0);
+                        fl_checkin_summary.setVisibility(View.VISIBLE);
+                        fl_checkin_summary.setTranslationY(Styling.getInDP(this, 100));
+                        fl_checkin_summary.animate()
+                                .translationY(0)
+                                .alpha(1);
+                    } else {
+                        fl_checkin_summary.setVisibility(View.VISIBLE);
+                    }
+                    break;
             }
         }
         currentView = showView;
@@ -180,6 +211,7 @@ public class CheckinActivity extends AppCompatActivity {
     private ViewPagerProgress vpp_questionProgress;
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
+    private FrameLayout fl_checkin_summary;
     private int current_page = 0;
     private Date dateDisplaying = API.currentDate;
     private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
@@ -276,6 +308,7 @@ public class CheckinActivity extends AppCompatActivity {
         vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
+        fl_checkin_summary = (FrameLayout) findViewById(R.id.fl_checkin_summary);
         ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
         tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
         bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
@@ -415,7 +448,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(JSONObject result) {
-                Toast.makeText(activity, "Checkin submission was a success.", Toast.LENGTH_LONG).show();
+                setView(Views.SUMMARY);
             }
         });
     }

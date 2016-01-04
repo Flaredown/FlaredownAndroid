@@ -2,21 +2,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--<include layout="@layout/toolbar"/>-->
+    <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_toolbar_view"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="false" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:visibility="gone"
-        android:id="@+id/rl_checkin">
-        <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/main_toolbar_view"/>
+        android:id="@+id/rl_checkin"
+        android:layout_below="@+id/main_toolbar_view"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="false">
 
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_questionPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar_view"
             android:layout_above="@+id/ll_nextbt_progress" />
 
         <LinearLayout
@@ -141,11 +146,13 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/ll_not_checked_in"
         android:background="@color/background"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/main_toolbar_view">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -179,5 +186,19 @@
                 android:paddingBottom="@dimen/sep_margin_small" />
         </LinearLayout>
     </LinearLayout>
-
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fl_checkin_summary"
+        android:layout_below="@+id/main_toolbar_view"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+        <fragment
+            android:id="@+id/f_checkin_summary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.flaredown.flaredownApp.Checkin.Checkin_summary_fragment"/>
+    </FrameLayout>
 </RelativeLayout>
