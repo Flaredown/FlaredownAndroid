@@ -212,6 +212,7 @@ public class CheckinActivity extends AppCompatActivity {
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
     private FrameLayout fl_checkin_summary;
+    private Fragment f_checkin_summary;
     private int current_page = 0;
     private Date dateDisplaying = API.currentDate;
     private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
@@ -448,9 +449,15 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(JSONObject result) {
-                setView(Views.SUMMARY);
+                displaySummary(entriesJSONObject, responseJSONObject, dateDisplaying);
             }
         });
+    }
+    private void displaySummary(JSONObject jsonEnrty, JSONObject jsonResponse, Date date) {
+        f_checkin_summary = Checkin_summary_fragment.newInstance(jsonEnrty, jsonResponse, date);
+        fl_checkin_summary.removeAllViews();
+        getSupportFragmentManager().beginTransaction().add(fl_checkin_summary.getId(), f_checkin_summary, "summary").commit();
+        setView(Views.SUMMARY);
     }
 
     private JSONObject getResponse() {
