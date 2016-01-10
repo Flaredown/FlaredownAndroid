@@ -6,7 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.R;
 
@@ -14,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +33,8 @@ public class Checkin_summary_fragment extends Fragment {
     private JSONObject argResponseJson;
     private Date argDate;
     private View root;
+    private LinearLayout ll_fragmentHolder;
+    private List<ViewPagerFragmentBase> fragments;
 
     public Checkin_summary_fragment() {
         // Required empty public constructor
@@ -69,12 +74,31 @@ public class Checkin_summary_fragment extends Fragment {
         }
     }
 
+    private void initUI() {
+        ll_fragmentHolder = (LinearLayout) root.findViewById(R.id.ll_fragmentholder);
+        assembleFragments();
+    }
+
+
+
+    private void assembleFragments() {
+        try {
+            fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
+            int i = 0;
+            for (ViewPagerFragmentBase fragment : fragments) {
+                getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_checkin_summary, container, false);
-        ((TextView)root.findViewById(R.id.testtext)).setText(argEntryJson.toString());
+        initUI();
         return root;
     }
 

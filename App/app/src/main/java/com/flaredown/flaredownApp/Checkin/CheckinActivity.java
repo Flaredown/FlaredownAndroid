@@ -478,7 +478,7 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
-    private List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
+    public static List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions"); // The question descriptions.
         ResponseReader responses = new ResponseReader(entry.getJSONArray("responses"));
