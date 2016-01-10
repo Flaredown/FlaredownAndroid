@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,6 +66,8 @@ public class Checkin_summary_fragment extends Fragment {
             try {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
                 argResponseJson = new JSONObject(getArguments().getString(ARG_RESPONSE_JSON));
+                argEntryJson.getJSONObject("entry").put("responses", argResponseJson.getJSONArray("responses"));
+                Toast.makeText(getActivity(), argResponseJson.toString(), Toast.LENGTH_LONG).show();
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
                 argResponseJson = new JSONObject();
