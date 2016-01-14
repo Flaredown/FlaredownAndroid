@@ -9,6 +9,7 @@ public class API_Error {
     public VolleyError volleyError;
     public Boolean internetConnection;
     public int statusCode = 500;
+    private Runnable retryRunnable = null;
 
     /**
      * Automatically sets status code, internet connection fields from a VolleyError object.
@@ -28,6 +29,24 @@ public class API_Error {
             this.internetConnection = false;
         }
         return this;
+    }
+
+    /**
+     * Change the ok button to retry, when clicked runnable will run.
+     * @param runnable retry action.
+     * @return Itself.
+     */
+    public API_Error setRetry(Runnable runnable) {
+        retryRunnable = runnable;
+        return this;
+    }
+
+    /**
+     * Returns the retry runnable.
+     * @return Retry runnable.
+     */
+    public Runnable getRetry() {
+        return retryRunnable;
     }
 
     /**
