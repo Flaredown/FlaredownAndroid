@@ -15,6 +15,18 @@
             android:orientation="vertical"
             android:id="@+id/ll_fragmentholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"></LinearLayout>
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_checkinSuccess"
+                    android:layout_centerInParent="true"
+                    android:textSize="@dimen/sub_title_font_size"
+                    android:layout_marginTop="@dimen/sep_margin_medium" />
+            </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
 </RelativeLayout>

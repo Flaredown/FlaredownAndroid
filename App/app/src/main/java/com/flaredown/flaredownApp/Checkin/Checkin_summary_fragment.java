@@ -8,11 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +35,7 @@ public class Checkin_summary_fragment extends Fragment {
     private View root;
     private LinearLayout ll_fragmentHolder;
     private List<ViewPagerFragmentBase> fragments;
+    private TextView tv_checkinSuccess;
 
     public Checkin_summary_fragment() {
         // Required empty public constructor
@@ -67,7 +67,6 @@ public class Checkin_summary_fragment extends Fragment {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
                 argResponseJson = new JSONObject(getArguments().getString(ARG_RESPONSE_JSON));
                 argEntryJson.getJSONObject("entry").put("responses", argResponseJson.getJSONArray("responses"));
-                Toast.makeText(getActivity(), argResponseJson.toString(), Toast.LENGTH_LONG).show();
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
                 argResponseJson = new JSONObject();
@@ -79,6 +78,8 @@ public class Checkin_summary_fragment extends Fragment {
 
     private void initUI() {
         ll_fragmentHolder = (LinearLayout) root.findViewById(R.id.ll_fragmentholder);
+        tv_checkinSuccess = (TextView) root.findViewById(R.id.tv_checkinSuccess);
+        tv_checkinSuccess.setText(Locales.read(getActivity(), "summary_title").createAT());
         assembleFragments();
     }
 
