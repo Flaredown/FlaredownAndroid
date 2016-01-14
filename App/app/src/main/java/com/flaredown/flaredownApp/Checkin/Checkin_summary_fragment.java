@@ -101,10 +101,17 @@ public class Checkin_summary_fragment extends Fragment {
                     @Override
                     public void onUpdate(JSONObject answer) {
                         try {
-                            JSONObject responseObject = new JSONObject();
-                            responseObject.putOpt("responses", new JSONArray()
-                                    .put(answer));
-                            flaredownAPI.submitEntry(argDate, responseObject, new API.OnApiResponse<JSONObject>() {
+                            JSONArray responseArray = argResponseJson.getJSONArray("responses");
+                            for(int i = 0; i < responseArray.length(); i++) {
+                                JSONObject responseItem = responseArray.getJSONObject(i);
+                                if(responseItem.getString("name").equals(answer.getString("name")) && responseItem.getString("catalog").equals(answer.getString("catalog"))) {
+                                    responseArray.getJSONObject(i).put("value", answer.get("value"));
+                                    break;
+                                }
+                            }
+
+
+                            flaredownAPI.submitEntry(argDate, argResponseJson, new API.OnApiResponse<JSONObject>() {
                                 @Override
                                 public void onFailure(API_Error error) {
                                     new DefaultErrors(getActivity(), error);
