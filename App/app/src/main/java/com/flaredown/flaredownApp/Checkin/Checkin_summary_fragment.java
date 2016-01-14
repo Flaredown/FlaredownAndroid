@@ -8,10 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +41,7 @@ public class Checkin_summary_fragment extends Fragment {
     private LinearLayout ll_fragmentHolder;
     private List<ViewPagerFragmentBase> fragments;
     private TextView tv_checkinSuccess;
+    private API flaredownAPI;
 
     public Checkin_summary_fragment() {
         // Required empty public constructor
@@ -91,6 +97,28 @@ public class Checkin_summary_fragment extends Fragment {
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
+                fragment.addOnUpdateListener(new ViewPagerFragmentBase.UpdateListener() {
+                    @Override
+                    public void onUpdate(JSONObject answer) {
+                        try {
+                            JSONObject responseObject = new JSONObject();
+                            responseObject.putOpt("responses", new JSONArray()
+                                    .put(answer));
+                            flaredownAPI.submitEntry(argDate, responseObject, new API.OnApiResponse<JSONObject>() {
+                                @Override
+                                public void onFailure(API_Error error) {
+                                    new DefaultErrors(getActivity(), error);
+                                }
+
+                                @Override
+                                public void onSuccess(JSONObject result) {
+                                    Toast.makeText(getActivity(), (result.optBoolean("success", false))? "DONE" : "FAILED", Toast.LENGTH_LONG).show(); // TODO A better confirmation
+
+                                }
+                            });
+                        } catch (JSONException e) {e.printStackTrace();}
+                    }
+                });
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -102,8 +130,15 @@ public class Checkin_summary_fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         root = inflater.inflate(R.layout.fragment_checkin_summary, container, false);
+        if(getActivity() instanceof CheckinActivity) {
+            flaredownAPI = ((CheckinActivity) getActivity()).flareDownAPI;
+        } else
+            flaredownAPI = new API(getActivity());
+
         initUI();
         return root;
     }
+
+
 
 }

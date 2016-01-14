@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -71,10 +72,8 @@ public class ViewPagerFragmentBase extends Fragment {
 
 
     public void onPageEnter() {
-
     }
     public void onPageExit() {
-
     }
     public void setEditTextFocus(EditText focus) {
         editTextFocus = focus;
@@ -93,8 +92,37 @@ public class ViewPagerFragmentBase extends Fragment {
         }
     }
 
+    List<UpdateListener> updateListeners = new ArrayList<>();
+    public void addOnUpdateListener(UpdateListener updateListener) {
+        updateListeners.add(updateListener);
+    }
+    public void removeOnUpdateListener(UpdateListener updateListener) {
+        updateListeners.remove(updateListener);
+    }
+    protected void triggerUpdateListener(JSONObject answer) {
+        for (UpdateListener updateListener : updateListeners) {
+            updateListener.onUpdate(answer);
+        }
+    }
+
+    public interface UpdateListener {
+        void onUpdate(JSONObject answer);
+    }
+
 
     public JSONArray getResponse() throws JSONException{
         return null;
+    }
+
+    public static JSONObject generateResponseObject(String catalog, String question, Object value) {
+        try {
+            JSONObject responseObject = new JSONObject();
+            responseObject.put("name", question);
+            responseObject.put("catalog", catalog);
+            responseObject.put("value", value);
+            return responseObject;
+        } catch (JSONException e) {
+            return new JSONObject();
+        }
     }
 }

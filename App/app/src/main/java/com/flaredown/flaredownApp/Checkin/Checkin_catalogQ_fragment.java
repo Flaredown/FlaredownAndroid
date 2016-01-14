@@ -238,7 +238,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private class NumberQuestionInflate extends BlankQuestion {
         EditText editText;
         double oldValue;
-        public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
+        public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException { // TODO TRIGGER UPDATE ON NUMBER CHANGE ASK LOGAN
             super(question, catalogue, section);
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
@@ -306,7 +306,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     }
     private class SelectQuestionInflate extends BlankQuestion {
         Checkin_Selector_View checkin_selector_view;
-        public SelectQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
+        public SelectQuestionInflate(final JSONObject question, final String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
             JSONArray inputs = question.getJSONArray("inputs");
@@ -315,6 +315,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 @Override
                 public void onClick(double value) {
                     updateResponse(value);
+                    triggerUpdateListener(generateResponseObject(catalogue, getName(), getValueDouble()));
                 }
             });
             this.ll_root.addView(checkin_selector_view);
@@ -338,7 +339,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
 
         @Override
         public String getValue() {
-            return String.valueOf(checkin_selector_view.getValue());
+            return String.valueOf(getValueDouble());
+        }
+        public double getValueDouble() {
+            return checkin_selector_view.getValue();
         }
 
         @Override
@@ -354,7 +358,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     }
     private class CheckBoxQuestionInflate extends BlankQuestion {
         Button button;
-        public CheckBoxQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException {
+        public CheckBoxQuestionInflate(JSONObject question, final String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
 
             button = new Button(new ContextThemeWrapper(getActivity(), R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
@@ -367,6 +371,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 public void onClick(View v) {
                     v.setSelected(!v.isSelected());
                     updateResponse(v.isSelected());
+                    triggerUpdateListener(generateResponseObject(catalogue, getName(), getValueInt()));
                 }
             });
 
@@ -382,7 +387,10 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
         @Override
         public String getValue() {
-            return String.valueOf((button.isSelected())? 1 : 0);
+            return String.valueOf(getValueInt());
+        }
+        public int getValueInt() {
+            return button.isSelected()? 1: 0;
         }
 
         @Override
