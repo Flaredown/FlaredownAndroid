@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,8 @@ public class API {
     //public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
     public static final Date currentDate = new Date();
     private SharedPreferences sharedPreferences;
+    private static final int API_TIMEOUT_MILLISECONDS = 300000;
+
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
     }
@@ -349,6 +352,40 @@ public class API {
         requestQueue.add(putRequest);
     }
 
+    public void updateUser(final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("current_user", response.toString());
+
+        JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.POST, getEndpointUrl("/me.json", params), response, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.has("success") && response.getBoolean("success") == true) {
+                        onApiResponse.onSuccess(response);
+                    } else {
+                        onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    }
+                } catch (JSONException e) {
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> postParams = addAuthenticationParams();
+                return postParams;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(putRequest);
+    }
+
     /**
      * Removes trackable from user, only for the current day.
      * @param catalog The catalog the trackable is from.
@@ -563,7 +600,59 @@ public class API {
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if(ni != null && ni.isConnected())
             return true;
-        return false;
+        return false;    }
+
+    /**
+     * Checks to see if the API stored in shared prefs is older than the API_TIMEOUT_MILLISECONDS
+     * @param endpoint The api endpoint to retrieve
+     * @return returns true if the cache is older and false if it is younger
+     */
+    public Boolean apiFromCacheIsDirty(String endpoint) {
+        SharedPreferences prefs = PreferenceKeys.getSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        boolean isDirty;
+
+                String api_endpoint_updated = prefs.getString("api_endpoint_" + endpoint + "_updated", "");
+                String api_endpoint = prefs.getString("api_endpoint_" + endpoint, "");
+                if (api_endpoint_updated.isEmpty() || api_endpoint.isEmpty()) {
+                    //return that it is dirty
+                    isDirty = true;
+                }
+                else {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(Long.parseLong(api_endpoint_updated));
+                    if ((Calendar.getInstance().getTimeInMillis() - cal.getTimeInMillis()) > API_TIMEOUT_MILLISECONDS) {
+                        //Cache is old
+                        //Return that it is dirty
+                        isDirty = true;
+                    } else {
+                        //Cache is clean
+                        //Return false
+                        isDirty = false;
+                    }
+                }
+        return isDirty;
     }
 
+    /**
+     * @param endpoint The api endpoint to retrieve
+     * @return returns api string for the supplied endpoint from shared prefs
+     */
+    public String getAPIFromCache (String endpoint){
+        SharedPreferences prefs = PreferenceKeys.getSharedPreferences(mContext);
+        return prefs.getString("api_endpoint_" + endpoint,"");
+    }
+
+    /**
+     * @param endpoint The api endpoint to retrieve
+     * @param json The json to store
+     * Stores the supplied api endpoint and associated string json to shared prefs
+     */
+    public void cacheAPI(String endpoint, String json){
+        SharedPreferences prefs = PreferenceKeys.getSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("api_endpoint_" + endpoint + "_updated",String.valueOf(Calendar.getInstance().getTimeInMillis()));
+        editor.putString("api_endpoint_" + endpoint,json);
+        editor.apply();
+    }
 }
