@@ -16,6 +16,7 @@ public class ResponseReader {
      */
     public ResponseReader(JSONArray responses) {
         this.responses = responses;
+        if(this.responses == null) this.responses = new JSONArray();
     }
 
     /**

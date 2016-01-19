@@ -30,6 +30,7 @@ import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.FlareDown.ResponseReader;
 import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
+import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 import com.flaredown.flaredownApp.R;
@@ -433,8 +434,8 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             });
         } catch (JSONException e) {
-            API_Error apiError = new API_Error();
-            DefaultErrors defaultErrors = new DefaultErrors(this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:initialisePages()"));
+            e.printStackTrace();
+            new DefaultErrors(this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:initialisePages()"));
         }
     }
 
@@ -481,7 +482,7 @@ public class CheckinActivity extends AppCompatActivity {
     public static List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions"); // The question descriptions.
-        ResponseReader responses = new ResponseReader(entry.getJSONArray("responses"));
+        ResponseReader responses = new ResponseReader(entry.optJSONArray("responses"));
         Iterator<String> cd_iterator = catalog_definitions.keys(); // Used to iterate through the catalogues.
 
         while(cd_iterator.hasNext()) {
