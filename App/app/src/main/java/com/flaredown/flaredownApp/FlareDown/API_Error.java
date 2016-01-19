@@ -9,6 +9,7 @@ public class API_Error {
     public VolleyError volleyError;
     public Boolean internetConnection;
     public int statusCode = 500;
+    public String debugString = "";
     private Runnable retryRunnable = null;
 
     /**
@@ -56,6 +57,25 @@ public class API_Error {
      */
     public API_Error setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+        return this;
+    }
+
+    /**
+     * Get the debug string, only appears if the app is in the debug app.
+     * @return The debug string.
+     */
+    public String getDebugString() {
+        return debugString;
+    }
+
+    /**
+     * Set the debug string, a message that appears in the error message when
+     * app is in debug mode.
+     * @param debugString
+     * @return Itself.
+     */
+    public API_Error setDebugString(String debugString) {
+        this.debugString = debugString;
         return this;
     }
 

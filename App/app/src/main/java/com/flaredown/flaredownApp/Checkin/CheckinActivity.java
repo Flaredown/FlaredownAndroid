@@ -434,7 +434,7 @@ public class CheckinActivity extends AppCompatActivity {
             });
         } catch (JSONException e) {
             API_Error apiError = new API_Error();
-            DefaultErrors defaultErrors = new DefaultErrors(this, new API_Error().setStatusCode(500));
+            DefaultErrors defaultErrors = new DefaultErrors(this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:initialisePages()"));
         }
     }
 

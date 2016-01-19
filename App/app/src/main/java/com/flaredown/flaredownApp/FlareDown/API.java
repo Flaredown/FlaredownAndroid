@@ -254,7 +254,7 @@ public class API {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, result.toString());
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:getEditables()JSONException"));
                 }
             }
         });
@@ -362,10 +362,10 @@ public class API {
                     if (response.has("success") && response.getBoolean("success") == true) {
                         onApiResponse.onSuccess(response);
                     } else {
-                        onApiResponse.onFailure(new API_Error().setStatusCode(500).setRetry(retryRunnable));
+                        onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()requestNotReturnSuccess").setRetry(retryRunnable));
                     }
                 } catch (JSONException e) {
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setRetry(retryRunnable));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()JSONException").setRetry(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
@@ -394,7 +394,7 @@ public class API {
      */
     public void delete_trackable(final String catalog, final int id, final OnApiResponse<String> onApiResponse) {
         if(catalog == null || catalog.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackable()noCatalog"));
             return;
         }
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, getEndpointUrl("/" + catalog + "/" + id), new Response.Listener<String>() {
@@ -425,7 +425,7 @@ public class API {
      */
     public void delete_trackableByName(final String catalog, final String name, final OnApiResponse<String> onApiResponse) {
         if(catalog == null || catalog.equals("") || name == null || name.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500).setRetry(new Runnable() {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackableByName()noCatalogOrName").setRetry(new Runnable() {
                 @Override
                 public void run() {
                     delete_trackableByName(catalog, name, onApiResponse);
@@ -461,7 +461,7 @@ public class API {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackableByName()JSONException"));
                 }
             }
         });
@@ -481,11 +481,11 @@ public class API {
             case "conditions":
                 break;
             default:
-                onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()WrongCatalog"));
                 return;
         }
         if(name == null || name.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()noName"));
             return;
         }
         final Map<String, String> params = addAuthenticationParams();
@@ -498,7 +498,7 @@ public class API {
                     onApiResponse.onSuccess(new JSONObject(response));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()responseJSONException"));
                 }
             }
         }, new Response.ErrorListener() {

@@ -45,6 +45,7 @@ public class DefaultErrors {
 
         if(PreferenceKeys.DEBUGGING) {
             description += "<br/><br/>---App is in debug mode extra detail below---<br/>";
+            description += "<b>Debug String:</b>" + apiError.getDebugString() + "<br/>";
             description += "<b>Error code: </b>" + apiError.statusCode + "<br/><b>Response:</b><br/>";
             description += response;
         }
