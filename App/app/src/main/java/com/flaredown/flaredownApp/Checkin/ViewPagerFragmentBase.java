@@ -96,6 +96,15 @@ public class ViewPagerFragmentBase extends Fragment {
     public void addOnUpdateListener(UpdateListener updateListener) {
         updateListeners.add(updateListener);
     }
+
+    /**
+     * The number input may not trigger an UpdateListener event when the user changes the value....
+     * This will allow the input to trigger an UpdateListener if not done prior.
+     */
+    public JSONArray activityClosing() {
+        return new JSONArray();
+    }
+
     public void removeOnUpdateListener(UpdateListener updateListener) {
         updateListeners.remove(updateListener);
     }

@@ -2,8 +2,10 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -223,6 +225,15 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     }
 
     @Override
+    public JSONArray activityClosing() {
+        JSONArray returnArray = new JSONArray();
+        for (BlankQuestion questionView : questionViews) {
+            returnArray.put(questionView.activityClosing());
+        }
+        return returnArray;
+    }
+
+    @Override
     public JSONArray getResponse() throws JSONException{
         JSONArray output = new JSONArray();
         for (BlankQuestion questionView : questionViews) {
@@ -238,7 +249,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
     private class NumberQuestionInflate extends BlankQuestion {
         EditText editText;
         double oldValue;
-        public NumberQuestionInflate(JSONObject question, String catalogue, int section) throws JSONException { // TODO TRIGGER UPDATE ON NUMBER CHANGE ASK LOGAN
+        public NumberQuestionInflate(JSONObject question, final String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
             JSONObject inputs = question.getJSONArray("inputs").getJSONObject(0);
 
@@ -254,9 +265,26 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
                 public void onFocusChange(View v, boolean hasFocus) {
                     try {
                         updateResponse(Double.parseDouble(getValue()));
+                        triggerUpdateListener(generateResponseObject(getCatalog(), getName(), getValueDouble()));
+                        updateListenerCalled = true;
                     } catch (NumberFormatException e) {
                         updateResponse(null);
                     }
+                }
+            });
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    updateListenerCalled = false;
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
                 }
             });
 
@@ -279,6 +307,11 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         }
 
         @Override
+        public JSONObject activityClosing() {
+            return generateResponseObject(getCatalog(), getName(), getValueDouble());
+        }
+
+        @Override
         public void saveResponse() {
             try {
                 updateResponse(Double.valueOf(getValue()));
@@ -290,6 +323,15 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         @Override
         public String getValue() {
             return editText.getText().toString();
+        }
+
+        public Double getValueDouble() {
+            try {
+                return Double.valueOf(editText.getText().toString());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return 0.0;
+            }
         }
 
         @Override
@@ -308,7 +350,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         Checkin_Selector_View checkin_selector_view;
         public SelectQuestionInflate(final JSONObject question, final String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
-
             JSONArray inputs = question.getJSONArray("inputs");
             checkin_selector_view = new Checkin_Selector_View(getActivity()).setInputs(inputs);
             checkin_selector_view.setButtonClickListener(new Checkin_Selector_View.OnButtonClickListener() {
@@ -360,7 +401,6 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         Button button;
         public CheckBoxQuestionInflate(JSONObject question, final String catalogue, int section) throws JSONException {
             super(question, catalogue, section);
-
             button = new Button(new ContextThemeWrapper(getActivity(), R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button);
 
             Spanned label = Locales.read(getActivity(), "catalogs." + catalogue + "." + question.getString("name")).resultIfUnsuccessful(question.getString("name")).createAT();
@@ -427,6 +467,14 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         public LinearLayout ll_root;
         public TextView tv_question;
         private String name;
+        private String catalog;
+
+        public String getCatalog() {
+            return catalog;
+        }
+
+        protected boolean updateListenerCalled = true;
+        public JSONObject activityClosing(){ return null; }
         public String getValue() {
             return "";
         }
@@ -439,6 +487,7 @@ public class Checkin_catalogQ_fragment extends ViewPagerFragmentBase {
         BlankQuestion(JSONObject question, String catalogue, int section) throws JSONException {
             questionViews.add(this); // Add to the list of elements for easy restoration
             name = question.getString("name");
+            this.catalog = catalogue;
             // Create root elements
             ll_root = (LinearLayout) ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_question_blank, null);
             tv_question = (TextView) ll_root.findViewById(R.id.tv_question);
