@@ -2,20 +2,18 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
-import android.content.Intent;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -27,32 +25,67 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
-import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.FlareDown.ResponseReader;
-import com.flaredown.flaredownApp.InternetStatusBroadcastReceiver;
-import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
-import com.flaredown.flaredownApp.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
-    Context mContext;
     API flareDownAPI;
 
+    private Date checkinDate = null;
+    private JSONObject entriesJSONObject = null;
+    private JSONObject responseJSONObject = null;
+
+    /*
+        View Variables.
+     */
+    private Button bt_nextQuestion;
+    private Button bt_prevQuestion;
+    private Button bt_submitCheckin;
+    private Button bt_not_checked_in_checkin;
+
+    private TextView tv_not_checked_in_checkin;
+
+    private MainToolbarView mainToolbarView;
+    private Toolbar toolbar;
+    private TextView toolbarTitle;
+    private LinearLayout ll_not_checked_in;
+    private LinearLayout ll_splashScreen;
+    private RelativeLayout rl_checkin;
+    private FrameLayout fl_checkin_summary;
+    private Fragment f_checkin_sumary;
+
+    private ViewPager vp_questions;
+    private ViewPagerAdapter vpa_questions;
+
+    private OnActivityResultListener onActivityResultListener;
+
+    /*
+        Instance constant arguments.
+     */
+    private static final String SI_ENTRIES_JSON = "entries endpoint";
+    private static final String SI_RESPONSE_JSON = "response json";
+    private static final String SI_CURRENT_VIEW = "current view";
+    private static final String SI_CHECKIN_DATE = "checkin date";
+
     private enum Views {
-        SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY;
+        SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY
     }
+
     private Views currentView = null;
     private static final int ANIMATION_DURATION = 250;
     private void setView(Views showView) { setView(showView, true); }
@@ -199,463 +232,226 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
 
-    private static final String DEBUG_TAG = "HomeActivity";
-
-    private ViewPager vp_questions;
-    private ScreenSlidePagerAdapter questionPagerAdapter;
-    private Button bt_nextQuestion;
-    private Button bt_prevQuestion;
-    private Button bt_submitCheckin;
-    private LinearLayout ll_not_checked_in;
-    private Button bt_not_checked_in_checkin;
-    private TextView tv_not_checked_in_checkin;
-    private ViewPagerProgress vpp_questionProgress;
-    private LinearLayout ll_splashScreen;
-    private RelativeLayout rl_checkin;
-    private FrameLayout fl_checkin_summary;
-    private Fragment f_checkin_summary;
-    private int current_page = 0;
-    private Date dateDisplaying = API.currentDate;
-    private InternetStatusBroadcastReceiver internetStatusBroadcastReceiver;
-    private Menu menu;
-    private JSONObject entriesJSONObject = null;
-    private JSONObject responseJSONObject = new JSONObject();
-
-    private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
-
-
-    public List<ViewPagerFragmentBase> getFragmentQuestions() {
-        return fragment_questions;
-    }
-    public ScreenSlidePagerAdapter getScreenSlidePagerAdapter() {
-        return questionPagerAdapter;
-    }
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        mContext = this;
-        Styling.setFont();
-
-        // Set default structure to the responseJSONObject.
-        try {
-            responseJSONObject.put("responses", new JSONArray());
-            responseJSONObject.put("tags", new JSONArray());
-            responseJSONObject.put("treatments", new JSONArray());
-        } catch (JSONException e) { e.printStackTrace(); }
-
-        flareDownAPI = new API(mContext);
-        if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
+        flareDownAPI = new API(getApplicationContext());
+        if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
             new ForceLogin(this, flareDownAPI);
             return;
         }
-        initialiseUI();
-        if(savedInstanceState != null && savedInstanceState.getString(SI_currentView, "").equals(Views.CHECKIN.toString()) && savedInstanceState.containsKey(SI_entriesEndpoint)){
-            if(savedInstanceState.containsKey(SI_entriesEndpoint))
-                try {
-                    entriesJSONObject = new JSONObject(savedInstanceState.getString(SI_entriesEndpoint));
-                    initialisePages(entriesJSONObject);
-                } catch(JSONException e) { e.printStackTrace(); }
-            if(savedInstanceState.containsKey(SI_responseJson))
-                try {
-                    responseJSONObject = new JSONObject(savedInstanceState.getString(SI_responseJson));
-                } catch (JSONException e) { e.printStackTrace(); }
-
-            setView(Views.CHECKIN, false);
-        } else {
-            createActivity();
-        }
+        Styling.setFont(); // Uses the Calligraphy library inject the font.
+        assignViews();
+        setLocales();
+        initialise();
+        setView(Views.SPLASH_SCREEN, false);
+        displayCheckin(new Date());
     }
 
-    private void createActivity() {
-        final API.OnApiResponse<JSONObject> entriesResponse = new API.OnApiResponse<JSONObject>() {
-            @Override
-            public void onSuccess(JSONObject jsonObject) {
-                entriesJSONObject = jsonObject;
-                initialisePages(jsonObject);
-                setView(Views.NOT_CHECKED_IN_YET);
-            }
-
-            @Override
-            public void onFailure(API_Error error) {
-                new DefaultErrors(mContext, error);
-            }
-        };
-
-        if(!flareDownAPI.checkInternet()) {
-            final TextView tv_noInternetConnection = (TextView) findViewById(R.id.tv_noInternetConnection);
-            tv_noInternetConnection.setVisibility(View.VISIBLE);
-            internetStatusBroadcastReceiver.addOnConnect(new Runnable() {
-                @Override
-                public void run() {
-                    tv_noInternetConnection.setVisibility(View.GONE);
-                    flareDownAPI.entries(dateDisplaying, entriesResponse);
-                }
-            });
-        } else
-            flareDownAPI.entries(dateDisplaying, entriesResponse);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
-    private void initialiseUI() {
-        // Find the views.
-        vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
+    /**
+     * Finds the views of relevant views and assigns it's corresponding variable.
+     */
+    private void assignViews() {
         bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
         bt_prevQuestion = (Button) findViewById(R.id.bt_prevQuestion);
         bt_submitCheckin = (Button) findViewById(R.id.bt_submitCheckin);
-        vpp_questionProgress = (ViewPagerProgress) findViewById(R.id.vpp_questionProgress);
+        bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
+        vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
+
+        tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
+
+        mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_top);
+        toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
+        ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
         fl_checkin_summary = (FrameLayout) findViewById(R.id.fl_checkin_summary);
-        ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
-        tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
-        bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
-        final Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
-        TextView title = (TextView) findViewById(R.id.toolbar_title);
+    }
 
-
-        bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
-        tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
-
-        // Set up the toolbar.
-        title.setText(Styling.displayDateLong(dateDisplaying));
-        setSupportActionBar(mainToolbarView);
+    private void initialise() {
+        //Set up the toolbar
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        setView(Views.SPLASH_SCREEN, false);
-
-        bt_nextQuestion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextQuestion();
-            }
-        });
-        bt_prevQuestion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previousQuestion();
-            }
-        });
-        bt_submitCheckin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submitCheckin();
-            }
-        });
-        vp_questions.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position <= 0) {
-                    bt_prevQuestion.setVisibility(View.INVISIBLE);
-                    bt_submitCheckin.setVisibility(View.GONE);
-                    bt_nextQuestion.setVisibility(View.VISIBLE);
-                } else if (position >= fragment_questions.size() - 1) {
-                    bt_nextQuestion.setVisibility(View.GONE);
-                    bt_prevQuestion.setVisibility(View.VISIBLE);
-                    bt_submitCheckin.setVisibility(View.VISIBLE);
-                } else {
-                    bt_submitCheckin.setVisibility(View.GONE);
-                    bt_nextQuestion.setVisibility(View.VISIBLE);
-                    bt_prevQuestion.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
         bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setView(Views.CHECKIN);
             }
         });
+
+
+
     }
 
-    private void initialisePages(JSONObject entrys) {
-        try {
-            fragment_questions = createFragments(entrys.getJSONObject("entry"));
-            vpp_questionProgress.setNumberOfPages(fragment_questions.size());
-            questionPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), fragment_questions);
-            questionPagerAdapter.setOnPageCountChange(new OnPageCountListener() {
-                @Override
-                public void onPageCountChange(int size) {
-                    vpp_questionProgress.setNumberOfPages(size);
-                }
-            });
-            vp_questions.setAdapter(questionPagerAdapter);
-            vp_questions.addOnPageChangeListener(vpp_questionProgress);
-            vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-
-                    ViewPagerFragmentBase currentPageFragment = fragment_questions.get(current_page);
-                    ViewPagerFragmentBase futurePageFragment = fragment_questions.get(position);
-
-                    // Hide/Show Keyboard depending on page contents.
-                    if(!futurePageFragment.hasFocusEditText()) { // Hide the keyboard
-                        View currentFocus = ((Activity)mContext).getCurrentFocus();
-                        if(currentFocus != null) {
-                            InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-                            inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
-                        }
-                    } else { // Show the keyboard
-                        futurePageFragment.focusEditText();
-                    }
-
-
-
-
-
-
-                    currentPageFragment.onPageExit();
-                    futurePageFragment.onPageEnter();
-                    current_page = position;
-                }
-                @Override
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-            new DefaultErrors(this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:initialisePages()"));
-        }
+    /**
+     * Set all the text locales inside the activity
+     */
+    private void setLocales() { // TODO set locales for the activity
+        //bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
+        //tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
     }
 
-    private void submitCheckin() {
-        final CheckinActivity activity = this;
-        flareDownAPI.submitEntry(dateDisplaying, responseJSONObject, new API.OnApiResponse<JSONObject>() {
+    /**
+     * Display the check in for a specific date.
+     * @param date The date for the check in.
+     */
+    private void displayCheckin(final Date date) { // TODO implement loading screen.
+        toolbarTitle.setText(Styling.displayDateLong(date));
+        flareDownAPI.entries(date, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
-                new DefaultErrors(activity, error);
-                Toast.makeText(activity, "Checkin submition failed", Toast.LENGTH_LONG).show();
+                new DefaultErrors(getApplicationContext(), error);
             }
 
             @Override
             public void onSuccess(JSONObject result) {
-                displaySummary(entriesJSONObject, responseJSONObject, dateDisplaying);
+                Toast.makeText(getApplicationContext(), "Loaded", Toast.LENGTH_SHORT).show();
+                try {
+                    displayCheckin(date, result.getJSONObject("entry"));
+                } catch (JSONException e) {
+                    new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)").setRetry(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayCheckin(date);
+                        }
+                    }));
+                }
             }
         });
     }
-    private void displaySummary(JSONObject jsonEnrty, JSONObject jsonResponse, Date date) {
-        f_checkin_summary = Checkin_summary_fragment.newInstance(jsonEnrty, jsonResponse, date);
-        fl_checkin_summary.removeAllViews();
-        getSupportFragmentManager().beginTransaction().add(fl_checkin_summary.getId(), f_checkin_summary, "summary").commit();
-        setView(Views.SUMMARY);
-    }
 
-    private JSONObject getResponse() {
+    /**
+     * Display the check in for a specific date, passing the entries json object.
+     * @param date The date for the check in.
+     * @param entriesJSONObject Prefetched entries json object, including response.
+     */
+    private void displayCheckin(final Date date, JSONObject entriesJSONObject) {
+        setView(Views.NOT_CHECKED_IN_YET);
+        Toast.makeText(getApplication(), "displayCheckin()", Toast.LENGTH_SHORT).show();
+        //if(vpa_questions.getCount() > 0)
+            //vpa_questions.removeAllFragments();
         try {
-            JSONObject output = new JSONObject();
-            JSONArray responses = new JSONArray();
-            for (ViewPagerFragmentBase fragment_question : fragment_questions) {
-                JSONArray fragmentResponse = fragment_question.getResponse();
-                //Toast.makeText(this, fragmentResponse.toString(), Toast.LENGTH_SHORT).show();
-                for(int i = 0; i < fragmentResponse.length(); i++) {
-                    responses.put(fragmentResponse.get(i));
-                }
-            }
-            output.put("responses", responses);
-            return output;
+            List<List<EntryParsers.CatalogDefinition>> catalogDefinitionLists = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
+            List<ViewPagerFragmentBase> fragments = createFragments(catalogDefinitionLists);
+            vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+            vp_questions.setAdapter(vpa_questions);
         } catch (JSONException e) {
-            return null;
+            e.printStackTrace();
+            /*new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(2)").setRetry(new Runnable() {
+                @Override
+                public void run() {
+                    displayCheckin(date);
+                }
+            }));*/
         }
     }
 
-    public static List<ViewPagerFragmentBase> createFragments(JSONObject entry) throws JSONException{
+    /**
+     * Creates a list array of fragment objects for each question specified in the JSON object
+     * @param catalogDefinitionLists Specification for each question.
+     * @return A list array of Fragments extending the View Pager Fragment.
+     * @throws JSONException
+     */
+    public static List<ViewPagerFragmentBase> createFragments(List<List<EntryParsers.CatalogDefinition>> catalogDefinitionLists) throws JSONException {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
-        JSONObject catalog_definitions = entry.getJSONObject("catalog_definitions"); // The question descriptions.
-        ResponseReader responses = new ResponseReader(entry.optJSONArray("responses"));
-        Iterator<String> cd_iterator = catalog_definitions.keys(); // Used to iterate through the catalogues.
-
-        while(cd_iterator.hasNext()) {
-            String catalogueKey = cd_iterator.next();
-            JSONArray catalogue = catalog_definitions.getJSONArray(catalogueKey);
-
-            if(!responses.isEmpty()) {
-                for(int i = 0; i < catalogue.length(); i++) {
-                    JSONArray ja = catalogue.getJSONArray(i);
-                    for(int j = 0; j < ja.length(); j++) {
-                        JSONObject question = ja.getJSONObject(j);
-                        String response = responses.getResponse(catalogueKey, question.getString("name"));
-                        if (response != "")
-                            question.put("response", response);
-                    }
+        String currentCatalog = null;
+        Integer section = 1;
+        for (List<EntryParsers.CatalogDefinition> catalogDefinitions : catalogDefinitionLists) {
+            if(catalogDefinitions.size() > 0 && EntryParsers.CATALOG_NAMES.indexOf(catalogDefinitions.get(0).getCatalog()) == -1) { // Check that it isn't a grouped catalog.
+                if(!catalogDefinitions.get(0).getCatalog().equals(currentCatalog)) {
+                    section = 1;
+                    currentCatalog = catalogDefinitions.get(0).getCatalog();
                 }
+                CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
+                checkinCatalogQFragment.setQuestions(new ArrayList<List<EntryParsers.CatalogDefinition>>(Arrays.asList(catalogDefinitions)), section);
+                fragments.add(checkinCatalogQFragment);
+                section++;
             }
-
-            if(catalogueKey.equals("symptoms") || catalogueKey.equals("conditions") || catalogueKey.equals("treatments")) {
-                Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
-                checkin_catalogQ_fragment.setQuestions(catalogue, 0, catalogueKey);
-                fragments.add(checkin_catalogQ_fragment);
-            } else {
-                for (int i = 0; i < catalogue.length(); i++) { // Display each question on a separate display.
-                    JSONArray questions = new JSONArray();
-                    questions.put(catalogue.getJSONArray(i));
-                    Checkin_catalogQ_fragment checkin_catalogQ_fragment = new Checkin_catalogQ_fragment();
-                    checkin_catalogQ_fragment.setQuestions(questions, i + 1, catalogueKey);
-                    fragments.add(checkin_catalogQ_fragment);
-
-                }
+        }
+        for (String catalogName : EntryParsers.CATALOG_NAMES) { // Handling the grouped catalogs.
+            if(!catalogName.equals("treatments")) {
+                CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
+                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions(catalogName, catalogDefinitionLists), 0);
+                fragments.add(checkinCatalogQFragment);
             }
-
-
         }
         return fragments;
     }
 
-
-    private static final String SI_entriesEndpoint = "entries endpoint string";
-    private static final String SI_responseJson = "responseJson";
-    private static final String SI_currentView = "current view";
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if(entriesJSONObject != null)
-            outState.putString(SI_entriesEndpoint, entriesJSONObject.toString());
-        outState.putString(SI_currentView, currentView.toString());
-        outState.putString(SI_responseJson, responseJSONObject.toString());
+    public List<ViewPagerFragmentBase> getFragmentQuestions() {
+        return vpa_questions.getFragments();
+    }
+    public ViewPagerAdapter getScreenSlidePagerAdapter() {
+        return vpa_questions;
     }
 
-    public void updateResponseJson(ViewPagerFragmentBase.Trackable trackable, String questionName, Object value) {
-        try {
-            JSONArray responses = responseJSONObject.getJSONArray("responses");
-            for(int i = 0; i < responses.length(); i++) {
-                JSONObject response = responses.getJSONObject(i);
-                if(response.getString("name").equals(questionName) && response.getString("catalog").equals(trackable.catalogue)) {
-                    response.put("value", value);
-                    return;
-                }
-            }
-
-            JSONObject response = new JSONObject();
-            response.put("name", questionName);
-            response.put("catalog", trackable.catalogue);
-            response.put("value", value);
-            responses.put(response);
-
-        } catch (JSONException e) { e.printStackTrace(); }
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        new ForceLogin(this, flareDownAPI);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-    // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        this.menu = menu;
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar summary_item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        /*if(data != null && data.hasExtra(AddEditableActivity.RESULT))
-            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();*/
-        if(onActivityResultListener != null) {
-            onActivityResultListener.onActivityResult(requestCode, resultCode, data);
-            onActivityResultListener = null;
-        }
-    }
-
-    private OnActivityResultListener onActivityResultListener = null;
     public void setOnActivityResultListener(OnActivityResultListener onActivityResultListener){
         this.onActivityResultListener = onActivityResultListener;
     }
+
     public interface OnActivityResultListener {
         void onActivityResult(int requestCode, int resultCode, Intent data);
     }
 
-
-    public void nextQuestion() {
-        int index = vp_questions.getCurrentItem() + 1;
-        if(index < fragment_questions.size())
-            vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1);
-    }
-    public void previousQuestion() {
-        int index = vp_questions.getCurrentItem() - 1;
-        if(index >= 0) {
-             vp_questions.setCurrentItem(index);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(vp_questions.getCurrentItem() == 0)
-            super.onBackPressed();
-        else
-            previousQuestion();
-    }
-
     /**
-     * Simple pager adapter, for previewing the questions pages, may need switching out when loading questions from the api.
+     * The adapter for the view pager, used to display the questions.
      */
-
-    public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+    public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
-        private OnPageCountListener onPageCountListener;
-        public ScreenSlidePagerAdapter(FragmentManager fm, List<ViewPagerFragmentBase> fragments) {
-            super(fm);
+        private OnPageViewCountListener onPageViewCountListener;
+
+        /**
+         * Constructs the custom view pager adapte with fragments that extent the ViewPagerFragmentBase class.
+         * @param fragmentManager
+         * @param fragments The fragments to display in view pager.
+         */
+        public ViewPagerAdapter(FragmentManager fragmentManager, List<ViewPagerFragmentBase> fragments) {
+            super(fragmentManager);
             this.fragments = fragments;
         }
 
-        public void addView(ViewPagerFragmentBase fragment, int index) {
-            fragments.add(index, fragment);
+        /**
+         * Add a fragment to the view pager.
+         * @param viewPagerFragmentBase The fragment to add to the view pager.
+         * @param index the location of the index.
+         */
+        public void addView(ViewPagerFragmentBase viewPagerFragmentBase, int index) {
+            fragments.add(index, viewPagerFragmentBase);
             notifyDataSetChanged();
-            onPageCountChange();
-
+            triggerOnViewPageCountChange();
         }
 
-        public void removeView(int index) {
+        /**
+         * Remove a fragment at a specific location.
+         * @param index The index of the fragment to remove.
+         */
+        public void removeFragment(int index) {
             fragments.remove(index);
             notifyDataSetChanged();
-            onPageCountChange();
+            triggerOnViewPageCountChange();
         }
 
-        public void setOnPageCountChange(OnPageCountListener onPageCountListener) {
-            this.onPageCountListener = onPageCountListener;
+        /**
+         * Remove all fragments from the view pager.
+         */
+        public void removeAllFragments() {
+            fragments = new ArrayList<>();
+            notifyDataSetChanged();
+            triggerOnViewPageCountChange();
         }
-        private void onPageCountChange() {
-            if(this.onPageCountListener != null)
-                onPageCountListener.onPageCountChange(fragments.size());
+
+        private void triggerOnViewPageCountChange() {
+            if(this.onPageViewCountListener != null)
+                this.onPageViewCountListener.onPageViewCountChange(fragments.size());
         }
 
         @Override
@@ -672,8 +468,67 @@ public class CheckinActivity extends AppCompatActivity {
         public int getItemPosition(Object object) {
             return POSITION_NONE;
         }
+
+        /*
+                                    Getters and setters.
+                                 */
+        public List<ViewPagerFragmentBase> getFragments() {
+            return fragments;
+        }
+
+        public void setFragments(List<ViewPagerFragmentBase> viewPagerFragmentBase) {
+            this.fragments = viewPagerFragmentBase;
+            notifyDataSetChanged();
+            triggerOnViewPageCountChange();
+        }
+
+        public void setOnPageViewCountListener(OnPageViewCountListener onPageViewCountListener) {
+            this.onPageViewCountListener = onPageViewCountListener;
+        }
     }
-    public interface OnPageCountListener{
-        void onPageCountChange(int size);
+
+    /**
+     * An event listener which is triggered when the page size changes for a view pager.
+     */
+    public interface OnPageViewCountListener {
+        void onPageViewCountChange(int size);
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Used to inject a custom font with Calligraphy library to the activity.
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /*if(data != null && data.hasExtra(AddEditableActivity.RESULT))
+            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();*/
+        if(onActivityResultListener != null) {
+            onActivityResultListener.onActivityResult(requestCode, resultCode, data);
+            onActivityResultListener = null;
+        }
+    }
+
 }

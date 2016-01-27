@@ -126,11 +126,11 @@ public class EditEditablesDialog extends DialogFragment {
                                     //Get the index of the question and remove it...
                                     int index = ViewPagerFragmentBase.indexOfTrackableQuestion(editable.catalog, editable.name, questionFragments);
                                     if(index != -1) {
-                                        if (questionFragments.get(index) instanceof Checkin_catalogQ_fragment) {
-                                            Checkin_catalogQ_fragment checkin_catalogQ_fragment = (Checkin_catalogQ_fragment) questionFragments.get(index);
+                                        if (questionFragments.get(index) instanceof CheckinCatalogQFragment) {
+                                            CheckinCatalogQFragment checkin_catalogQ_fragment = (CheckinCatalogQFragment) questionFragments.get(index);
                                             checkin_catalogQ_fragment.removeQuestion(editable.name);
                                         } else {
-                                            checkinActivity.getScreenSlidePagerAdapter().removeView(index);
+                                            checkinActivity.getScreenSlidePagerAdapter().removeFragment(index);
                                         }
                                     }
                                 }
@@ -213,14 +213,15 @@ public class EditEditablesDialog extends DialogFragment {
 
                                         //Alter the checkin pages.
 
-                                        Checkin_catalogQ_fragment catalogueFragment = (Checkin_catalogQ_fragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexOfCatalogue(catalog, checkinActivity.getFragmentQuestions()));
+                                        CheckinCatalogQFragment catalogueFragment = (CheckinCatalogQFragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexesOfCatalog(catalog, checkinActivity.getFragmentQuestions()).get(0)); //TODO make safer
 
-                                        JSONObject question = Checkin_catalogQ_fragment.getDefaultQuestionJson(name);
-                                        try {
-                                            catalogueFragment.appendQuestion(question);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
+                                        //JSONObject question = CheckinCatalogQFragment.getDefaultQuestionJson(name);
+                                        //try {
+                                            //catalogueFragment.appendQuestion(question);
+                                        //} catch (JSONException e) {
+                                        //    e.printStackTrace();
+                                        //}
+                                        //TODO Add question to view
                                     }
                                 });
                             }

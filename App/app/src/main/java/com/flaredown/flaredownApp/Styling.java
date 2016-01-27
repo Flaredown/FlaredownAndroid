@@ -26,7 +26,7 @@ public class Styling {
                 .setDefaultFontPath("fonts/proximanova_regular.ttf")
                 .build());
 
-        /**
+        /*
          * Don't forget to add the following
          * @Override
          * protected void attachBaseContext(Context newBase) {
