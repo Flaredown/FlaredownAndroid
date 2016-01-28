@@ -48,7 +48,7 @@ public class API {
     //public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
     public static final Date currentDate = new Date();
     private SharedPreferences sharedPreferences;
-    private static final int API_TIMEOUT_MILLISECONDS = 300000;
+    private static final int API_TIMEOUT_MILLISECONDS = 30;
 
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
@@ -192,11 +192,13 @@ public class API {
             @Override
             public void onResponse(JSONObject response) {
                 onApiResponse.onSuccess(response);
+                cacheAPI("current_user",response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                cacheAPI("current_user","");
             }
         });
 
