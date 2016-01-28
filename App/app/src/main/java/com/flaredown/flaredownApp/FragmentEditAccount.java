@@ -65,7 +65,7 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
         mBirthDatePicker = (DatePicker) view.findViewById(R.id.birthday);
         mBirthDatePicker.setMaxDate(Calendar.getInstance().getTimeInMillis());
         mbtnSave = (Button)view.findViewById(R.id.editAccountSave);
-        final LinearLayout llProgress = (LinearLayout) view.findViewById(R.id.llProgress);
+        final LinearLayout llProgress = (LinearLayout) view.findViewById(R.id.llEditAccountProgress);
         final LinearLayout llEditAccount = (LinearLayout) view.findViewById(R.id.llEditAccount);
         mtvCountry = (TextView) view.findViewById(R.id.tvCountry);
         mtvBirthdate = (TextView) view.findViewById(R.id.tvBirthdate);
