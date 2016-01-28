@@ -340,8 +340,8 @@ public class CheckinActivity extends AppCompatActivity {
         //if(vpa_questions.getCount() > 0)
             //vpa_questions.removeAllFragments();
         try {
-            List<List<EntryParsers.CatalogDefinition>> catalogDefinitionLists = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
-            List<ViewPagerFragmentBase> fragments = createFragments(catalogDefinitionLists);
+            List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions2(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
+            List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
         } catch (JSONException e) {
@@ -357,22 +357,22 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Creates a list array of fragment objects for each question specified in the JSON object
-     * @param catalogDefinitionLists Specification for each question.
+     * @param collectionCatalogDefinitions Specification for each question.
      * @return A list array of Fragments extending the View Pager Fragment.
      * @throws JSONException
      */
-    public static List<ViewPagerFragmentBase> createFragments(List<List<EntryParsers.CatalogDefinition>> catalogDefinitionLists) throws JSONException {
+    public static List<ViewPagerFragmentBase> createFragments(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) throws JSONException {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         String currentCatalog = null;
         Integer section = 1;
-        for (List<EntryParsers.CatalogDefinition> catalogDefinitions : catalogDefinitionLists) {
-            if(catalogDefinitions.size() > 0 && EntryParsers.CATALOG_NAMES.indexOf(catalogDefinitions.get(0).getCatalog()) == -1) { // Check that it isn't a grouped catalog.
-                if(!catalogDefinitions.get(0).getCatalog().equals(currentCatalog)) {
+        for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            if(EntryParsers.CATALOG_NAMES.indexOf(collectionCatalogDefinition.getCatalog()) == -1) { // Check that it isn't a grouped catalog.
+                if(!collectionCatalogDefinition.getCatalog().equals(currentCatalog)) {
                     section = 1;
-                    currentCatalog = catalogDefinitions.get(0).getCatalog();
+                    currentCatalog = collectionCatalogDefinition.getCatalog(); // Add a new class to contain groups of catalog definitions.
                 }
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(new ArrayList<List<EntryParsers.CatalogDefinition>>(Arrays.asList(catalogDefinitions)), section);
+                checkinCatalogQFragment.setQuestions(new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
                 fragments.add(checkinCatalogQFragment);
                 section++;
             }
@@ -380,7 +380,7 @@ public class CheckinActivity extends AppCompatActivity {
         for (String catalogName : EntryParsers.CATALOG_NAMES) { // Handling the grouped catalogs.
             if(!catalogName.equals("treatments")) {
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions(catalogName, catalogDefinitionLists), 0);
+                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions2(catalogName, collectionCatalogDefinitions), 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }
@@ -523,8 +523,6 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*if(data != null && data.hasExtra(AddEditableActivity.RESULT))
-            Toast.makeText(this, data.getStringExtra(AddEditableActivity.RESULT), Toast.LENGTH_LONG).show();*/
         if(onActivityResultListener != null) {
             onActivityResultListener.onActivityResult(requestCode, resultCode, data);
             onActivityResultListener = null;

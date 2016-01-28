@@ -94,7 +94,7 @@ public class Checkin_summary_fragment extends Fragment {
     private void assembleFragments() {
         try {
             //fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
-            fragments = CheckinActivity.createFragments(EntryParsers.getCatalogDefinitions(argEntryJson.getJSONObject("entry"), new JSONArray())); //TODO pass responses
+            fragments = CheckinActivity.createFragments(EntryParsers.getCatalogDefinitions2(argEntryJson.getJSONObject("entry"), new JSONArray())); //TODO pass responses
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();

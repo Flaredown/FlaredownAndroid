@@ -1,7 +1,5 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +15,16 @@ import java.util.List;
 public class EntryParsers {
 
     public static final List<String> CATALOG_NAMES = new ArrayList<>(Arrays.asList("symptoms", "conditions", "treatments"));
+
+    public static boolean catalogDefinitionHasOneElement(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+        return collectionCatalogDefinitions != null && collectionCatalogDefinitions.size() > 0 && collectionCatalogDefinitions.size() > 0;
+    }
+    public static CatalogDefinition getFirstCatalogDefinition(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+        if(catalogDefinitionHasOneElement(collectionCatalogDefinitions))
+            return collectionCatalogDefinitions.get(0).get(0);
+        else
+            return null;
+    }
 
 
     /**
@@ -39,26 +47,28 @@ public class EntryParsers {
      * @param responseJArray if no response pass an empty json array.
      * @return A List of catalog definitions.
      * @throws JSONException
-     */
-    public static List<List<CatalogDefinition>> getCatalogDefinitions(JSONObject catalogDefinitionsJObject, JSONArray responseJArray) throws JSONException {
+     *///TODO TEST OBJ
+    public static List<CollectionCatalogDefinition> getCatalogDefinitions2(JSONObject catalogDefinitionsJObject, JSONArray responseJArray) throws JSONException {
         List<Response> responses = getResponses(responseJArray);
-        List<List<CatalogDefinition>> catalogDefinitionsList = new ArrayList<>();
+        List<CollectionCatalogDefinition> collectionDefinitions = new ArrayList<>();
+
         Iterator<String> cdJArrayIterator = catalogDefinitionsJObject.keys();
         while(cdJArrayIterator.hasNext()) {
             String catalogName = cdJArrayIterator.next();
             JSONArray catalogDefinitionsJArray = catalogDefinitionsJObject.getJSONArray(catalogName);
             for(int i = 0; i < catalogDefinitionsJArray.length(); i++) {
-                List<CatalogDefinition> catalogDefinitions = new ArrayList<>();
+                CollectionCatalogDefinition collectionCatalogDefinition = new CollectionCatalogDefinition();
                 JSONArray catalogDefinitionsJArray2 = catalogDefinitionsJArray.getJSONArray(i);
                 for(int j = 0; j < catalogDefinitionsJArray2.length(); j++) {
                     CatalogDefinition catalogDefinition = new CatalogDefinition(catalogName, catalogDefinitionsJArray2.getJSONObject(j));
                     catalogDefinition.setResponse(findResponse(responses, catalogDefinition));
-                    catalogDefinitions.add(catalogDefinition);
+                    collectionCatalogDefinition.add(catalogDefinition);
                 }
-                catalogDefinitionsList.add(catalogDefinitions);
+                collectionDefinitions.add(collectionCatalogDefinition);
             }
         }
-        return catalogDefinitionsList;
+
+        return collectionDefinitions;
     }
 
     /**
@@ -66,24 +76,26 @@ public class EntryParsers {
      * @param catalog Catalog name to filter by.
      * @param catalogDefinitionLists A list of catalog definitions to filter through.
      * @return The filtered list of catalog definitions.
-     */
-    public static List<List<CatalogDefinition>> getCatalogDefinitions(String catalog, List<List<CatalogDefinition>> catalogDefinitionLists) {
-        List<List<CatalogDefinition>> filteredList = new ArrayList<>();
-        for (List<CatalogDefinition> catalogDefinitions : catalogDefinitionLists)
-            if(catalogDefinitions.size() > 0 && catalogDefinitions.get(0).getCatalog().equals(catalog))
-                filteredList.add(catalogDefinitions);
+     *///TODO TEST OBJ
+    public static List<CollectionCatalogDefinition> getCatalogDefinitions2(String catalog, List<CollectionCatalogDefinition> catalogDefinitionLists) {
+        List<CollectionCatalogDefinition> filteredList = new ArrayList<>();
+        for (CollectionCatalogDefinition collectionCatalogDefinition : catalogDefinitionLists)
+            if(collectionCatalogDefinition.getCatalog().equals(catalog))
+                filteredList.add(collectionCatalogDefinition);
         return filteredList;
     }
 
     /**
      * Retruns a JSON Array of the responses.
-     * @param catalogDefinitions A list of catalog definitions containing responses.
+     * @param collectionCatalogDefinitions A list of catalog definitions containing responses.
      * @return JSON Array of responses
-     */
-    public JSONArray getResponsesJSONCatalogDefinitionList(List<CatalogDefinition> catalogDefinitions) {
+     *///TODO TEST OBJ
+    public JSONArray getResponsesJSONCatalogDefinitionList2(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONArray outputJArray = new JSONArray();
-        for (CatalogDefinition catalogDefinition : catalogDefinitions) {
-            outputJArray.put(catalogDefinition.response.getJSONObject());
+        for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                outputJArray.put(catalogDefinition.response.getJSONObject());
+            }
         }
         return outputJArray;
     }
@@ -104,21 +116,35 @@ public class EntryParsers {
     /**
      * Returns a JSON Object of the catalog definitions.
      * @return
-     */
-    public static JSONObject getCatalogDefinitionsJSON(List<CatalogDefinition> catalogDefinitions) {
+     *///TODO TEST OBJ
+    public static JSONObject getCatalogDefinitionsJSON2(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONObject outputJObject = new JSONObject();
         try {
-            for (CatalogDefinition catalogDefinition : catalogDefinitions) {
-                if (!outputJObject.has(catalogDefinition.getCatalog()))
-                    outputJObject.put(catalogDefinition.getCatalog(), new JSONArray());
-                JSONArray catalogJArray = outputJObject.getJSONArray(catalogDefinition.getCatalog());
-                catalogJArray.put(catalogDefinition.getJSONObject());
+            for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+                for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                    JSONArray catalogJArray = outputJObject.getJSONArray(collectionCatalogDefinition.getCatalog());
+                    catalogJArray.put(catalogDefinition.getJSONObject());
+                    if (!outputJObject.has(collectionCatalogDefinition.getCatalog()))
+                        outputJObject.put(collectionCatalogDefinition.getCatalog(), catalogJArray);
+                }
             }
         } catch (JSONException e) {
 
         }
         return outputJObject;
     }
+
+    public static CatalogDefinition createCatalogDefinition(String catalog, String name, CatalogInputType catalogInputType, List<Input> inputs ) {
+        return new CatalogDefinition(catalog, name, catalogInputType, inputs);
+    }
+
+    public static List<Input> getDefaultInputSmilies() {
+        List<Input> inputs = new ArrayList<>();
+        for(int i = 0; i < 5; i++)
+            inputs.add(new Input(i).setHelper("basic_" + i).setMetaLabel((i == 0) ? "smiley" : null));
+        return inputs;
+    }
+
 
     /**
      * Returns a JSON array of the inputs for a catalog definition.
@@ -194,6 +220,23 @@ public class EntryParsers {
         }
     }
 
+
+    public enum CatalogInputType {
+        SELECT, CHECKBOX, NUMBER
+    }
+
+    public static String getCatalogInputTypeString(CatalogInputType cit) {
+        switch (cit) {
+            case SELECT:
+                return "select";
+            case CHECKBOX:
+                return "checkbox";
+            case NUMBER:
+                return "number";
+        }
+        return "";
+    }
+
     /**
      * Stores catalog definitions (check in questions).
      */
@@ -214,6 +257,13 @@ public class EntryParsers {
                     inputs.add(new Input(inputsJArray.getJSONObject(i)));
                 }
             }
+        }
+
+        CatalogDefinition(String catalog, String name, CatalogInputType catalogInputType, List<Input> inputs) {
+            this.catalog = catalog;
+            this.name = name;
+            this.kind = getCatalogInputTypeString(catalogInputType);
+            this.inputs = inputs;
         }
 
         /**
@@ -258,6 +308,21 @@ public class EntryParsers {
         }
     }
 
+    public static class CollectionCatalogDefinition extends ArrayList<CatalogDefinition> {
+
+        String catalog = null;
+
+        @Override
+        public boolean add(CatalogDefinition object) {
+            catalog = object.getCatalog();
+            return super.add(object);
+        }
+
+        public String getCatalog() {
+            return catalog;
+        }
+    }
+
     /**
      * Stores values for a select input question.
      */
@@ -266,12 +331,18 @@ public class EntryParsers {
         private String helper;
         private String label;
         private String metaLabel;
+        private Double step;
 
         Input(JSONObject inputJObject) throws JSONException{
             value = inputJObject.get("value");
             helper = inputJObject.optString("helper", null);
             metaLabel = inputJObject.optString("meta_label", null);
             label = inputJObject.optString("label", null);
+            step = inputJObject.optDouble("step", 0);
+        }
+
+        Input(Object value) {
+            this.value = value;
         }
 
         /**
@@ -285,6 +356,7 @@ public class EntryParsers {
                 outputJObject.putOpt("helper", helper);
                 outputJObject.putOpt("meta_label", metaLabel);
                 outputJObject.putOpt("label", label);
+                outputJObject.putOpt("step", step);
             } catch (JSONException e) {
 
             }
@@ -301,6 +373,20 @@ public class EntryParsers {
 
         public String getLabel() {
             return label;
+        }
+
+        public Double getStep() {
+            return step;
+        }
+
+        public Input setHelper(String helper) {
+            this.helper = helper;
+            return this;
+        }
+
+        public Input setMetaLabel(String metaLabel) {
+            this.metaLabel = metaLabel;
+            return this;
         }
     }
 }

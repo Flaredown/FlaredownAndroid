@@ -18,24 +18,21 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    protected List<List<EntryParsers.CatalogDefinition>> catalogDefinitionLists;
+    protected List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
 
-    public List<List<EntryParsers.CatalogDefinition>> getCatalogDefinitionLists() {
-        return catalogDefinitionLists;
+    public List<EntryParsers.CollectionCatalogDefinition> getCollectionCatalogDefinitions() {
+        return collectionCatalogDefinitions;
     }
 
-    //Trackable trackable = null; // TODO remove
-
-
-    public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
+    public static int indexOfQuestionsPage(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
         List<Integer> catalogIndexes = indexesOfCatalog(catalogue, fragments);
-        for (int i = 0; i < catalogIndexes.size(); i++) {
-            ViewPagerFragmentBase fragment = fragments.get(i);
+        for (Integer catalogIndex : catalogIndexes) {
+            ViewPagerFragmentBase fragment = fragments.get(catalogIndex);
             if(fragment instanceof CheckinCatalogQFragment) {
                 CheckinCatalogQFragment checkinCatalogQFragment = (CheckinCatalogQFragment) fragment;
                 int questionIndex = checkinCatalogQFragment.indexOfQuestion(question);
                 if(questionIndex != -1)
-                    return questionIndex;
+                    return catalogIndex;
             }
         }
         return -1;
@@ -45,51 +42,12 @@ public class ViewPagerFragmentBase extends Fragment {
         List<Integer> integers = new ArrayList<>();
         for (int i = 0; i < fragments.size(); i++) {
             ViewPagerFragmentBase fragment = fragments.get(i);
-            if(fragment.catalogDefinitionLists != null && fragment.catalogDefinitionLists.size() > 0 && fragment.catalogDefinitionLists.get(0).size() > 0 && fragment.catalogDefinitionLists.get(0).get(0).getCatalog().equals(catalog)) {
+            if(fragment.collectionCatalogDefinitions.size() > 0 && fragment.collectionCatalogDefinitions.get(0).getCatalog().equals(catalog)) {
                 integers.add(i);
             }
         }
         return integers;
     }
-
-
-
-
-    /*public static int indexOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
-        for (int i = 0; i < fragments.size(); i++) {
-            if(fragments.get(i).trackable.catalogue.equals(catalogue)) return i;
-        }
-        return -1;
-    }*/
-
-    /*public static class Trackable {
-        String catalogue;
-        String[] questions;
-        JSONArray JA_questions = new JSONArray();
-
-        public Trackable() {
-            catalogue = "";
-            questions = new String[0];
-        }
-
-        public Trackable(String catalogue, JSONArray questions) throws JSONException{
-            this.catalogue = catalogue;
-            this.JA_questions = questions;
-            createQuestionsStrArr(questions);
-        }
-
-        private void createQuestionsStrArr(JSONArray questions) throws JSONException{
-            this.questions = new String[questions.length()];
-            for(int i = 0; i < questions.length(); i++) {
-                JSONArray ja = questions.getJSONArray(i);
-                for(int j = 0; j < ja.length(); j++) {
-                    JSONObject jo = ja.getJSONObject(j);
-                    this.questions[i] = jo.getString("name");
-                }
-            }
-        }
-    }
-    */
 
 
     public void onPageEnter() {

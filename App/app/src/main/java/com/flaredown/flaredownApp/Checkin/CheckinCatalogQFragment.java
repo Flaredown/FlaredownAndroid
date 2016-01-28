@@ -1,9 +1,9 @@
 package com.flaredown.flaredownApp.Checkin;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.text.Spanned;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
@@ -11,11 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.FlareDown.API_Error;
+import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Styling;
@@ -60,22 +63,53 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     }
 
     private void init() {
-        if(catalogDefinitionLists != null) {
+        if(collectionCatalogDefinitions != null) {
             //Set the catalog title.
-            if(catalogDefinitionLists.size() > 0 && catalogDefinitionLists.get(0).size() > 0) {
-                switch (catalogDefinitionLists.get(0).get(0).getCatalog()) {
+            if(collectionCatalogDefinitions.size() > 0 && collectionCatalogDefinitions.get(0).size() > 0) {
+                switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
                     case "conditions":
                     case "symptoms":
-                        tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + catalogDefinitionLists.get(0).get(0).getCatalog()).capitalize1Char().createAT());
+                        tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + collectionCatalogDefinitions.get(0).get(0).getCatalog()).capitalize1Char().createAT());
                         break;
                     default:
-                        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + catalogDefinitionLists.get(0).get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
+                        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
                         break;
                 }
+                //Open edit trackables dialog on catalog title click.
+                tv_catalogName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
+                            String catalog = EntryParsers.getFirstCatalogDefinition(collectionCatalogDefinitions).getCatalog();
+
+                            switch (catalog) {
+                                case "symptoms":
+                                case "conditions":
+                                    String title = Locales.read(getActivity(), "onboarding.edit_" + catalog).create();
+
+                                    final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                                    editEditablesDialog.initialize(title, catalog);
+                                    editEditablesDialog.show(getActivity().getFragmentManager(), "editablesdialog");
+                                    api.getEditables(catalog, new API.OnApiResponse<List<String>>() {
+                                        @Override
+                                        public void onFailure(API_Error error) {
+                                            new DefaultErrors(getActivity(), error);
+                                        }
+
+                                        @Override
+                                        public void onSuccess(List<String> result) {
+                                            editEditablesDialog.setItems(result);
+                                        }
+                                    });
+                                    break;
+                            }
+                        }
+                    }
+                });
 
                 //Set the section title.
                 String sectionTitle = "--";
-                switch (catalogDefinitionLists.get(0).get(0).getCatalog()) {
+                switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
                     case "symptoms":
                         if (questionViews.size() == 0)
                             sectionTitle = Locales.read(getActivity(), "oops_no_symptoms_being_tracked").create();
@@ -89,14 +123,14 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                             sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
                         break;
                     default:
-                        sectionTitle = Locales.read(getActivity(), "catalogs." + catalogDefinitionLists.get(0).get(0).getCatalog() + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+                        sectionTitle = Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).get(0).getCatalog() + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
                         break;
                 }
                 //sectionTitle = String.valueOf(section);
                 tv_sectionTitle.setText(sectionTitle);
             }
-            for (List<EntryParsers.CatalogDefinition> catalogDefinitions : catalogDefinitionLists) {
-                for (EntryParsers.CatalogDefinition catalogDefinition : catalogDefinitions) {
+            for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinitions : this.collectionCatalogDefinitions) {
+                for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinitions) {
                     appendQuesiton(catalogDefinition);
                 }
             }
@@ -107,9 +141,8 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private List<BaseQuestion> questionViews = new ArrayList<>();
 
-    public void setQuestions(List<List<EntryParsers.CatalogDefinition>> catalogDefinitions, Integer section) {
-        //Toast.makeText(getActivity(), "CheckinCatalogQFragment:setQuestions()",Toast.LENGTH_SHORT).show();
-        this.catalogDefinitionLists = catalogDefinitions;
+    public void setQuestions(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Integer section) {
+        this.collectionCatalogDefinitions = collectionCatalogDefinitions;
         this.section = section;
     }
 
@@ -122,8 +155,16 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             case "checkbox":
                 questionView = new CheckBoxQuestion(getActivity(), catalogDefinition);
                 break;
+            case "number":
+                questionView = new NumberQuestion(getActivity(), catalogDefinition);
+                break;
         }
         if(questionView != null) {
+            if(collectionCatalogDefinitions.size() > 0) { // Add to list if not already there.
+                if(collectionCatalogDefinitions.get(0).indexOf(catalogDefinition) == -1) {
+                    collectionCatalogDefinitions.get(0).add(catalogDefinition);
+                }
+            }
             ll_questionHolder.addView(questionView);
             questionViews.add(questionView);
         }
@@ -131,13 +172,24 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     public void removeQuestion(String name) {
         int location = indexOfQuestion(name);
-        this.ll_questionHolder.removeView(questionViews.get(location));
-        questionViews.remove(location);
+        for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                if(name.equals(catalogDefinition.getName())) {
+                    collectionCatalogDefinition.remove(catalogDefinition);
+                }
+            }
+            if(collectionCatalogDefinition.size() == 0)
+                collectionCatalogDefinitions.remove(collectionCatalogDefinition);
+        }
+        if(location != -1) {
+            this.ll_questionHolder.removeView(questionViews.get(location));
+            questionViews.remove(location);
+        }
     }
 
     public int indexOfQuestion(String name) {
         for (int i = 0; i < questionViews.size(); i++) {
-            if(questionViews.get(i).getCatalogDefinition().getName().equals(name)) {
+            if(name.equals(questionViews.get(i).getCatalogDefinition().getName())) {
                 return i;
             }
         }
@@ -190,6 +242,45 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         public EntryParsers.CatalogDefinition getCatalogDefinition() {
             return catalogDefinition;
         }
+    }
+
+    private static class NumberQuestion extends BaseQuestion {
+        EditText editText;
+        boolean integersOnly = false;
+
+        public NumberQuestion(Activity activity, EntryParsers.CatalogDefinition catalogDefinition) {
+            super(activity, catalogDefinition);
+            if(catalogDefinition.getInputs().size() > 0){
+                editText = new EditText(getContext());
+
+                double step = catalogDefinition.getInputs().get(0).getStep();
+                if(step == Math.round(step)) { // Only excepts whole numbers.
+                    integersOnly = true;
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                } else { // Decimals are aloud.
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                }
+                editText.setGravity(Gravity.CENTER);
+                editText.setSelectAllOnFocus(true);
+                try {
+                    setValue((double) catalogDefinition.getInputs().get(0).getValue());
+                } catch (ClassCastException e) {
+                    setValue(0.0);
+                }
+                this.addView(editText);
+
+
+            }
+
+        }
+        public void setValue(double value) {
+            if(integersOnly) {
+                editText.setText(String.valueOf((int) value));
+            } else {
+                editText.setText(String.valueOf(value));
+            }
+        }
+
     }
 
     private static class CheckBoxQuestion extends BaseQuestion {
