@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.Checkin;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +50,7 @@ public class EntryParsers {
      * @return A List of catalog definitions.
      * @throws JSONException
      *///TODO TEST OBJ
-    public static List<CollectionCatalogDefinition> getCatalogDefinitions2(JSONObject catalogDefinitionsJObject, JSONArray responseJArray) throws JSONException {
+    public static List<CollectionCatalogDefinition> getCatalogDefinitions(JSONObject catalogDefinitionsJObject, JSONArray responseJArray) throws JSONException {
         List<Response> responses = getResponses(responseJArray);
         List<CollectionCatalogDefinition> collectionDefinitions = new ArrayList<>();
 
@@ -77,7 +79,7 @@ public class EntryParsers {
      * @param catalogDefinitionLists A list of catalog definitions to filter through.
      * @return The filtered list of catalog definitions.
      *///TODO TEST OBJ
-    public static List<CollectionCatalogDefinition> getCatalogDefinitions2(String catalog, List<CollectionCatalogDefinition> catalogDefinitionLists) {
+    public static List<CollectionCatalogDefinition> getCatalogDefinitions(String catalog, List<CollectionCatalogDefinition> catalogDefinitionLists) {
         List<CollectionCatalogDefinition> filteredList = new ArrayList<>();
         for (CollectionCatalogDefinition collectionCatalogDefinition : catalogDefinitionLists)
             if(collectionCatalogDefinition.getCatalog().equals(catalog))
@@ -90,7 +92,7 @@ public class EntryParsers {
      * @param collectionCatalogDefinitions A list of catalog definitions containing responses.
      * @return JSON Array of responses
      *///TODO TEST OBJ
-    public JSONArray getResponsesJSONCatalogDefinitionList2(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+    public JSONArray getResponsesJSONCatalogDefinitionList(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONArray outputJArray = new JSONArray();
         for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
             for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
@@ -117,7 +119,7 @@ public class EntryParsers {
      * Returns a JSON Object of the catalog definitions.
      * @return
      *///TODO TEST OBJ
-    public static JSONObject getCatalogDefinitionsJSON2(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+    public static JSONObject getCatalogDefinitionsJSON(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONObject outputJObject = new JSONObject();
         try {
             for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {

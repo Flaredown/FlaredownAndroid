@@ -35,7 +35,19 @@ public class CheckinSelectorView extends LinearLayout { //TODO check no need for
     }
 
     public void setValue(Object value) {
-        this.value = value; //TODO update view.
+        this.value = value;
+        for (InputButton button : buttons) {
+            try {
+                if (button.getValue().equals(value)) {
+                    button.selectButton();
+                    return;
+                }
+                if(((Integer) button.getValue()).doubleValue() == ((Double) value).doubleValue()){
+                    button.selectButton();
+                    return;
+                }
+            } catch(Exception e){}
+        }
     }
 
     public CheckinSelectorView setInputs(List<EntryParsers.Input> inputs) {

@@ -30,12 +30,9 @@ import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
@@ -379,7 +376,7 @@ public class CheckinActivity extends AppCompatActivity {
         //if(vpa_questions.getCount() > 0)
             //vpa_questions.removeAllFragments();
         try {
-            List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions2(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
+            List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
             List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
@@ -419,7 +416,7 @@ public class CheckinActivity extends AppCompatActivity {
         for (String catalogName : EntryParsers.CATALOG_NAMES) { // Handling the grouped catalogs.
             if(!catalogName.equals("treatments")) {
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions2(catalogName, collectionCatalogDefinitions), 0);
+                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions), 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }

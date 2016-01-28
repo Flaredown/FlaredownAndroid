@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
@@ -267,6 +269,14 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                 } catch (ClassCastException e) {
                     setValue(0.0);
                 }
+
+                if(catalogDefinition.getResponse() != null) {
+                    try {
+                        setValue((double) catalogDefinition.getResponse().getValue());
+                    } catch (ClassCastException e) {
+
+                    }
+                }
                 this.addView(editText);
 
 
@@ -298,7 +308,14 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             this.addView(bt_checkbox);
             int margins = (int) Styling.getInDP(activity, 5);
             ((ViewGroup.MarginLayoutParams) bt_checkbox.getLayoutParams()).setMargins(margins, margins, margins, margins);
+
+            if(catalogDefinition.getResponse() != null) {
+                try {
+                    bt_checkbox.setSelected(((double) catalogDefinition.getResponse().getValue()) == 1.0);
+                } catch (ClassCastException e) {}
+            }
         }
+
     }
     private static class SelectQuestion extends BaseQuestion {
         CheckinSelectorView checkinSelectorView;
@@ -307,6 +324,11 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             checkinSelectorView = new CheckinSelectorView(activity);
             checkinSelectorView.setInputs(catalogDefinition.getInputs());
             this.addView(checkinSelectorView);
+
+
+            if(catalogDefinition.getResponse() != null) {
+                checkinSelectorView.setValue(catalogDefinition.getResponse().getValue());
+            }
         }
     }
 }
