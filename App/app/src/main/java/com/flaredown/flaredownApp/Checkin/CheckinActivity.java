@@ -288,8 +288,47 @@ public class CheckinActivity extends AppCompatActivity {
             }
         });
 
+        vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
 
+            @Override
+            public void onPageSelected(int position) {
+                if (position <= 0) {
+                    bt_prevQuestion.setVisibility(View.INVISIBLE);
+                    bt_submitCheckin.setVisibility(View.GONE);
+                    bt_nextQuestion.setVisibility(View.VISIBLE);
+                } else if (position >= vpa_questions.getFragments().size() - 1) {
+                    bt_nextQuestion.setVisibility(View.GONE);
+                    bt_prevQuestion.setVisibility(View.VISIBLE);
+                    bt_submitCheckin.setVisibility(View.VISIBLE);
+                } else {
+                    bt_submitCheckin.setVisibility(View.GONE);
+                    bt_nextQuestion.setVisibility(View.VISIBLE);
+                    bt_prevQuestion.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        bt_nextQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1, true);
+            }
+        });
+        bt_prevQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                vp_questions.setCurrentItem(vp_questions.getCurrentItem() - 1, true);
+            }
+        });
     }
 
     /**
