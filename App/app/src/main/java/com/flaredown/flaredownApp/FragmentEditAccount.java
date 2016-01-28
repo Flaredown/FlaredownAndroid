@@ -280,7 +280,12 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
     public void onDateChanged(DatePicker datePicker, int year, int month, int day) {
         mDobYear = String.valueOf(year);
         mDobDay = String.valueOf(day);
-        mDobMonth = String.valueOf(month+1);
+        if (month < 9){
+            mDobMonth = String.valueOf("0" + (month + 1)); //Add 0 to single digits b/c API doesn't like just single digits
+        }
+        else {
+            mDobMonth = String.valueOf(month + 1);
+        }
     }
 
     @Override
