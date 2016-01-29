@@ -71,9 +71,9 @@ public class ViewPagerFragmentBase extends Fragment {
         }
     }
 
-    List<UpdateListener> updateListeners = new ArrayList<>();
-    public void addOnUpdateListener(UpdateListener updateListener) {
-        updateListeners.add(updateListener);
+    List<OnResposneUpdate> onResposneUpdates = new ArrayList<>();
+    public void addOnUpdateListener(OnResposneUpdate onResposneUpdate) {
+        onResposneUpdates.add(onResposneUpdate);
     }
 
     /**
@@ -84,17 +84,17 @@ public class ViewPagerFragmentBase extends Fragment {
         return new JSONArray();
     }
 
-    public void removeOnUpdateListener(UpdateListener updateListener) {
-        updateListeners.remove(updateListener);
+    public void removeOnUpdateListener(OnResposneUpdate onResposneUpdate) {
+        onResposneUpdates.remove(onResposneUpdate);
     }
-    protected void triggerUpdateListener(JSONObject answer) {
-        for (UpdateListener updateListener : updateListeners) {
-            updateListener.onUpdate(answer);
+    protected void triggerOnUpdateListener(EntryParsers.CatalogDefinition catalogDefinition) {
+        for (OnResposneUpdate onResposneUpdate : onResposneUpdates) {
+            onResposneUpdate.onUpdate(catalogDefinition);
         }
     }
 
-    public interface UpdateListener {
-        void onUpdate(JSONObject answer);
+    public interface OnResposneUpdate {
+        void onUpdate(EntryParsers.CatalogDefinition catalogDefinition);
     }
 
 

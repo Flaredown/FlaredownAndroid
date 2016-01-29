@@ -98,10 +98,10 @@ public class Checkin_summary_fragment extends Fragment {
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
-                fragment.addOnUpdateListener(new ViewPagerFragmentBase.UpdateListener() {
+                fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                     @Override
-                    public void onUpdate(JSONObject answer) {
-                        try {
+                    public void onUpdate(EntryParsers.CatalogDefinition answer) { //todo fix... use the catalog definitions
+                        /*try {
                             JSONArray responseArray = argResponseJson.getJSONArray("responses");
                             for(int i = 0; i < responseArray.length(); i++) {
                                 JSONObject responseItem = responseArray.getJSONObject(i);
@@ -124,7 +124,7 @@ public class Checkin_summary_fragment extends Fragment {
 
                                 }
                             });
-                        } catch (JSONException e) {e.printStackTrace();}
+                        } catch (JSONException e) {e.printStackTrace();}*/
                     }
                 });
             }

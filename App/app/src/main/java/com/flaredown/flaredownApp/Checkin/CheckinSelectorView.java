@@ -112,11 +112,20 @@ public class CheckinSelectorView extends LinearLayout { //TODO check no need for
         }
 
         public void selectButton() {
-            for (InputButton button : buttons)
+            /*for (InputButton button : buttons)
                 if(!iconMode)
                     button.setSelected(button.equals(this));
                 else
-                    button.setSelected(button.tryGetValue() <= this.tryGetValue());
+                    button.setSelected((button.tryGetValue() <= this.tryGetValue() && this.tryGetValue() != 0));
+                    */
+            for (int i = 0; i < buttons.size(); i++) {
+                InputButton button = buttons.get(i);
+                if(!iconMode) {
+                    button.setSelected(button.equals(this));
+                } else {
+                    button.setSelected((i == 0 && this.tryGetValue() == 0) || (i != 0 && this.tryGetValue() >= button.tryGetValue()));
+                }
+            }
         }
 
         public void setIconMode(LinearLayout ll) {

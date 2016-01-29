@@ -92,11 +92,12 @@ public class EntryParsers {
      * @param collectionCatalogDefinitions A list of catalog definitions containing responses.
      * @return JSON Array of responses
      *///TODO TEST OBJ
-    public JSONArray getResponsesJSONCatalogDefinitionList(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+    public static JSONArray getResponsesJSONCatalogDefinitionList(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONArray outputJArray = new JSONArray();
         for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
             for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
-                outputJArray.put(catalogDefinition.response.getJSONObject());
+                if(catalogDefinition.response != null)
+                    outputJArray.put(catalogDefinition.response.getJSONObject());
             }
         }
         return outputJArray;
@@ -124,14 +125,16 @@ public class EntryParsers {
         try {
             for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
                 for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
-                    JSONArray catalogJArray = outputJObject.getJSONArray(collectionCatalogDefinition.getCatalog());
+                    JSONArray catalogJArray = new JSONArray();
+                    if(outputJObject.has(collectionCatalogDefinition.getCatalog()))
+                        catalogJArray = outputJObject.getJSONArray(collectionCatalogDefinition.getCatalog());
                     catalogJArray.put(catalogDefinition.getJSONObject());
                     if (!outputJObject.has(collectionCatalogDefinition.getCatalog()))
                         outputJObject.put(collectionCatalogDefinition.getCatalog(), catalogJArray);
                 }
             }
         } catch (JSONException e) {
-
+            e.printStackTrace();
         }
         return outputJObject;
     }
@@ -161,6 +164,17 @@ public class EntryParsers {
         return outputJArray;
     }
 
+    public static CatalogDefinition findCatalogDefinition(List<CollectionCatalogDefinition> collectionCatalogDefinitions, String catalog, String name) {
+        List<CollectionCatalogDefinition> ccds = getCatalogDefinitions(catalog, collectionCatalogDefinitions);
+        for (CollectionCatalogDefinition ccd : ccds) {
+            for (CatalogDefinition catalogDefinition : ccd) {
+                if(catalogDefinition.getName().equals(name))
+                    return catalogDefinition;
+            }
+        }
+        return null;
+    }
+
     /**
      * Finds a response for a catalog defintion.
      * @param responses List of responses to search through.
@@ -187,12 +201,44 @@ public class EntryParsers {
     }
 
     /**
+     * Creates a new response object
+     * @param catalog Catalog name for the response
+     * @param name The name of the response
+     * @param value The value of the response.
+     * @return A new response object.
+     */
+    public static Response createResponse(String catalog, String name, Object value) {
+        return new Response(catalog, name, value);
+    }
+
+    /**
+     * Creates a new response object.
+     * @param catalogDefinition The catalog definition which the response is for.
+     * @param value The value of the response.
+     * @return The new response object.
+     */
+    public static Response createResponse(CatalogDefinition catalogDefinition, Object value) {
+        return new Response(catalogDefinition, value);
+    }
+
+    /**
      * Stores Response values.
      */
     public static class Response {
         private String name;
         private Object value;
         private String catalog;
+        Response(CatalogDefinition catalogDefinition, Object value) {
+            this.name = catalogDefinition.getName();
+            this.catalog = catalogDefinition.getCatalog();
+            this.value = value;
+        }
+        Response(String catalog, String name, Object value) {
+            this.name = name;
+            this.value = value;
+            this.catalog = catalog;
+        }
+
         Response(JSONObject responseItem) throws JSONException{
             name = responseItem.getString("name");
             value = responseItem.get("value");
@@ -272,16 +318,12 @@ public class EntryParsers {
          * Get a JSON Object interpretation of the CatalogDefinition object.
          * @return JSON Object interpretation of the Catalog Definition object.
          */
-        public JSONObject getJSONObject() {
+        public JSONObject getJSONObject() throws JSONException{
             JSONObject outputJObject = new JSONObject();
-            try {
-                outputJObject.put("name", name);
-                outputJObject.put("kind", kind);
-                if(inputs != null)
-                    outputJObject.put("inputs", getInputsJSONArray(inputs));
-            } catch(JSONException e) {
-
-            }
+            outputJObject.put("name", name);
+            outputJObject.put("kind", kind);
+            if(inputs != null)
+                outputJObject.put("inputs", getInputsJSONArray(inputs));
             return outputJObject;
         }
 

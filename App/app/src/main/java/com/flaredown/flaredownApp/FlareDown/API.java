@@ -344,6 +344,18 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
+    public void submitEntry(Date date, JSONArray responses, OnApiResponse<JSONObject> onApiResponse) {
+        try {
+            submitEntry(date, new JSONObject().put("responses", responses), onApiResponse);
+        } catch (JSONException e) { e.printStackTrace(); }
+    }
+
+    /**
+     * Submits a check in entry to flaredown.
+     * @param date The date of the checkin.
+     * @param response The response data.
+     * @param onApiResponse
+     */
     public void submitEntry(final Date date, final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {
         HashMap<String, String> params = new HashMap<>();
         params.put("entry", response.toString());

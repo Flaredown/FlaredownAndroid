@@ -46,6 +46,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Date checkinDate = null;
     private JSONObject entriesJSONObject = null;
     private JSONObject responseJSONObject = null;
+    private List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
 
     /*
         View Variables.
@@ -84,6 +85,7 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     private Views currentView = null;
+    private Integer currentQuestionPage = 0;
     private static final int ANIMATION_DURATION = 250;
     private void setView(Views showView) { setView(showView, true); }
     private void setView(Views showView, boolean animate) {
@@ -306,6 +308,11 @@ public class CheckinActivity extends AppCompatActivity {
                     bt_nextQuestion.setVisibility(View.VISIBLE);
                     bt_prevQuestion.setVisibility(View.VISIBLE);
                 }
+
+                if (currentQuestionPage != null)
+                    vpa_questions.getFragments().get(currentQuestionPage).onPageExit();
+                vpa_questions.getFragments().get(position).onPageEnter();
+                currentQuestionPage = position;
             }
 
             @Override
@@ -324,6 +331,30 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 vp_questions.setCurrentItem(vp_questions.getCurrentItem() - 1, true);
+            }
+        });
+
+        bt_submitCheckin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submitCheckin();
+            }
+        });
+    }
+
+    /**
+     * Submits the checkin to flaredown and displays the summary page.
+     */
+    private void submitCheckin() {
+        flareDownAPI.submitEntry(checkinDate, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions), new API.OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                new DefaultErrors(getApplicationContext(), error);
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                Toast.makeText(getApplicationContext(), "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
             }
         });
     }
@@ -371,23 +402,33 @@ public class CheckinActivity extends AppCompatActivity {
      * @param entriesJSONObject Prefetched entries json object, including response.
      */
     private void displayCheckin(final Date date, JSONObject entriesJSONObject) {
+        checkinDate = date;
         setView(Views.NOT_CHECKED_IN_YET);
-        Toast.makeText(getApplication(), "displayCheckin()", Toast.LENGTH_SHORT).show();
-        //if(vpa_questions.getCount() > 0)
-            //vpa_questions.removeAllFragments();
         try {
-            List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
+            collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
             List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
+            for (ViewPagerFragmentBase fragment : fragments) {
+                fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
+                    @Override
+                    public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
+                        try {
+                            if (catalogDefinition.getResponse() != null) {
+                                EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
+                            }
+                        } catch (NullPointerException e) {e.printStackTrace();}
+                    }
+                });
+            }
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
         } catch (JSONException e) {
             e.printStackTrace();
-            /*new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(2)").setRetry(new Runnable() {
+            new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(2)").setRetry(new Runnable() {
                 @Override
                 public void run() {
                     displayCheckin(date);
                 }
-            }));*/
+            }));
         }
     }
 
