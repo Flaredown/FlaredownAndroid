@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Checkin;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,7 +124,7 @@ public class EntryParsers {
     public static JSONObject getCatalogDefinitionsJSON(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONObject outputJObject = new JSONObject();
         try {
-            for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            /*for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
                 for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
                     JSONArray catalogJArray = new JSONArray();
                     if(outputJObject.has(collectionCatalogDefinition.getCatalog()))
@@ -131,6 +132,22 @@ public class EntryParsers {
                     catalogJArray.put(catalogDefinition.getJSONObject());
                     if (!outputJObject.has(collectionCatalogDefinition.getCatalog()))
                         outputJObject.put(collectionCatalogDefinition.getCatalog(), catalogJArray);
+                }
+            }*/
+
+            for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+                JSONArray catalogJArray = new JSONArray();
+                if(outputJObject.has(collectionCatalogDefinition.getCatalog()))
+                    catalogJArray = outputJObject.getJSONArray(collectionCatalogDefinition.getCatalog());
+                JSONArray catalogJArray2 = new JSONArray();
+                for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                    catalogJArray2.put(catalogDefinition.getJSONObject());
+                }
+
+                catalogJArray.put(catalogJArray2);
+
+                if(!outputJObject.has(collectionCatalogDefinition.getCatalog())) {
+                    outputJObject.put(collectionCatalogDefinition.getCatalog(), catalogJArray);
                 }
             }
         } catch (JSONException e) {

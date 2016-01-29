@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,6 +81,7 @@ public class CheckinActivity extends AppCompatActivity {
     private static final String SI_RESPONSE_JSON = "response json";
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
+    private static final String SI_CHECKIN_PAGE_NUMBER = "checkin page number";
 
     private enum Views {
         SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY
@@ -245,13 +248,33 @@ public class CheckinActivity extends AppCompatActivity {
         assignViews();
         setLocales();
         initialise();
-        setView(Views.SPLASH_SCREEN, false);
-        displayCheckin(new Date());
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW))
+            setView((Views)savedInstanceState.getSerializable(SI_CURRENT_VIEW), false);
+        else
+            setView(Views.SPLASH_SCREEN, false);
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_ENTRIES_JSON) && savedInstanceState.containsKey(SI_RESPONSE_JSON) && savedInstanceState.containsKey(SI_CHECKIN_DATE) && savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER)) {
+            Date date = new Date(savedInstanceState.getLong(SI_CHECKIN_DATE));
+            try {
+                List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON)), new JSONArray(savedInstanceState.getString(SI_RESPONSE_JSON)));
+                displayCheckin(date, ccds);
+                vp_questions.setCurrentItem(savedInstanceState.getInt(SI_CHECKIN_PAGE_NUMBER));
+            } catch (JSONException e) { e.printStackTrace(); }
+        } else {
+            if(savedInstanceState != null && savedInstanceState.containsKey(SI_CHECKIN_DATE))
+                displayCheckin(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
+            else
+                displayCheckin(new Date());
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(SI_ENTRIES_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
+        outState.putString(SI_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
+        outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime());
+        outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
+        outState.putSerializable(SI_CURRENT_VIEW, currentView);
     }
 
     /**
@@ -373,6 +396,7 @@ public class CheckinActivity extends AppCompatActivity {
      */
     private void displayCheckin(final Date date) { // TODO implement loading screen.
         toolbarTitle.setText(Styling.displayDateLong(date));
+        checkinDate = date;
         flareDownAPI.entries(date, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
@@ -383,14 +407,12 @@ public class CheckinActivity extends AppCompatActivity {
             public void onSuccess(JSONObject result) {
                 Toast.makeText(getApplicationContext(), "Loaded", Toast.LENGTH_SHORT).show();
                 try {
-                    displayCheckin(date, result.getJSONObject("entry"));
+                    JSONObject entryJObject = result.getJSONObject("entry");
+                    List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(entryJObject.getJSONObject("catalog_definitions"), entryJObject.getJSONArray(("responses")));
+                    displayCheckin(date, ccds);
                 } catch (JSONException e) {
-                    new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)").setRetry(new Runnable() {
-                        @Override
-                        public void run() {
-                            displayCheckin(date);
-                        }
-                    }));
+                    e.printStackTrace();
+                    new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)"));
                 }
             }
         });
@@ -399,37 +421,28 @@ public class CheckinActivity extends AppCompatActivity {
     /**
      * Display the check in for a specific date, passing the entries json object.
      * @param date The date for the check in.
-     * @param entriesJSONObject Prefetched entries json object, including response.
+     * @param collectionCatalogDefinitions Prefetched entries json object, including response.
      */
-    private void displayCheckin(final Date date, JSONObject entriesJSONObject) {
+    private void displayCheckin(final Date date, List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) {
         checkinDate = date;
-        setView(Views.NOT_CHECKED_IN_YET);
-        try {
-            collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJSONObject.getJSONObject("catalog_definitions"), entriesJSONObject.getJSONArray(("responses")));
-            List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
-            for (ViewPagerFragmentBase fragment : fragments) {
-                fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
-                    @Override
-                    public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
-                        try {
-                            if (catalogDefinition.getResponse() != null) {
-                                EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
-                            }
-                        } catch (NullPointerException e) {e.printStackTrace();}
-                    }
-                });
-            }
-            vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
-            vp_questions.setAdapter(vpa_questions);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(2)").setRetry(new Runnable() {
+        toolbarTitle.setText(Styling.displayDateLong(date));
+        if(currentView != Views.CHECKIN) setView(Views.NOT_CHECKED_IN_YET);
+        this.collectionCatalogDefinitions = collectionCatalogDefinitions;
+        List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
+        for (ViewPagerFragmentBase fragment : fragments) {
+            fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                 @Override
-                public void run() {
-                    displayCheckin(date);
+                public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
+                    try {
+                        if (catalogDefinition.getResponse() != null) {
+                            EntryParsers.findCatalogDefinition(CheckinActivity.this.collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
+                        }
+                    } catch (NullPointerException e) {e.printStackTrace();}
                 }
-            }));
+            });
         }
+        vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+        vp_questions.setAdapter(vpa_questions);
     }
 
     /**
@@ -438,7 +451,7 @@ public class CheckinActivity extends AppCompatActivity {
      * @return A list array of Fragments extending the View Pager Fragment.
      * @throws JSONException
      */
-    public static List<ViewPagerFragmentBase> createFragments(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) throws JSONException {
+    public static List<ViewPagerFragmentBase> createFragments(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         String currentCatalog = null;
         Integer section = 1;

@@ -26,6 +26,10 @@ import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Styling;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +43,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
      */
     private static final String SI_ENTRY_JSON = "entry json";
     private static final String SI_RESPONSE_JSON = "response json";
-    private static final String SI_CATALOG_NAME = "catalog name";
+    private static final String SI_SECTION = "section number";
 
     private View fragmentRoot = null;
     private LinearLayout ll_questionHolder;
@@ -51,11 +55,30 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //return super.onCreateView(inflater, container, savedInstanceState);
         api = new API(getActivity());
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_ENTRY_JSON) && savedInstanceState.containsKey(SI_RESPONSE_JSON) && savedInstanceState.containsKey(SI_SECTION)) {
+            try {
+                collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(new JSONObject(savedInstanceState.getString(SI_ENTRY_JSON)), new JSONArray(savedInstanceState.getString(SI_RESPONSE_JSON)));
+                section = savedInstanceState.getInt(SI_SECTION);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         if (fragmentRoot == null){
             assignViews(inflater, container);
             init();
         }
         return fragmentRoot;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        for (BaseQuestion questionView : questionViews) {
+            questionView.getValue(); // Updates response object
+        }
+        outState.putString(SI_ENTRY_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
+        outState.putString(SI_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
+        outState.putInt(SI_SECTION, section);
     }
 
     private void assignViews(LayoutInflater inflater, ViewGroup container) {
@@ -112,6 +135,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
                 //Set the section title.
                 String sectionTitle = "--";
+                Log.d("sectionTitle", collectionCatalogDefinitions.get(0).get(0).getCatalog());
                 switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
                     case "symptoms":
                         if (questionViews.size() == 0)
@@ -282,9 +306,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
                 if(catalogDefinition.getResponse() != null) {
                     try {
-                        setValue((double) catalogDefinition.getResponse().getValue());
+                       if(catalogDefinition.getResponse().getValue() instanceof Integer)
+                           setValue(Integer.valueOf((Integer)catalogDefinition.getResponse().getValue()).doubleValue());
+                       else
+                           setValue((double)catalogDefinition.getResponse().getValue());
                     } catch (ClassCastException e) {
-
+                        e.printStackTrace();
                     }
                 }
                 this.addView(editText);
@@ -347,7 +374,10 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
             if(catalogDefinition.getResponse() != null) {
                 try {
-                    bt_checkbox.setSelected(((double) catalogDefinition.getResponse().getValue()) == 1.0);
+                    if(catalogDefinition.getResponse().getValue() instanceof Integer)
+                        bt_checkbox.setSelected(((int) catalogDefinition.getResponse().getValue()) == 1);
+                    else
+                        bt_checkbox.setSelected(((double) catalogDefinition.getResponse().getValue()) == 1.0);
                 } catch (ClassCastException e) {}
             }
         }
