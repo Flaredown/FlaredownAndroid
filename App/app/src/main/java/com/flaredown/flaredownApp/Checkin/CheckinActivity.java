@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -405,10 +404,11 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(JSONObject result) {
-                Toast.makeText(getApplicationContext(), "Loaded", Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject entryJObject = result.getJSONObject("entry");
-                    List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(entryJObject.getJSONObject("catalog_definitions"), entryJObject.getJSONArray(("responses")));
+                    if(!entryJObject.has("responses"))
+                        entryJObject.put("responses", new JSONArray());
+                    List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(entryJObject.getJSONObject("catalog_definitions"), entryJObject.getJSONArray("responses"));
                     displayCheckin(date, ccds);
                 } catch (JSONException e) {
                     e.printStackTrace();

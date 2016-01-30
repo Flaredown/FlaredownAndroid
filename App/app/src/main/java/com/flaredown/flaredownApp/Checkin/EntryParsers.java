@@ -1,8 +1,5 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +49,7 @@ public class EntryParsers {
      * @throws JSONException
      *///TODO TEST OBJ
     public static List<CollectionCatalogDefinition> getCatalogDefinitions(JSONObject catalogDefinitionsJObject, JSONArray responseJArray) throws JSONException {
+        if(responseJArray == null) responseJArray = new JSONArray();
         List<Response> responses = getResponses(responseJArray);
         List<CollectionCatalogDefinition> collectionDefinitions = new ArrayList<>();
 

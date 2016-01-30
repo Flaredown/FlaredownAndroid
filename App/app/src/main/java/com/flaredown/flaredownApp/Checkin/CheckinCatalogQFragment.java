@@ -2,11 +2,9 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,7 +15,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
@@ -135,7 +132,6 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
                 //Set the section title.
                 String sectionTitle = "--";
-                Log.d("sectionTitle", collectionCatalogDefinitions.get(0).get(0).getCatalog());
                 switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
                     case "symptoms":
                         if (questionViews.size() == 0)
