@@ -237,6 +237,7 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.activity_home);
         flareDownAPI = new API(getApplicationContext());
         if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
@@ -274,10 +275,12 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SI_ENTRIES_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
-        outState.putString(SI_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
-        outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime());
-        outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
+        if(collectionCatalogDefinitions != null) {
+            outState.putString(SI_ENTRIES_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
+            outState.putString(SI_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
+            outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime());
+            outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
+        }
         outState.putSerializable(SI_CURRENT_VIEW, currentView);
     }
 

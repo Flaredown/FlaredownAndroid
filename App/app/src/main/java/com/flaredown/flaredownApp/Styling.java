@@ -1,7 +1,10 @@
 package com.flaredown.flaredownApp;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
@@ -68,5 +71,19 @@ public class Styling {
         else
             sdf = new SimpleDateFormat("MMMM d, yyyy");
         return sdf.format(date);
+    }
+
+
+    public static boolean isLargeScreen(Context context) {
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) > Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public static void forcePortraitOrientation(Activity activity) {
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    public static void forcePortraitOnSmallDevices(Activity activity) {
+        if(!isLargeScreen(activity))
+            forcePortraitOrientation(activity);
     }
 }
