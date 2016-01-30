@@ -7,7 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -36,8 +37,10 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -45,6 +48,7 @@ public class CheckinActivity extends AppCompatActivity {
     API flareDownAPI;
 
     private Date checkinDate = null;
+    private boolean isLoadingCheckin = false;
     private JSONObject entriesJSONObject = null;
     private JSONObject responseJSONObject = null;
     private List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
@@ -89,9 +93,42 @@ public class CheckinActivity extends AppCompatActivity {
     private Views currentView = null;
     private Integer currentQuestionPage = 0;
     private static final int ANIMATION_DURATION = 250;
+    private boolean setViewAnimationInProgress = false;
+    private class SetViewQueueItem {
+        private Views views;
+        private boolean animate;
+        SetViewQueueItem(Views views, boolean animate) {
+            this.views = views;
+            this.animate = animate;
+        }
+
+        public Views getViews() {
+            return views;
+        }
+
+        public boolean getAnimate() {
+            return animate;
+        }
+    }
+    private LinkedBlockingQueue<SetViewQueueItem> setViewQueueItems = new LinkedBlockingQueue<>();
+    private void setViewAnimationComplete() {
+        setViewAnimationInProgress = false;
+        if(setViewQueueItems.size() > 0) {
+            SetViewQueueItem setViewQueueItem = setViewQueueItems.poll();
+            setView(setViewQueueItem.getViews(), setViewQueueItem.getAnimate());
+        }
+
+    }
     private void setView(Views showView) { setView(showView, true); }
     private void setView(Views showView, boolean animate) {
+        if(setViewAnimationInProgress) {
+            try {
+                setViewQueueItems.put(new SetViewQueueItem(showView, animate));
+                return;
+            } catch (InterruptedException e){}
+        }
         if(showView != currentView) {
+            if(animate) setViewAnimationInProgress = true;
             if (currentView != null) {
                 // Hide animations
                 switch (currentView) {
@@ -188,7 +225,14 @@ public class CheckinActivity extends AppCompatActivity {
                         rl_checkin.animate()
                                 .alpha(1)
                                 .translationY(0)
-                                .setDuration(ANIMATION_DURATION);
+                                .setDuration(ANIMATION_DURATION)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                setViewAnimationComplete();
+                            }
+                        });
                     } else
                         rl_checkin.setVisibility(View.VISIBLE);
                     break;
@@ -198,7 +242,14 @@ public class CheckinActivity extends AppCompatActivity {
                         ll_splashScreen.setVisibility(View.VISIBLE);
                         ll_splashScreen.animate()
                                 .alpha(1)
-                                .translationY(Styling.getInDP(this, 100));
+                                .translationY(Styling.getInDP(this, 100))
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        setViewAnimationComplete();
+                                    }
+                                });
                     } else
                         ll_splashScreen.setVisibility(View.VISIBLE);
                     break;
@@ -210,7 +261,14 @@ public class CheckinActivity extends AppCompatActivity {
                         ll_not_checked_in.animate()
                                 .alpha(1)
                                 .translationY(0)
-                                .setDuration(ANIMATION_DURATION);
+                                .setDuration(ANIMATION_DURATION)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                setViewAnimationComplete();
+                            }
+                        });
                     } else {
                         ll_not_checked_in.setVisibility(View.VISIBLE);
                     }
@@ -222,7 +280,16 @@ public class CheckinActivity extends AppCompatActivity {
                         fl_checkin_summary.setTranslationY(Styling.getInDP(this, 100));
                         fl_checkin_summary.animate()
                                 .translationY(0)
-                                .alpha(1);
+                                .alpha(1)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                setViewAnimationComplete();
+                                fl_checkin_summary.setAlpha(1);
+                                fl_checkin_summary.setVisibility(View.VISIBLE);
+                            }
+                        });
                     } else {
                         fl_checkin_summary.setVisibility(View.VISIBLE);
                     }
@@ -372,6 +439,46 @@ public class CheckinActivity extends AppCompatActivity {
                 setView(Views.SUMMARY);
             }
         });
+
+        mainToolbarView.setNextOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isLoadingCheckin) {
+                    setView(Views.SPLASH_SCREEN);
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(checkinDate);
+                    c.add(Calendar.DATE, 1);
+                    displayCheckin(c.getTime());
+                }
+            }
+        });
+        mainToolbarView.setPrevOnClickListner(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isLoadingCheckin) {
+                    setView(Views.SPLASH_SCREEN);
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(checkinDate);
+                    c.add(Calendar.DATE, -1);
+                    displayCheckin(c.getTime());
+                }
+            }
+        });
+    }
+
+    private void updateDateButtons(Date date) {
+        Calendar today = Calendar.getInstance();
+        today.setTime(new Date());
+
+        Calendar dateDisplayingC = Calendar.getInstance();
+        dateDisplayingC.setTime(date);
+        if(today.get(Calendar.DAY_OF_YEAR) == dateDisplayingC.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == dateDisplayingC.get(Calendar.YEAR)) {
+            mainToolbarView.setPrevButtonState(MainToolbarView.ButtonState.VISIBLE);
+            mainToolbarView.setNextButtonState(MainToolbarView.ButtonState.HIDDEN);
+        } else {
+            mainToolbarView.setPrevButtonState(MainToolbarView.ButtonState.VISIBLE);
+            mainToolbarView.setNextButtonState(MainToolbarView.ButtonState.VISIBLE);
+        }
     }
 
     /**
@@ -393,8 +500,26 @@ public class CheckinActivity extends AppCompatActivity {
 
     private void displaySummary(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Date date) {
         f_checkin_sumary = Checkin_summary_fragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions), EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions), date);
-        fl_checkin_summary.removeAllViews();
-        getSupportFragmentManager().beginTransaction().add(fl_checkin_summary.getId(), f_checkin_sumary, "sumary").commit();
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+
+        /*if(f_checkin_sumary != null)
+            trans.remove(f_checkin_sumary);
+        trans.add(fl_checkin_summary.getId(), f_checkin_sumaryNew);
+
+
+        trans.commit();
+        f_checkin_sumary = f_checkin_sumaryNew;*/
+
+        trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
+    }
+
+    private void removeSummary() {
+        /*if(f_checkin_sumary != null) {
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.remove(f_checkin_sumary);
+            trans.();
+            f_checkin_sumary = null;
+        }*/
     }
 
     /**
@@ -409,9 +534,13 @@ public class CheckinActivity extends AppCompatActivity {
      * Display the check in for a specific date.
      * @param date The date for the check in.
      */
-    private void displayCheckin(final Date date) { // TODO implement loading screen.
+    private void displayCheckin(final Date date) {
+        removeSummary();
+        updateDateButtons(date);
+        collectionCatalogDefinitions = null;
         toolbarTitle.setText(Styling.displayDateLong(date));
         checkinDate = date;
+        isLoadingCheckin = true;
         flareDownAPI.entries(date, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
@@ -440,10 +569,18 @@ public class CheckinActivity extends AppCompatActivity {
      * @param collectionCatalogDefinitions Prefetched entries json object, including response.
      */
     private void displayCheckin(final Date date, List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) {
-        checkinDate = date;
-        toolbarTitle.setText(Styling.displayDateLong(date));
-        if(currentView == Views.SPLASH_SCREEN) setView(Views.NOT_CHECKED_IN_YET);
+        this.checkinDate = date;
         this.collectionCatalogDefinitions = collectionCatalogDefinitions;
+        removeSummary();
+        updateDateButtons(date);
+        toolbarTitle.setText(Styling.displayDateLong(date));
+        if(currentView == Views.SPLASH_SCREEN) {
+            if(EntryParsers.hasResponse(collectionCatalogDefinitions)) // Show the correct view
+            {
+                setView(Views.SUMMARY);
+                displaySummary(collectionCatalogDefinitions, checkinDate);
+            } else setView(Views.NOT_CHECKED_IN_YET);
+        }
         List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
         for (ViewPagerFragmentBase fragment : fragments) {
             fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
@@ -457,8 +594,15 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             });
         }
-        vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
-        vp_questions.setAdapter(vpa_questions);
+        if(vpa_questions == null) {
+            vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+            vp_questions.setAdapter(vpa_questions);
+        } else {
+            vpa_questions.removeAllFragments();
+            vpa_questions.setFragments(fragments);
+            vp_questions.setCurrentItem(0, false);
+        }
+        isLoadingCheckin = false;
     }
 
     /**
@@ -511,8 +655,9 @@ public class CheckinActivity extends AppCompatActivity {
     /**
      * The adapter for the view pager, used to display the questions.
      */
-    public static class ViewPagerAdapter extends FragmentStatePagerAdapter {
+    public static class ViewPagerAdapter extends FragmentPagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
+        private FragmentManager fragmentManager;
         private OnPageViewCountListener onPageViewCountListener;
 
         /**
@@ -522,37 +667,31 @@ public class CheckinActivity extends AppCompatActivity {
          */
         public ViewPagerAdapter(FragmentManager fragmentManager, List<ViewPagerFragmentBase> fragments) {
             super(fragmentManager);
+            this.fragmentManager = fragmentManager;
             this.fragments = fragments;
-        }
-
-        /**
-         * Add a fragment to the view pager.
-         * @param viewPagerFragmentBase The fragment to add to the view pager.
-         * @param index the location of the index.
-         */
-        public void addView(ViewPagerFragmentBase viewPagerFragmentBase, int index) {
-            fragments.add(index, viewPagerFragmentBase);
-            notifyDataSetChanged();
-            triggerOnViewPageCountChange();
-        }
-
-        /**
-         * Remove a fragment at a specific location.
-         * @param index The index of the fragment to remove.
-         */
-        public void removeFragment(int index) {
-            fragments.remove(index);
-            notifyDataSetChanged();
-            triggerOnViewPageCountChange();
+            attachFragments();
         }
 
         /**
          * Remove all fragments from the view pager.
          */
         public void removeAllFragments() {
+            final FragmentTransaction trans = fragmentManager.beginTransaction();
+            for (int i = 0; i < fragments.size(); i++) {
+                trans.remove(fragments.get(i));
+            }
+            trans.commit();
             fragments = new ArrayList<>();
             notifyDataSetChanged();
             triggerOnViewPageCountChange();
+        }
+
+        private void attachFragments() {
+            final FragmentTransaction trans = fragmentManager.beginTransaction();
+            for (int i = 0; i < fragments.size(); i++) {
+                trans.show(fragments.get(i));
+            }
+            trans.commit();
         }
 
         private void triggerOnViewPageCountChange() {
@@ -584,6 +723,7 @@ public class CheckinActivity extends AppCompatActivity {
 
         public void setFragments(List<ViewPagerFragmentBase> viewPagerFragmentBase) {
             this.fragments = viewPagerFragmentBase;
+            attachFragments();
             notifyDataSetChanged();
             triggerOnViewPageCountChange();
         }

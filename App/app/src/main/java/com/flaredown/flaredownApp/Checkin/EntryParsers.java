@@ -102,6 +102,15 @@ public class EntryParsers {
         return outputJArray;
     }
 
+    public static boolean hasResponse(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
+        for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                if(catalogDefinition.getResponse() != null) return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Returns a JSON Array of the responses.
      * @param responses List of responses.

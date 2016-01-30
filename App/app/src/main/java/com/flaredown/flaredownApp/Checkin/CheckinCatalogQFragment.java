@@ -285,7 +285,13 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private static class NumberQuestion extends BaseQuestion { // TODO update response object on value change.
         EditText editText;
+        String initalValue;
         boolean integersOnly = false;
+
+        @Override
+        public boolean hasValueChanged() {
+            return !initalValue.equals(editText.getText().toString());
+        }
 
         public NumberQuestion(Activity activity, EntryParsers.CatalogDefinition catalogDefinition) {
             super(activity, catalogDefinition);
@@ -318,9 +324,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     }
                 }
                 this.addView(editText);
+                initalValue = editText.getText().toString();
 
 
             }
+
+
 
         }
 
