@@ -69,10 +69,12 @@ public class Checkin_summary_fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             try {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
                 argResponseJson = new JSONArray(getArguments().getString(ARG_RESPONSE_JSON));
+                argDate = new Date(getArguments().getLong(ARG_DATE_JSON));
                 collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(argEntryJson, argResponseJson);
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
@@ -101,31 +103,12 @@ public class Checkin_summary_fragment extends Fragment {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
                 fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                     @Override
-                    public void onUpdate(EntryParsers.CatalogDefinition answer) { //todo fix... use the catalog definitions
-                        /*try {
-                            JSONArray responseArray = argResponseJson.getJSONArray("responses");
-                            for(int i = 0; i < responseArray.length(); i++) {
-                                JSONObject responseItem = responseArray.getJSONObject(i);
-                                if(responseItem.getString("name").equals(answer.getString("name")) && responseItem.getString("catalog").equals(answer.getString("catalog"))) {
-                                    responseArray.getJSONObject(i).put("value", answer.get("value"));
-                                    break;
-                                }
+                    public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
+                        try {
+                            if (catalogDefinition.getResponse() != null) {
+                                EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
                             }
-
-
-                            flaredownAPI.submitEntry(argDate, argResponseJson, new API.OnApiResponse<JSONObject>() {
-                                @Override
-                                public void onFailure(API_Error error) {
-                                    new DefaultErrors(getActivity(), error);
-                                }
-
-                                @Override
-                                public void onSuccess(JSONObject result) {
-                                    Toast.makeText(getActivity(), (result.optBoolean("success", false))? "DONE" : "FAILED", Toast.LENGTH_LONG).show(); // TODO A better confirmation
-
-                                }
-                            });
-                        } catch (JSONException e) {e.printStackTrace();}*/
+                        } catch (NullPointerException e) {e.printStackTrace();}
                     }
                 });
             }
@@ -146,6 +129,14 @@ public class Checkin_summary_fragment extends Fragment {
 
         initUI();
         return root;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_ENTRY_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
+        outState.putString(ARG_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
+        outState.putLong(ARG_DATE_JSON, argDate.getTime());
     }
 
     @Override

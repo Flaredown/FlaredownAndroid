@@ -247,23 +247,7 @@ public class CheckinActivity extends AppCompatActivity {
         assignViews();
         setLocales();
         initialise();
-        /*if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW))
-            setView((Views)savedInstanceState.getSerializable(SI_CURRENT_VIEW), false);
-        else
-            setView(Views.SPLASH_SCREEN, false);
-        if(savedInstanceState != null && savedInstanceState.containsKey(SI_ENTRIES_JSON) && savedInstanceState.containsKey(SI_RESPONSE_JSON) && savedInstanceState.containsKey(SI_CHECKIN_DATE) && savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER)) {
-            Date date = new Date(savedInstanceState.getLong(SI_CHECKIN_DATE));
-            try {
-                List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON)), new JSONArray(savedInstanceState.getString(SI_RESPONSE_JSON)));
-                displayCheckin(date, ccds);
-                vp_questions.setCurrentItem(savedInstanceState.getInt(SI_CHECKIN_PAGE_NUMBER));
-            } catch (JSONException e) { e.printStackTrace(); }
-        } else {
-            if(savedInstanceState != null && savedInstanceState.containsKey(SI_CHECKIN_DATE))
-                displayCheckin(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
-            else
-                displayCheckin(new Date());
-        }*/
+
         if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
             Views savedViewState = (Views) savedInstanceState.getSerializable(SI_CURRENT_VIEW);
             Date savedCheckinDate = new Date(savedInstanceState.getLong(SI_CHECKIN_DATE));
@@ -275,7 +259,7 @@ public class CheckinActivity extends AppCompatActivity {
                     List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJObject, responseJArray);
                     displayCheckin(savedCheckinDate, collectionCatalogDefinitions);
                     if(savedViewState == Views.SUMMARY) {
-                        displaySummary(collectionCatalogDefinitions, savedCheckinDate);
+                        //displaySummary(collectionCatalogDefinitions, savedCheckinDate );
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
