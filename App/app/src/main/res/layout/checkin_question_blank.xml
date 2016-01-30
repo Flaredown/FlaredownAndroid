@@ -3,15 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <!--<TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Catalog Name"
-        android:id="@+id/tv_catalog"
-        android:textColor="@color/accent"/>-->
-
     <TextView
         android:id="@+id/tv_question"
         android:gravity="center"

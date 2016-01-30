@@ -39,10 +39,12 @@
             android:name="com.flaredown.flaredownApp.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" />
+            android:windowSoftInputMode="adjustResize|stateVisible"
+            android:screenOrientation="behind"/>
         <activity
             android:name="com.flaredown.flaredownApp.SettingsActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="behind">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.flaredown.flaredownApp.Checkin.CheckinActivity" />
@@ -62,7 +64,8 @@
         <activity
             android:name="com.flaredown.flaredownApp.PolicyWebView"
             android:label="@string/title_activity_policy_web_view"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:screenOrientation="behind">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.flaredown.flaredownApp.SettingsActivity" />

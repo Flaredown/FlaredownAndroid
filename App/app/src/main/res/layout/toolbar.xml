@@ -7,11 +7,31 @@
     android:background="@android:color/transparent"
     android:animateLayoutChanges="true"
     android:theme="@style/AppTheme.ActionBar">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title"
-            android:textColor="@color/sub_text_color"
-            android:textSize="@dimen/sub_title_font_size" />
-    </android.support.v7.widget.Toolbar>
+    <Button
+        android:id="@+id/bt_toolbar_prev"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:text="&lt;--"
+        android:textColor="@color/sub_text_color"
+        android:textSize="@dimen/sub_title_font_size"
+        android:background="@android:color/transparent"
+        android:visibility="gone"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/toolbar_title"
+        android:textColor="@color/sub_text_color"
+        android:textSize="@dimen/sub_title_font_size" />
+    <Button
+        android:id="@+id/bt_toolbar_next"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:text="-->"
+        android:textColor="@color/sub_text_color"
+        android:textSize="@dimen/sub_title_font_size"
+        android:background="@android:color/transparent"
+        android:visibility="gone"/>
+</android.support.v7.widget.Toolbar>

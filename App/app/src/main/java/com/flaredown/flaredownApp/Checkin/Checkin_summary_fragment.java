@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,8 @@ public class Checkin_summary_fragment extends Fragment {
     private static final String ARG_DATE_JSON = "date";
 
     private JSONObject argEntryJson;
-    private JSONObject argResponseJson;
+    private JSONArray argResponseJson;
+    private List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
     private Date argDate;
     private View root;
     private LinearLayout ll_fragmentHolder;
@@ -55,7 +57,7 @@ public class Checkin_summary_fragment extends Fragment {
      * @param responseJson The response json submitted for checkin.
      * @return A new instance of fragment Checkin_summary_fragment.
      */
-    public static Checkin_summary_fragment newInstance(JSONObject entryJson, JSONObject responseJson, Date date) {
+    public static Checkin_summary_fragment newInstance(JSONObject entryJson, JSONArray responseJson, Date date) {
         Checkin_summary_fragment fragment = new Checkin_summary_fragment();
         Bundle args = new Bundle();
         args.putString(ARG_ENTRY_JSON, entryJson.toString());
@@ -67,15 +69,22 @@ public class Checkin_summary_fragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i("Fragment", "Checkin Summary Fragment onCreate called");
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if (getArguments() != null) {
             try {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
-                argResponseJson = new JSONObject(getArguments().getString(ARG_RESPONSE_JSON));
-                argEntryJson.getJSONObject("entry").put("responses", argResponseJson.getJSONArray("responses"));
+                argResponseJson = new JSONArray(getArguments().getString(ARG_RESPONSE_JSON));
+                argDate = new Date(getArguments().getLong(ARG_DATE_JSON));
+                collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(argEntryJson, argResponseJson);
+                if(EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
+                    Log.i("CSF", "At least one catalog definition has been passed");
+                } else
+                    Log.w("CSF", "No catalog definitions have been passed");
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
-                argResponseJson = new JSONObject();
+                argResponseJson = new JSONArray();
                 e.printStackTrace();
             }
             argDate = new Date(getArguments().getLong(ARG_DATE_JSON, new Date().getTime()));
@@ -92,51 +101,61 @@ public class Checkin_summary_fragment extends Fragment {
 
 
     private void assembleFragments() {
-        try {
-            fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
+        //try {
+            //fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
+            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions); //TODO pass responses
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
-                fragment.addOnUpdateListener(new ViewPagerFragmentBase.UpdateListener() {
+                fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                     @Override
-                    public void onUpdate(JSONObject answer) {
+                    public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
                         try {
-                            JSONArray responseArray = argResponseJson.getJSONArray("responses");
-                            for(int i = 0; i < responseArray.length(); i++) {
-                                JSONObject responseItem = responseArray.getJSONObject(i);
-                                if(responseItem.getString("name").equals(answer.getString("name")) && responseItem.getString("catalog").equals(answer.getString("catalog"))) {
-                                    responseArray.getJSONObject(i).put("value", answer.get("value"));
-                                    break;
-                                }
+                            if (catalogDefinition.getResponse() != null) {
+                                EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
+                                argResponseJson = EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions);
+
+                                final API.OnApiResponse responseListener = new API.OnApiResponse<JSONObject>() {
+                                    @Override
+                                    public void onFailure(API_Error error) {
+                                        try {
+                                            new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submition"));
+                                        } catch (NullPointerException e) {e.printStackTrace();}
+                                    }
+
+                                    @Override
+                                    public void onSuccess(JSONObject result) {
+                                        try {
+                                            if (result.optBoolean("success", false))
+                                                Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
+                                            else
+                                                new DefaultErrors(getActivity(), new API_Error().setStatusCode(500).setDebugString("Checkin_summary_fragment:assembleFragments:returnFalse"));
+                                        } catch (NullPointerException e) {
+                                            // If the activity closes too early getActivity returns null and crashes the app.
+                                        }
+                                    }
+                                };
+                                flaredownAPI.submitEntry(argDate, argResponseJson, responseListener);
                             }
-
-
-                            flaredownAPI.submitEntry(argDate, argResponseJson, new API.OnApiResponse<JSONObject>() {
-                                @Override
-                                public void onFailure(API_Error error) {
-                                    new DefaultErrors(getActivity(), error);
-                                }
-
-                                @Override
-                                public void onSuccess(JSONObject result) {
-                                    Toast.makeText(getActivity(), (result.optBoolean("success", false))? "DONE" : "FAILED", Toast.LENGTH_LONG).show(); // TODO A better confirmation
-
-                                }
-                            });
-                        } catch (JSONException e) {e.printStackTrace();}
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
+                fragment.onPageExit();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+       // } catch (JSONException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.i("CSF", "onCreateView called");
         root = inflater.inflate(R.layout.fragment_checkin_summary, container, false);
+        Log.i("CSF", root.toString());
         if(getActivity() instanceof CheckinActivity) {
             flaredownAPI = ((CheckinActivity) getActivity()).flareDownAPI;
         } else
@@ -147,10 +166,22 @@ public class Checkin_summary_fragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_ENTRY_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
+        outState.putString(ARG_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
+        outState.putLong(ARG_DATE_JSON, argDate.getTime());
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-        JSONArray responseArray = argResponseJson.optJSONArray("responses");
-        if(responseArray == null) responseArray = new JSONArray();
+        for (ViewPagerFragmentBase fragment : fragments) {
+            fragment.onPageExit();
+        }
+        //TODO update on close
+        /*//JSONArray responseArray = argResponseJson.optJSONArray("responses");
+        //if(responseArray == null) responseArray = new JSONArray();
 
         for (ViewPagerFragmentBase fragment : fragments) {
             JSONArray fragmentArray = fragment.activityClosing();
@@ -181,6 +212,6 @@ public class Checkin_summary_fragment extends Fragment {
                 } catch (NullPointerException e) { // If the application has been closed a null pointer is thrown
                 }
             }
-        });
+        });*/
     }
 }
