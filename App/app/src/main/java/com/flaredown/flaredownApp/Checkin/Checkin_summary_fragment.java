@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,10 +108,30 @@ public class Checkin_summary_fragment extends Fragment {
                         try {
                             if (catalogDefinition.getResponse() != null) {
                                 EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
+                                argResponseJson = EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions);
+
+                                final API.OnApiResponse responseListener = new API.OnApiResponse<JSONObject>() {
+                                    @Override
+                                    public void onFailure(API_Error error) {
+                                        new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submition"));
+                                    }
+
+                                    @Override
+                                    public void onSuccess(JSONObject result) {
+                                        if (result.optBoolean("success", false))
+                                            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+                                        else
+                                            new DefaultErrors(getActivity(), new API_Error().setStatusCode(500).setDebugString("Checkin_summary_fragment:assembleFragments:returnFalse"));
+                                    }
+                                };
+                                flaredownAPI.submitEntry(argDate, argResponseJson, responseListener);
                             }
-                        } catch (NullPointerException e) {e.printStackTrace();}
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
+                fragment.onPageExit();
             }
        // } catch (JSONException e) {
         //    e.printStackTrace();
@@ -142,6 +163,9 @@ public class Checkin_summary_fragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        for (ViewPagerFragmentBase fragment : fragments) {
+            fragment.onPageExit();
+        }
         //TODO update on close
         /*//JSONArray responseArray = argResponseJson.optJSONArray("responses");
         //if(responseArray == null) responseArray = new JSONArray();

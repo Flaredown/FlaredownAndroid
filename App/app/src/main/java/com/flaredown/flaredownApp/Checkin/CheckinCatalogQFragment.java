@@ -3,8 +3,10 @@ package com.flaredown.flaredownApp.Checkin;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.Spanned;
+import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -164,7 +166,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     public void onPageExit() {
         for (BaseQuestion questionView : questionViews) {
             questionView.getValue(); // Ensures Catalog Definition Response is upto date.
-            if(questionView.getCatalogDefinition().getResponse() != null)
+            if(questionView instanceof NumberQuestion && questionView.getCatalogDefinition().getResponse() != null && questionView.hasValueChanged())
                 triggerOnUpdateListener(questionView.getCatalogDefinition());
         }
     }
@@ -232,6 +234,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         protected Activity activity;
         private TextView tv_question;
         private EntryParsers.CatalogDefinition catalogDefinition;
+        protected boolean hasValueChanged = false;
 
         public BaseQuestion(Activity activity, EntryParsers.CatalogDefinition catalogDefinition) {
             super(activity);
@@ -271,6 +274,10 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             tv_question.setVisibility(VISIBLE);
         }
 
+        public boolean hasValueChanged(){
+            return hasValueChanged;
+        }
+
         public EntryParsers.CatalogDefinition getCatalogDefinition() {
             return catalogDefinition;
         }
@@ -282,11 +289,11 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
         public NumberQuestion(Activity activity, EntryParsers.CatalogDefinition catalogDefinition) {
             super(activity, catalogDefinition);
-            if(catalogDefinition.getInputs().size() > 0){
+            if (catalogDefinition.getInputs().size() > 0) {
                 editText = new EditText(getContext());
 
                 double step = catalogDefinition.getInputs().get(0).getStep();
-                if(step == Math.round(step)) { // Only excepts whole numbers.
+                if (step == Math.round(step)) { // Only excepts whole numbers.
                     integersOnly = true;
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER);
                 } else { // Decimals are aloud.
@@ -300,12 +307,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     setValue(0.0);
                 }
 
-                if(catalogDefinition.getResponse() != null) {
+                if (catalogDefinition.getResponse() != null) {
                     try {
-                       if(catalogDefinition.getResponse().getValue() instanceof Integer)
-                           setValue(Integer.valueOf((Integer)catalogDefinition.getResponse().getValue()).doubleValue());
-                       else
-                           setValue((double)catalogDefinition.getResponse().getValue());
+                        if (catalogDefinition.getResponse().getValue() instanceof Integer)
+                            setValue(Integer.valueOf((Integer) catalogDefinition.getResponse().getValue()).doubleValue());
+                        else
+                            setValue((double) catalogDefinition.getResponse().getValue());
                     } catch (ClassCastException e) {
                         e.printStackTrace();
                     }
@@ -316,12 +323,29 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             }
 
         }
+
         public void setValue(double value) {
-            if(integersOnly) {
+            if (integersOnly) {
                 editText.setText(String.valueOf((int) value));
             } else {
                 editText.setText(String.valueOf(value));
             }
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    hasValueChanged = true;
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
         }
 
         @Override
@@ -335,17 +359,18 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     objValue = Double.valueOf(stringValue);
                 }
 
-                if(getCatalogDefinition().getResponse() == null) {
+                if (getCatalogDefinition().getResponse() == null) {
                     getCatalogDefinition().setResponse(EntryParsers.createResponse(getCatalogDefinition(), objValue));
                 } else {
                     getCatalogDefinition().getResponse().setValue(objValue);
                 }
-            } catch (NumberFormatException e) {}
+            } catch (NumberFormatException e) {
+            }
             return super.getValue();
         }
     }
 
-    private static class CheckBoxQuestion extends BaseQuestion {
+    private class CheckBoxQuestion extends BaseQuestion {
         Button bt_checkbox;
 
         public CheckBoxQuestion(Activity activity, final EntryParsers.CatalogDefinition catalogDefinition) {
@@ -362,6 +387,8 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     } else {
                         catalogDefinition.getResponse().setValue(value);
                     }
+                    hasValueChanged = true;
+                    triggerOnUpdateListener(catalogDefinition);
                 }
             });
             this.addView(bt_checkbox);
@@ -379,7 +406,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         }
 
     }
-    private static class SelectQuestion extends BaseQuestion {
+    private class SelectQuestion extends BaseQuestion {
         CheckinSelectorView checkinSelectorView;
         public SelectQuestion(Activity activity, final EntryParsers.CatalogDefinition catalogDefinition) {
             super(activity, catalogDefinition);
@@ -400,6 +427,8 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     } else {
                         catalogDefinition.getResponse().setValue(value);
                     }
+                    hasValueChanged = true;
+                    triggerOnUpdateListener(catalogDefinition);
                 }
             });
         }
