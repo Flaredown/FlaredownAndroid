@@ -247,7 +247,7 @@ public class CheckinActivity extends AppCompatActivity {
         assignViews();
         setLocales();
         initialise();
-        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW))
+        /*if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW))
             setView((Views)savedInstanceState.getSerializable(SI_CURRENT_VIEW), false);
         else
             setView(Views.SPLASH_SCREEN, false);
@@ -263,6 +263,27 @@ public class CheckinActivity extends AppCompatActivity {
                 displayCheckin(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
             else
                 displayCheckin(new Date());
+        }*/
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
+            Views savedViewState = (Views) savedInstanceState.getSerializable(SI_CURRENT_VIEW);
+            Date savedCheckinDate = new Date(savedInstanceState.getLong(SI_CHECKIN_DATE));
+            setView(savedViewState, false);
+            if(savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER) && savedInstanceState.containsKey(SI_ENTRIES_JSON) && savedInstanceState.containsKey(SI_RESPONSE_JSON)) {
+                try {
+                    JSONObject entriesJObject = new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON));
+                    JSONArray responseJArray = new JSONArray(savedInstanceState.getString(SI_RESPONSE_JSON));
+                    List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(entriesJObject, responseJArray);
+                    displayCheckin(savedCheckinDate, collectionCatalogDefinitions);
+                    if(savedViewState == Views.SUMMARY) {
+                        displaySummary(collectionCatalogDefinitions, savedCheckinDate);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            setView(Views.SPLASH_SCREEN);
+            displayCheckin(new Date());
         }
     }
 
@@ -360,6 +381,8 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 submitCheckin();
+                displaySummary(collectionCatalogDefinitions, checkinDate);
+                setView(Views.SUMMARY);
             }
         });
     }
@@ -379,6 +402,12 @@ public class CheckinActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
             }
         });
+    }
+
+    private void displaySummary(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Date date) {
+        f_checkin_sumary = Checkin_summary_fragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions), EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions), date);
+        fl_checkin_summary.removeAllViews();
+        getSupportFragmentManager().beginTransaction().add(fl_checkin_summary.getId(), f_checkin_sumary, "sumary").commit();
     }
 
     /**
@@ -406,7 +435,7 @@ public class CheckinActivity extends AppCompatActivity {
             public void onSuccess(JSONObject result) {
                 try {
                     JSONObject entryJObject = result.getJSONObject("entry");
-                    if(!entryJObject.has("responses"))
+                    if (!entryJObject.has("responses"))
                         entryJObject.put("responses", new JSONArray());
                     List<EntryParsers.CollectionCatalogDefinition> ccds = EntryParsers.getCatalogDefinitions(entryJObject.getJSONObject("catalog_definitions"), entryJObject.getJSONArray("responses"));
                     displayCheckin(date, ccds);
@@ -426,7 +455,7 @@ public class CheckinActivity extends AppCompatActivity {
     private void displayCheckin(final Date date, List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) {
         checkinDate = date;
         toolbarTitle.setText(Styling.displayDateLong(date));
-        if(currentView != Views.CHECKIN) setView(Views.NOT_CHECKED_IN_YET);
+        if(currentView == Views.SPLASH_SCREEN) setView(Views.NOT_CHECKED_IN_YET);
         this.collectionCatalogDefinitions = collectionCatalogDefinitions;
         List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
         for (ViewPagerFragmentBase fragment : fragments) {

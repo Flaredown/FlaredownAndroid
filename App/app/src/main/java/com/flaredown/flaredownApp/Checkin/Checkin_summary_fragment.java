@@ -35,7 +35,8 @@ public class Checkin_summary_fragment extends Fragment {
     private static final String ARG_DATE_JSON = "date";
 
     private JSONObject argEntryJson;
-    private JSONObject argResponseJson;
+    private JSONArray argResponseJson;
+    private List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
     private Date argDate;
     private View root;
     private LinearLayout ll_fragmentHolder;
@@ -55,7 +56,7 @@ public class Checkin_summary_fragment extends Fragment {
      * @param responseJson The response json submitted for checkin.
      * @return A new instance of fragment Checkin_summary_fragment.
      */
-    public static Checkin_summary_fragment newInstance(JSONObject entryJson, JSONObject responseJson, Date date) {
+    public static Checkin_summary_fragment newInstance(JSONObject entryJson, JSONArray responseJson, Date date) {
         Checkin_summary_fragment fragment = new Checkin_summary_fragment();
         Bundle args = new Bundle();
         args.putString(ARG_ENTRY_JSON, entryJson.toString());
@@ -71,11 +72,11 @@ public class Checkin_summary_fragment extends Fragment {
         if (getArguments() != null) {
             try {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
-                argResponseJson = new JSONObject(getArguments().getString(ARG_RESPONSE_JSON));
-                argEntryJson.getJSONObject("entry").put("responses", argResponseJson.getJSONArray("responses"));
+                argResponseJson = new JSONArray(getArguments().getString(ARG_RESPONSE_JSON));
+                collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(argEntryJson, argResponseJson);
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
-                argResponseJson = new JSONObject();
+                argResponseJson = new JSONArray();
                 e.printStackTrace();
             }
             argDate = new Date(getArguments().getLong(ARG_DATE_JSON, new Date().getTime()));
@@ -92,9 +93,9 @@ public class Checkin_summary_fragment extends Fragment {
 
 
     private void assembleFragments() {
-        try {
+        //try {
             //fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
-            fragments = CheckinActivity.createFragments(EntryParsers.getCatalogDefinitions(argEntryJson.getJSONObject("entry"), new JSONArray())); //TODO pass responses
+            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions); //TODO pass responses
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
@@ -128,9 +129,9 @@ public class Checkin_summary_fragment extends Fragment {
                     }
                 });
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+       // } catch (JSONException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     @Override
@@ -150,8 +151,9 @@ public class Checkin_summary_fragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        JSONArray responseArray = argResponseJson.optJSONArray("responses");
-        if(responseArray == null) responseArray = new JSONArray();
+        //TODO update on close
+        /*//JSONArray responseArray = argResponseJson.optJSONArray("responses");
+        //if(responseArray == null) responseArray = new JSONArray();
 
         for (ViewPagerFragmentBase fragment : fragments) {
             JSONArray fragmentArray = fragment.activityClosing();
@@ -182,6 +184,6 @@ public class Checkin_summary_fragment extends Fragment {
                 } catch (NullPointerException e) { // If the application has been closed a null pointer is thrown
                 }
             }
-        });
+        });*/
     }
 }
