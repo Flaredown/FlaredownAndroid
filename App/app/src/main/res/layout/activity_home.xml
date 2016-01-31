@@ -45,35 +45,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:animateLayoutChanges="true">
+                android:animateLayoutChanges="true"
+                android:gravity="center">
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="&lt;---"
+                <ImageButton
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/fd_arrow_change_question"
                     android:id="@+id/bt_prevQuestion"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
-                    android:visibility="invisible"
-                    android:layout_weight="0.5" />
+                    android:scaleType="fitCenter"
+                    android:paddingLeft="@dimen/sep_margin_large"
+                    android:paddingRight="@dimen/sep_margin_large"
+                    android:visibility="invisible" />
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="--->"
+                <ImageButton
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/fd_arrow_change_question_next"
                     android:id="@+id/bt_nextQuestion"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
-                    android:layout_weight="0.5" />
+                    android:scaleType="fitCenter"
+                    android:paddingLeft="@dimen/sep_margin_large"
+                    android:paddingRight="@dimen/sep_margin_large" />
 
                 <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
                     android:text="SUBMIT"
                     android:id="@+id/bt_submitCheckin"
                     android:layout_alignParentRight="true"

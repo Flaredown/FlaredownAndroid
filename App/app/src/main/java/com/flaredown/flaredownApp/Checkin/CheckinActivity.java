@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -56,8 +58,8 @@ public class CheckinActivity extends AppCompatActivity {
     /*
         View Variables.
      */
-    private Button bt_nextQuestion;
-    private Button bt_prevQuestion;
+    private ImageButton bt_nextQuestion;
+    private ImageButton bt_prevQuestion;
     private Button bt_submitCheckin;
     private Button bt_not_checked_in_checkin;
 
@@ -355,8 +357,8 @@ public class CheckinActivity extends AppCompatActivity {
      * Finds the views of relevant views and assigns it's corresponding variable.
      */
     private void assignViews() {
-        bt_nextQuestion = (Button) findViewById(R.id.bt_nextQuestion);
-        bt_prevQuestion = (Button) findViewById(R.id.bt_prevQuestion);
+        bt_nextQuestion = (ImageButton) findViewById(R.id.bt_nextQuestion);
+        bt_prevQuestion = (ImageButton) findViewById(R.id.bt_prevQuestion);
         bt_submitCheckin = (Button) findViewById(R.id.bt_submitCheckin);
         bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);

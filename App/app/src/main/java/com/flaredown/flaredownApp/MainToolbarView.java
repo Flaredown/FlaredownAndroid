@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,8 +17,8 @@ import android.widget.TextView;
 public class MainToolbarView extends LinearLayout{
 
     private Toolbar toolbar;
-    private Button bt_next;
-    private Button bt_prev;
+    private ImageButton bt_next;
+    private ImageButton bt_prev;
     private TextView title;
     private Context mContext;
     private View rootView;
@@ -31,8 +32,8 @@ public class MainToolbarView extends LinearLayout{
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_top);
 
-        bt_next = (Button) rootView.findViewById(R.id.bt_toolbar_next);
-        bt_prev = (Button) rootView.findViewById(R.id.bt_toolbar_prev);
+        bt_next = (ImageButton) rootView.findViewById(R.id.bt_toolbar_next);
+        bt_prev = (ImageButton) rootView.findViewById(R.id.bt_toolbar_prev);
 
 
         //title = (TextView) findViewById(R.id.toolbar_title);
