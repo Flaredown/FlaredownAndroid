@@ -242,9 +242,10 @@ public class CheckinActivity extends AppCompatActivity {
                     if(animate) {
                         ll_splashScreen.setAlpha(0);
                         ll_splashScreen.setVisibility(View.VISIBLE);
+                        ll_splashScreen.setTranslationY(0);
                         ll_splashScreen.animate()
                                 .alpha(1)
-                                .translationY(Styling.getInDP(this, 100))
+                                .translationY(Styling.getInDP(this, 0))
                                 .setListener(new AnimatorListenerAdapter() {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
@@ -336,7 +337,7 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             }
         } else {
-            setView(Views.SPLASH_SCREEN);
+            setView(Views.SPLASH_SCREEN, false);
             displayCheckin(new Date());
         }
     }
