@@ -633,7 +633,10 @@ public class CheckinActivity extends AppCompatActivity {
         for (String catalogName : EntryParsers.CATALOG_NAMES) { // Handling the grouped catalogs.
             if(!catalogName.equals("treatments")) {
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions), 0);
+                List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitionsFiltered = EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions);
+                if(collectionCatalogDefinitionsFiltered.size() == 0)
+                    collectionCatalogDefinitionsFiltered.add(EntryParsers.createBlankCollectionCatalogDefinition(catalogName));
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitionsFiltered, 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }

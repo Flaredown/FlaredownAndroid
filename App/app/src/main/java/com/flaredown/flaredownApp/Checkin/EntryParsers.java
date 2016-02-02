@@ -167,6 +167,10 @@ public class EntryParsers {
         return new CatalogDefinition(catalog, name, catalogInputType, inputs);
     }
 
+    public static CollectionCatalogDefinition createBlankCollectionCatalogDefinition(String catalogName) {
+        return new CollectionCatalogDefinition().setCatalog(catalogName);
+    }
+
     public static List<Input> getDefaultInputSmilies() {
         List<Input> inputs = new ArrayList<>();
         for(int i = 0; i < 5; i++)
@@ -388,6 +392,11 @@ public class EntryParsers {
 
         public String getCatalog() {
             return catalog;
+        }
+
+        public CollectionCatalogDefinition setCatalog(String catalogName) {
+            this.catalog = catalogName;
+            return this;
         }
     }
 

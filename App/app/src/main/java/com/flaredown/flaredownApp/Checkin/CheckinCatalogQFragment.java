@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -88,16 +89,17 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     }
 
     private void init() {
+        Log.i(DEBUG_KEY, String.valueOf(collectionCatalogDefinitions.size()));
         if(collectionCatalogDefinitions != null) {
             //Set the catalog title.
-            if(collectionCatalogDefinitions.size() > 0 && collectionCatalogDefinitions.get(0).size() > 0) {
-                switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
+            if(collectionCatalogDefinitions.size() > 0) {
+                switch (collectionCatalogDefinitions.get(0).getCatalog()) {
                     case "conditions":
                     case "symptoms":
-                        tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + collectionCatalogDefinitions.get(0).get(0).getCatalog()).capitalize1Char().createAT());
+                        tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + collectionCatalogDefinitions.get(0).getCatalog()).capitalize1Char().createAT());
                         break;
                     default:
-                        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
+                        tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
                         break;
                 }
                 //Open edit trackables dialog on catalog title click.
@@ -105,7 +107,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     @Override
                     public void onClick(View v) {
                         if(EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
-                            String catalog = EntryParsers.getFirstCatalogDefinition(collectionCatalogDefinitions).getCatalog();
+                            String catalog = collectionCatalogDefinitions.get(0).getCatalog();
 
                             switch (catalog) {
                                 case "symptoms":
@@ -132,9 +134,15 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                     }
                 });
 
+                for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinitions : this.collectionCatalogDefinitions) {
+                    for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinitions) {
+                        appendQuesiton(catalogDefinition);
+                    }
+                }
+
                 //Set the section title.
                 String sectionTitle = "--";
-                switch (collectionCatalogDefinitions.get(0).get(0).getCatalog()) {
+                switch (collectionCatalogDefinitions.get(0).getCatalog()) {
                     case "symptoms":
                         if (questionViews.size() == 0)
                             sectionTitle = Locales.read(getActivity(), "oops_no_symptoms_being_tracked").create();
@@ -148,16 +156,11 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                             sectionTitle = Locales.read(getActivity(), "how_active_were_your_conditions").create();
                         break;
                     default:
-                        sectionTitle = Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).get(0).getCatalog() + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
+                        sectionTitle = Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).getCatalog() + ".section_" + section + "_prompt").resultIfUnsuccessful(sectionTitle).create();
                         break;
                 }
                 //sectionTitle = String.valueOf(section);
                 tv_sectionTitle.setText(sectionTitle);
-            }
-            for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinitions : this.collectionCatalogDefinitions) {
-                for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinitions) {
-                    appendQuesiton(catalogDefinition);
-                }
             }
         }
     }
