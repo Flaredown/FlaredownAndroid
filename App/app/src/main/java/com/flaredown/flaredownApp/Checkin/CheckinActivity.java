@@ -584,7 +584,7 @@ public class CheckinActivity extends AppCompatActivity {
                 displaySummary(collectionCatalogDefinitions, checkinDate);
             } else setView(Views.NOT_CHECKED_IN_YET);
         }
-        List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions, date);
+        List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
         for (ViewPagerFragmentBase fragment : fragments) {
             fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                 @Override
@@ -609,26 +609,12 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     /**
-     * Returns true if the date object is today's date.
-     * @param date The date to check.
-     * @return True if the date passed is equal to todays.
-     */
-    public static boolean isCheckinForToday(Date date) {
-        Calendar today = Calendar.getInstance();
-        today.setTime(new Date());
-        Calendar checkinCalendar = Calendar.getInstance();
-        today.setTime(date);
-        return today.get(Calendar.DAY_OF_YEAR) == checkinCalendar.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == checkinCalendar.get(Calendar.YEAR);
-    }
-
-
-    /**
      * Creates a list array of fragment objects for each question specified in the JSON object
      * @param collectionCatalogDefinitions Specification for each question.
      * @return A list array of Fragments extending the View Pager Fragment.
      * @throws JSONException
      */
-    public static List<ViewPagerFragmentBase> createFragments(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Date checkinDate) {
+    public static List<ViewPagerFragmentBase> createFragments(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         String currentCatalog = null;
         Integer section = 1;
@@ -639,7 +625,7 @@ public class CheckinActivity extends AppCompatActivity {
                     currentCatalog = collectionCatalogDefinition.getCatalog(); // Add a new class to contain groups of catalog definitions.
                 }
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section, checkinDate);
+                checkinCatalogQFragment.setQuestions(new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
                 fragments.add(checkinCatalogQFragment);
                 section++;
             }
@@ -650,7 +636,7 @@ public class CheckinActivity extends AppCompatActivity {
                 List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitionsFiltered = EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions);
                 if(collectionCatalogDefinitionsFiltered.size() == 0)
                     collectionCatalogDefinitionsFiltered.add(EntryParsers.createBlankCollectionCatalogDefinition(catalogName));
-                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitionsFiltered, 0, checkinDate);
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitionsFiltered, 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }

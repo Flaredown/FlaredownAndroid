@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +49,6 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     private LinearLayout ll_questionHolder;
     private TextView tv_catalogName;
     private TextView tv_sectionTitle;
-    private Date checkinDate;
 
     @Nullable
     @Override
@@ -98,48 +96,43 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                 switch (collectionCatalogDefinitions.get(0).getCatalog()) {
                     case "conditions":
                     case "symptoms":
-                            if(CheckinActivity.isCheckinForToday(checkinDate)) // Can only edit trackables for the current day
-                                tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + collectionCatalogDefinitions.get(0).getCatalog()).capitalize1Char().createAT());
-                            else
-                                tv_catalogName.setText(Locales.read(getActivity(), collectionCatalogDefinitions.get(0).getCatalog()).capitalize1Char().createAT());
+                        tv_catalogName.setText(Locales.read(getActivity(), "onboarding.edit_" + collectionCatalogDefinitions.get(0).getCatalog()).capitalize1Char().createAT());
                         break;
                     default:
                         tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
                         break;
                 }
                 //Open edit trackables dialog on catalog title click.
-                if(CheckinActivity.isCheckinForToday(checkinDate)) {
-                    tv_catalogName.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
-                                String catalog = collectionCatalogDefinitions.get(0).getCatalog();
+                tv_catalogName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
+                            String catalog = collectionCatalogDefinitions.get(0).getCatalog();
 
-                                switch (catalog) {
-                                    case "symptoms":
-                                    case "conditions":
-                                        String title = Locales.read(getActivity(), "onboarding.edit_" + catalog).create();
+                            switch (catalog) {
+                                case "symptoms":
+                                case "conditions":
+                                    String title = Locales.read(getActivity(), "onboarding.edit_" + catalog).create();
 
-                                        final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
-                                        editEditablesDialog.initialize(title, catalog);
-                                        editEditablesDialog.show(getActivity().getFragmentManager(), "editablesdialog");
-                                        api.getEditables(catalog, new API.OnApiResponse<List<String>>() {
-                                            @Override
-                                            public void onFailure(API_Error error) {
-                                                new DefaultErrors(getActivity(), error);
-                                            }
+                                    final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
+                                    editEditablesDialog.initialize(title, catalog);
+                                    editEditablesDialog.show(getActivity().getFragmentManager(), "editablesdialog");
+                                    api.getEditables(catalog, new API.OnApiResponse<List<String>>() {
+                                        @Override
+                                        public void onFailure(API_Error error) {
+                                            new DefaultErrors(getActivity(), error);
+                                        }
 
-                                            @Override
-                                            public void onSuccess(List<String> result) {
-                                                editEditablesDialog.setItems(result);
-                                            }
-                                        });
-                                        break;
-                                }
+                                        @Override
+                                        public void onSuccess(List<String> result) {
+                                            editEditablesDialog.setItems(result);
+                                        }
+                                    });
+                                    break;
                             }
                         }
-                    });
-                }
+                    }
+                });
 
                 for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinitions : this.collectionCatalogDefinitions) {
                     for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinitions) {
@@ -183,10 +176,9 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private List<BaseQuestion> questionViews = new ArrayList<>();
 
-    public void setQuestions(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Integer section, Date checkinDate) {
+    public void setQuestions(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Integer section) {
         this.collectionCatalogDefinitions = collectionCatalogDefinitions;
         this.section = section;
-        this.checkinDate = checkinDate;
     }
 
     public void appendQuesiton(EntryParsers.CatalogDefinition catalogDefinition) {

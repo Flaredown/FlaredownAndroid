@@ -103,7 +103,7 @@ public class Checkin_summary_fragment extends Fragment {
     private void assembleFragments() {
         //try {
             //fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
-            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions, argDate); //TODO pass responses
+            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions); //TODO pass responses
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
