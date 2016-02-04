@@ -2,21 +2,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--<include layout="@layout/toolbar"/>-->
+    <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_toolbar_view"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="false" />
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:visibility="gone"
-        android:id="@+id/rl_checkin">
-        <com.flaredown.flaredownApp.MainToolbarView android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/main_toolbar_view"/>
+        android:id="@+id/rl_checkin"
+        android:layout_below="@+id/main_toolbar_view"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="false">
 
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_questionPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar_view"
             android:layout_above="@+id/ll_nextbt_progress" />
 
         <LinearLayout
@@ -40,35 +45,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:animateLayoutChanges="true">
+                android:animateLayoutChanges="true"
+                android:gravity="center">
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="&lt;---"
+                <ImageButton
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/fd_arrow_change_question"
                     android:id="@+id/bt_prevQuestion"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
-                    android:visibility="invisible"
-                    android:layout_weight="0.5" />
+                    android:scaleType="fitCenter"
+                    android:paddingLeft="@dimen/sep_margin_large"
+                    android:paddingRight="@dimen/sep_margin_large"
+                    android:visibility="invisible" />
 
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="--->"
+                <ImageButton
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/fd_arrow_change_question_next"
                     android:id="@+id/bt_nextQuestion"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
-                    android:layout_weight="0.5" />
+                    android:scaleType="fitCenter"
+                    android:paddingLeft="@dimen/sep_margin_large"
+                    android:paddingRight="@dimen/sep_margin_large" />
 
                 <Button
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
                     android:text="SUBMIT"
                     android:id="@+id/bt_submitCheckin"
                     android:layout_alignParentRight="true"
@@ -90,6 +99,67 @@
                 android:paddingBottom="3dp" />-->
         </LinearLayout>
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ll_not_checked_in"
+        android:background="@color/background"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/main_toolbar_view">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:animateLayoutChanges="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+            <TextView
+                android:id="@+id/tv_not_checked_in_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You haven&apos;t checked in yet today"
+                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:textSize="@dimen/sub_title_font_size" />
+
+            <Button
+                android:id="@+id/bt_not_checked_in_checkin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check-in"
+                android:paddingLeft="@dimen/sep_margin_medium"
+                android:paddingRight="@dimen/sep_margin_medium"
+                android:paddingTop="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fl_checkin_summary"
+        android:layout_below="@+id/main_toolbar_view"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+        <!--
+        Now gets added progromatically
+        <fragment
+            android:id="@+id/f_checkin_summary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.flaredown.flaredownApp.Checkin.Checkin_summary_fragment"/> -->
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -138,46 +208,4 @@
             android:layout_margin="@dimen/sep_margin_large" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/ll_not_checked_in"
-        android:background="@color/background"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:animateLayoutChanges="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin">
-            <TextView
-                android:id="@+id/tv_not_checked_in_checkin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="You haven&apos;t checked in yet today"
-                android:layout_marginBottom="@dimen/sep_margin_medium"
-                android:textSize="@dimen/sub_title_font_size" />
-
-            <Button
-                android:id="@+id/bt_not_checked_in_checkin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Check-in"
-                android:paddingLeft="@dimen/sep_margin_medium"
-                android:paddingRight="@dimen/sep_margin_medium"
-                android:paddingTop="@dimen/sep_margin_small"
-                android:paddingBottom="@dimen/sep_margin_small" />
-        </LinearLayout>
-    </LinearLayout>
-
 </RelativeLayout>

@@ -9,6 +9,8 @@ public class API_Error {
     public VolleyError volleyError;
     public Boolean internetConnection;
     public int statusCode = 500;
+    public String debugString = "";
+    private Runnable retryRunnable = null;
 
     /**
      * Automatically sets status code, internet connection fields from a VolleyError object.
@@ -31,12 +33,49 @@ public class API_Error {
     }
 
     /**
+     * Change the ok button to retry, when clicked runnable will run.
+     * @param runnable retry action.
+     * @return Itself.
+     */
+    public API_Error setRetry(Runnable runnable) {
+        retryRunnable = runnable;
+        return this;
+    }
+
+    /**
+     * Returns the retry runnable.
+     * @return Retry runnable.
+     */
+    public Runnable getRetry() {
+        return retryRunnable;
+    }
+
+    /**
      * Set the status code of the error.
      * @param statusCode the HTTP status code.
      * @return returns itself for easy concatenation.
      */
     public API_Error setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+        return this;
+    }
+
+    /**
+     * Get the debug string, only appears if the app is in the debug app.
+     * @return The debug string.
+     */
+    public String getDebugString() {
+        return debugString;
+    }
+
+    /**
+     * Set the debug string, a message that appears in the error message when
+     * app is in debug mode.
+     * @param debugString
+     * @return Itself.
+     */
+    public API_Error setDebugString(String debugString) {
+        this.debugString = debugString;
         return this;
     }
 

@@ -9,8 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,62 +18,41 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    Trackable trackable = null;
+    protected List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
 
+    public List<EntryParsers.CollectionCatalogDefinition> getCollectionCatalogDefinitions() {
+        return collectionCatalogDefinitions;
+    }
 
-    public static int indexOfTrackableQuestion(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
-        for(int i = 0; i < fragments.size(); i++) {
-            ViewPagerFragmentBase fragment = fragments.get(i);
-            if(fragment.trackable.catalogue.equals(catalogue) && Arrays.asList(fragment.trackable.questions).indexOf(question) != -1) {
-                //Found it
-                return i;
+    public static int indexOfQuestionsPage(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
+        List<Integer> catalogIndexes = indexesOfCatalog(catalogue, fragments);
+        for (Integer catalogIndex : catalogIndexes) {
+            ViewPagerFragmentBase fragment = fragments.get(catalogIndex);
+            if(fragment instanceof CheckinCatalogQFragment) {
+                CheckinCatalogQFragment checkinCatalogQFragment = (CheckinCatalogQFragment) fragment;
+                int questionIndex = checkinCatalogQFragment.indexOfQuestion(question);
+                if(questionIndex != -1)
+                    return catalogIndex;
             }
         }
         return -1;
     }
 
-    public static int indexOfCatalogue(String catalogue, List<ViewPagerFragmentBase> fragments) {
+    public static List<Integer> indexesOfCatalog(String catalog, List<ViewPagerFragmentBase> fragments) {
+        List<Integer> integers = new ArrayList<>();
         for (int i = 0; i < fragments.size(); i++) {
-            if(fragments.get(i).trackable.catalogue.equals(catalogue)) return i;
-        }
-        return -1;
-    }
-
-    public static class Trackable {
-        String catalogue;
-        String[] questions;
-        JSONArray JA_questions = new JSONArray();
-
-        public Trackable() {
-            catalogue = "";
-            questions = new String[0];
-        }
-
-        public Trackable(String catalogue, JSONArray questions) throws JSONException{
-            this.catalogue = catalogue;
-            this.JA_questions = questions;
-            createQuestionsStrArr(questions);
-        }
-
-        private void createQuestionsStrArr(JSONArray questions) throws JSONException{
-            this.questions = new String[questions.length()];
-            for(int i = 0; i < questions.length(); i++) {
-                JSONArray ja = questions.getJSONArray(i);
-                for(int j = 0; j < ja.length(); j++) {
-                    JSONObject jo = ja.getJSONObject(j);
-                    this.questions[i] = jo.getString("name");
-                }
+            ViewPagerFragmentBase fragment = fragments.get(i);
+            if(fragment.collectionCatalogDefinitions.size() > 0 && fragment.collectionCatalogDefinitions.get(0).getCatalog().equals(catalog)) {
+                integers.add(i);
             }
         }
+        return integers;
     }
-
 
 
     public void onPageEnter() {
-
     }
     public void onPageExit() {
-
     }
     public void setEditTextFocus(EditText focus) {
         editTextFocus = focus;
@@ -93,8 +71,46 @@ public class ViewPagerFragmentBase extends Fragment {
         }
     }
 
+    List<OnResposneUpdate> onResposneUpdates = new ArrayList<>();
+    public void addOnUpdateListener(OnResposneUpdate onResposneUpdate) {
+        onResposneUpdates.add(onResposneUpdate);
+    }
+
+    /**
+     * The number input may not trigger an UpdateListener event when the user changes the value....
+     * This will allow the input to trigger an UpdateListener if not done prior.
+     */
+    public JSONArray activityClosing() {
+        return new JSONArray();
+    }
+
+    public void removeOnUpdateListener(OnResposneUpdate onResposneUpdate) {
+        onResposneUpdates.remove(onResposneUpdate);
+    }
+    protected void triggerOnUpdateListener(EntryParsers.CatalogDefinition catalogDefinition) {
+        for (OnResposneUpdate onResposneUpdate : onResposneUpdates) {
+            onResposneUpdate.onUpdate(catalogDefinition);
+        }
+    }
+
+    public interface OnResposneUpdate {
+        void onUpdate(EntryParsers.CatalogDefinition catalogDefinition);
+    }
+
 
     public JSONArray getResponse() throws JSONException{
         return null;
+    }
+
+    public static JSONObject generateResponseObject(String catalog, String question, Object value) {
+        try {
+            JSONObject responseObject = new JSONObject();
+            responseObject.put("name", question);
+            responseObject.put("catalog", catalog);
+            responseObject.put("value", value);
+            return responseObject;
+        } catch (JSONException e) {
+            return new JSONObject();
+        }
     }
 }

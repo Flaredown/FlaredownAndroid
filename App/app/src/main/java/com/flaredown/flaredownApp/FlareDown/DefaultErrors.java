@@ -45,6 +45,7 @@ public class DefaultErrors {
 
         if(PreferenceKeys.DEBUGGING) {
             description += "<br/><br/>---App is in debug mode extra detail below---<br/>";
+            description += "<b>Debug String:</b>" + apiError.getDebugString() + "<br/>";
             description += "<b>Error code: </b>" + apiError.statusCode + "<br/><b>Response:</b><br/>";
             description += response;
         }
@@ -59,11 +60,19 @@ public class DefaultErrors {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         builder.setMessage(text)
-            .setTitle(title)
-            .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            .setTitle(title);
+        if(apiError.getRetry() == null)
+            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
+                }
+            });
+        else
+            builder.setPositiveButton("Retry", new DialogInterface.OnClickListener() { //TODO make local
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    apiError.getRetry().run();
                 }
             });
 

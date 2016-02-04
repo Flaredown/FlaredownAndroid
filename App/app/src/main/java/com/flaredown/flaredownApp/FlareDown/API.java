@@ -41,7 +41,7 @@ public class API {
     private static final String SP_USER_EMAIL = "FlareDownAPI_useremail"; // String
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     private static final String SP_ENTRIES_CACHE = "FlareDownAPI_entries_cache";
-    public static final String API_BASE_URL = "https://api-staging.flaredown.com/v1";
+    public static final String API_BASE_URL = "https://staging.flaredown.com/v1";
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     public static final String CHAR_SET = "UTF-8";
@@ -126,7 +126,12 @@ public class API {
 
                     //onApiResponse.onSuccess(jsonResponse);
                 } catch (JSONException e) {
-                    onApiResponse.onFailure(new API_Error().setInternetConnection(true));
+                    onApiResponse.onFailure(new API_Error().setInternetConnection(true).setRetry(new Runnable() {
+                        @Override
+                        public void run() {
+                            users_sign_in(email, password, onApiResponse);
+                        }
+                    }));
                     e.printStackTrace();
                 }
             }
@@ -138,7 +143,12 @@ public class API {
                 } catch (NullPointerException e) {
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "503");
                 }
-                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        users_sign_in(email, password, onApiResponse);
+                    }
+                }));
             }
         }) {
             @Override
@@ -169,7 +179,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setInternetConnection(true).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        users_sign_out(onApiResponse);
+                    }
+                }));
             }
         }) {
             @Override
@@ -197,7 +212,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        current_user(onApiResponse);
+                    }
+                }));
                 cacheAPI("current_user","");
             }
         });
@@ -239,7 +259,7 @@ public class API {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, result.toString());
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:getEditables()JSONException"));
                 }
             }
         });
@@ -263,7 +283,7 @@ public class API {
      * @param onApiResponse Callback with the response from the API server.
      * @return Returns the volley request queue it is using.
      */
-    public RequestQueue get_json_array(String endpoint, final OnApiResponse<JSONArray> onApiResponse) {
+    public RequestQueue get_json_array(final String endpoint, final OnApiResponse<JSONArray> onApiResponse) {
         JsonRequest jsonRequest = new JsonArrayRequest(Request.Method.GET, getEndpointUrl(endpoint), null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -272,7 +292,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        get_json_array(endpoint, onApiResponse);
+                    }
+                }));
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
@@ -302,7 +327,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        entries(date, onApiResponse);
+                    }
+                }));
             }
         }) {
             @Override
@@ -319,9 +349,27 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
+    public void submitEntry(Date date, JSONArray responses, OnApiResponse<JSONObject> onApiResponse) {
+        try {
+            submitEntry(date, new JSONObject().put("responses", responses), onApiResponse);
+        } catch (JSONException e) { e.printStackTrace(); }
+    }
+
+    /**
+     * Submits a check in entry to flaredown.
+     * @param date The date of the checkin.
+     * @param response The response data.
+     * @param onApiResponse
+     */
     public void submitEntry(final Date date, final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {
         HashMap<String, String> params = new HashMap<>();
         params.put("entry", response.toString());
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                submitEntry(date, response, onApiResponse);
+            }
+        };
 
         JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.PUT, getEndpointUrl("/entries/" + API_DATE_FORMAT.format(date) + ".json", params), response, new Response.Listener<JSONObject>() {
             @Override
@@ -330,16 +378,16 @@ public class API {
                     if (response.has("success") && response.getBoolean("success") == true) {
                         onApiResponse.onSuccess(response);
                     } else {
-                        onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                        onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()requestNotReturnSuccess").setRetry(retryRunnable));
                     }
                 } catch (JSONException e) {
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()JSONException").setRetry(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(retryRunnable));
             }
         }){
             @Override
@@ -394,9 +442,9 @@ public class API {
      * @param id The id of the trackable.
      * @param onApiResponse Callback with the response from the API server.
      */
-    public void delete_trackable(String catalog, int id, final OnApiResponse<String> onApiResponse) {
+    public void delete_trackable(final String catalog, final int id, final OnApiResponse<String> onApiResponse) {
         if(catalog == null || catalog.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackable()noCatalog"));
             return;
         }
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, getEndpointUrl("/" + catalog + "/" + id), new Response.Listener<String>() {
@@ -407,7 +455,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        delete_trackable(catalog, id, onApiResponse);
+                    }
+                }));
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
@@ -422,7 +475,12 @@ public class API {
      */
     public void delete_trackableByName(final String catalog, final String name, final OnApiResponse<String> onApiResponse) {
         if(catalog == null || catalog.equals("") || name == null || name.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackableByName()noCatalogOrName").setRetry(new Runnable() {
+                @Override
+                public void run() {
+                    delete_trackableByName(catalog, name, onApiResponse);
+                }
+            }));
             return;
         }
 
@@ -453,7 +511,7 @@ public class API {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:delete_trackableByName()JSONException"));
                 }
             }
         });
@@ -466,18 +524,18 @@ public class API {
      * @param name The new name of the trackable.
      * @param onApiResponse Callback with the response from the API server.
      */
-    public void create_trackable(String catalog, String name, final OnApiResponse<JSONObject> onApiResponse) {
+    public void create_trackable(final String catalog, final String name, final OnApiResponse<JSONObject> onApiResponse) {
         switch (catalog) {
             case "symptoms":
             case "treatments":
             case "conditions":
                 break;
             default:
-                onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()WrongCatalog"));
                 return;
         }
         if(name == null || name.equals("")) {
-            onApiResponse.onFailure(new API_Error().setStatusCode(500));
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()noName"));
             return;
         }
         final Map<String, String> params = addAuthenticationParams();
@@ -490,13 +548,18 @@ public class API {
                     onApiResponse.onSuccess(new JSONObject(response));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onApiResponse.onFailure(new API_Error().setStatusCode(500));
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:create_trackable()responseJSONException"));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        create_trackable(catalog, name, onApiResponse);
+                    }
+                }));
             }
         }) {
             @Override
@@ -580,7 +643,12 @@ public class API {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(new Runnable() {
+                    @Override
+                    public void run() {
+                        getLocales(language, onApiResponse);
+                    }
+                }));
             }
         }) {
             @Override
