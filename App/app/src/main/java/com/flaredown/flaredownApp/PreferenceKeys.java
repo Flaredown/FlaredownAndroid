@@ -9,7 +9,7 @@ import android.util.Log;
  * Created by thunter on 01/09/15.
  */
 public class PreferenceKeys {
-    public static final boolean DEBUGGING = true;
+    public static final boolean DEBUGGING = !BuildConfig.APPLICATION_ID.equals("com.flaredown.flaredownApp");
     //public static final String API_DOMAIN = "https://app.flaredown.com/v1";
 
     //Key values stored in sharedpreferences

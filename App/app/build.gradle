@@ -12,11 +12,31 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
     productFlavors {
+        productRelease {
+            applicationId 'com.flaredown.flaredownApp'
+            buildConfigField "String", "API_BASE_URI", "\"https://app.flaredown.com/v1\""
+            resValue "string", "app_name", "@string/app_name_release"
+            targetSdkVersion 22
+            versionCode 1
+            versionName '1.0'
+        }
+        productDebug {
+            buildConfigField "String", "API_BASE_URI", "\"https://staging.flaredown.com/v1\""
+            resValue "string", "app_name", "\"Flaredown Debug\""
+            minSdkVersion 14
+            applicationId 'com.flaredown.flaredownApp.DEBUG'
+            targetSdkVersion 22
+            versionCode 1
+            versionName '1.0'
+        }
     }
 }
 

@@ -69,7 +69,6 @@ public class Checkin_summary_fragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i("Fragment", "Checkin Summary Fragment onCreate called");
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         if (getArguments() != null) {
@@ -78,10 +77,6 @@ public class Checkin_summary_fragment extends Fragment {
                 argResponseJson = new JSONArray(getArguments().getString(ARG_RESPONSE_JSON));
                 argDate = new Date(getArguments().getLong(ARG_DATE_JSON));
                 collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(argEntryJson, argResponseJson);
-                if(EntryParsers.catalogDefinitionHasOneElement(collectionCatalogDefinitions)) {
-                    Log.i("CSF", "At least one catalog definition has been passed");
-                } else
-                    Log.w("CSF", "No catalog definitions have been passed");
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
                 argResponseJson = new JSONArray();
@@ -153,9 +148,7 @@ public class Checkin_summary_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.i("CSF", "onCreateView called");
         root = inflater.inflate(R.layout.fragment_checkin_summary, container, false);
-        Log.i("CSF", root.toString());
         if(getActivity() instanceof CheckinActivity) {
             flaredownAPI = ((CheckinActivity) getActivity()).flareDownAPI;
         } else

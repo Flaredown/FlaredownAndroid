@@ -89,7 +89,6 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     }
 
     private void init() {
-        Log.i(DEBUG_KEY, String.valueOf(collectionCatalogDefinitions.size()));
         if(collectionCatalogDefinitions != null) {
             //Set the catalog title.
             if(collectionCatalogDefinitions.size() > 0) {
