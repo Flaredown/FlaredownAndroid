@@ -230,7 +230,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        Context context = getActivity().getApplicationContext();
+        Context context = getActivity();
         // Save/Update all alarms
         if (mTimes.size() > 0){
             if (updateAllAlarms() && scheduleAllAlarms()){

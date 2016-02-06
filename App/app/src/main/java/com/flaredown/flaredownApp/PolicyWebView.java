@@ -29,7 +29,7 @@ public class PolicyWebView extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         WebView webview = (WebView) findViewById(R.id.blankWebView);
-        Context context = getApplicationContext();
+        Context context = PolicyWebView.this;
         String identifier;
 
         if (bundle != null) {

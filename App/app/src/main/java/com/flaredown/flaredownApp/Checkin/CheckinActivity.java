@@ -309,7 +309,7 @@ public class CheckinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.activity_home);
-        flareDownAPI = new API(getApplicationContext());
+        flareDownAPI = new API(CheckinActivity.this);
         if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
             new ForceLogin(this, flareDownAPI);
             return;
@@ -491,12 +491,12 @@ public class CheckinActivity extends AppCompatActivity {
         flareDownAPI.submitEntry(checkinDate, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions), new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
-                new DefaultErrors(getApplicationContext(), error);
+                new DefaultErrors(CheckinActivity.this, error);
             }
 
             @Override
             public void onSuccess(JSONObject result) {
-                Toast.makeText(getApplicationContext(), "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
+                Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
             }
         });
     }
@@ -547,7 +547,7 @@ public class CheckinActivity extends AppCompatActivity {
         flareDownAPI.entries(date, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
-                new DefaultErrors(getApplicationContext(), error);
+                new DefaultErrors(CheckinActivity.this, error);
             }
 
             @Override
@@ -560,7 +560,7 @@ public class CheckinActivity extends AppCompatActivity {
                     displayCheckin(date, ccds);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)"));
+                    new DefaultErrors(CheckinActivity.this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)"));
                 }
             }
         });
