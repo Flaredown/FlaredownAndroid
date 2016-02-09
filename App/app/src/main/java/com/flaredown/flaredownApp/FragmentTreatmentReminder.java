@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -48,7 +47,6 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     private List<String> mTimes = new ArrayList<>();
     private Realm mRealm;
     private String mTreatmentTitle;
-    private RelativeLayout mrlTreatmentReminderFragment;
     private RealmResults<Alarm> mAlarms;
     private Switch swSunday;
     private Switch swMonday;
@@ -57,6 +55,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     private Switch swThursday;
     private Switch swFriday;
     private Switch swSaturday;
+    private Context mContext;
 
 
 
@@ -66,6 +65,9 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         mView = getActivity().getLayoutInflater().inflate(R.layout.fragment_treatment_reminder, null);
         builder.setView(mView);
+
+        mContext = mView.getContext();
+
         mRealm = Realm.getInstance(getActivity());
 
         swMonday = (Switch) mView.findViewById(R.id.swTreatmentReminderMonday);
@@ -76,7 +78,6 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         swSaturday = (Switch) mView.findViewById(R.id.swTreatmentReminderSaturday);
         swSunday = (Switch) mView.findViewById(R.id.swTreatmentReminderSunday);
         TextView tvTreatmentAddReminderTime = (TextView) mView.findViewById(R.id.tvTreatmentAddReminderTime);
-        mrlTreatmentReminderFragment = (RelativeLayout) mView.findViewById(R.id.rl_TreatmentReminderFragment);
         mlvTreatmentReminders = (ListView) mView.findViewById(R.id.lvTreatmentReminderTimes);
         mAdapter = new ReminderListAdapter<>(mTimes);
         mlvTreatmentReminders.setAdapter(mAdapter);
@@ -151,11 +152,6 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         Calendar time = Calendar.getInstance();
         time.set(Calendar.HOUR_OF_DAY,timePicker.getCurrentHour());
@@ -221,7 +217,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         switch (view.getId()) {
             case R.id.tvTreatmentAddReminderTime:
                 //Popup time picker
-                TimePickerDialog time = new TimePickerDialog(getActivity(), this,Calendar.getInstance().get(Calendar.HOUR_OF_DAY),Calendar.getInstance().get(Calendar.MINUTE), false);
+                TimePickerDialog time = new TimePickerDialog(mContext, this,Calendar.getInstance().get(Calendar.HOUR_OF_DAY),Calendar.getInstance().get(Calendar.MINUTE), false);
                 time.show();
                 break;
         }
@@ -230,7 +226,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        Context context = getActivity().getApplicationContext();
+        Context context = mView.getContext();
         // Save/Update all alarms
         if (mTimes.size() > 0){
             if (updateAllAlarms() && scheduleAllAlarms()){
@@ -409,13 +405,13 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     }
 
     private boolean scheduleAllAlarms(){
-        AlarmManager manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         try {
             for (Alarm x : mAlarms) {
-                Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
+                Intent alarmIntent = new Intent(mContext, AlarmReceiver.class);
                 alarmIntent.putExtra("id",x.getId());
                 alarmIntent.putExtra("title",x.getTitle());
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), x.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, x.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     manager.setExact(AlarmManager.RTC_WAKEUP, x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
                 } else {
@@ -430,13 +426,13 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     }
 
     private boolean unscheduleAllAlarms(){
-        AlarmManager manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager manager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         try {
             for (Alarm x : mAlarms) {
-                Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
+                Intent alarmIntent = new Intent(mContext, AlarmReceiver.class);
                 alarmIntent.putExtra("id", x.getId());
                 alarmIntent.putExtra("title", x.getTitle());
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), x.getId(), alarmIntent, 0);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, x.getId(), alarmIntent, 0);
                 manager.cancel(pendingIntent);
             }
             return true;
@@ -459,7 +455,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         }
 
         ReminderListAdapter(List<String> times) {
-            super(getActivity(),R.layout.treatment_reminder_times, (List<String>) times);
+            super(mContext,R.layout.treatment_reminder_times, (List<String>) times);
             this.mTimes = times;
         }
 
@@ -475,8 +471,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
             ViewHolder holder;
 
             if (convertView == null) {
-                LayoutInflater inflater = getActivity().getLayoutInflater();
-                row = inflater.inflate(R.layout.treatment_reminder_times, parent, false);
+                row = LayoutInflater.from(mContext).inflate(R.layout.treatment_reminder_times, parent, false);
 
                 holder = new ViewHolder();
                 holder.tv1 = (TextView) row.findViewById(R.id.tvTreatmentReminderTime);
@@ -487,6 +482,8 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
             else{
                 holder = (ViewHolder)row.getTag();
             }
+
+
             if(mTimes.size()>0)
             {
                 //SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
