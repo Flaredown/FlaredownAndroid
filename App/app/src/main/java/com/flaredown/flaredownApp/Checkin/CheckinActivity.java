@@ -3,7 +3,12 @@ package com.flaredown.flaredownApp.Checkin;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -186,9 +191,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Menu menu;
     private JSONObject entriesJSONObject = null;
     private JSONObject responseJSONObject = new JSONObject();
-
     private List<ViewPagerFragmentBase> fragment_questions = new ArrayList<>();
-
 
     public List<ViewPagerFragmentBase> getFragmentQuestions() {
         return fragment_questions;
@@ -220,22 +223,70 @@ public class CheckinActivity extends AppCompatActivity {
             new ForceLogin(this, flareDownAPI);
             return;
         }
+
         initialiseUI();
-        if(savedInstanceState != null && savedInstanceState.getString(SI_currentView, "").equals(Views.CHECKIN.toString()) && savedInstanceState.containsKey(SI_entriesEndpoint)){
-            if(savedInstanceState.containsKey(SI_entriesEndpoint))
+        if (savedInstanceState != null && savedInstanceState.getString(SI_currentView, "").equals(Views.CHECKIN.toString()) && savedInstanceState.containsKey(SI_entriesEndpoint)) {
+            if (savedInstanceState.containsKey(SI_entriesEndpoint))
                 try {
                     entriesJSONObject = new JSONObject(savedInstanceState.getString(SI_entriesEndpoint));
                     initialisePages(entriesJSONObject);
-                } catch(JSONException e) { e.printStackTrace(); }
-            if(savedInstanceState.containsKey(SI_responseJson))
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            if (savedInstanceState.containsKey(SI_responseJson))
                 try {
                     responseJSONObject = new JSONObject(savedInstanceState.getString(SI_responseJson));
-                } catch (JSONException e) { e.printStackTrace(); }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             setView(Views.CHECKIN, false);
         } else {
             createActivity();
         }
+
+        checkMinimumVersion();
+    }
+
+    private void checkMinimumVersion() {
+        //Validate minimum client version
+        flareDownAPI.getMinimumClient(new API.OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                //unable to get min version from api, do nothing
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    JSONObject android = result.getJSONObject("android");
+                    String version = android.getString("major") + "." + android.getString("minor");
+                    Double minVersion = Double.parseDouble(version);
+
+                    if (pInfo.versionCode <= minVersion){
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                        dialog.setTitle(Locales.read(mContext,"nice_errors.minimum_client_error").create());
+                        dialog.setCancelable(false);
+                        dialog.setMessage(Locales.read(mContext,"nice_errors.minimum_client_error_description").create());
+                        dialog.setPositiveButton(Locales.read(mContext,"nav.update").create(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse(Locales.read(mContext,"URI.android_app_uri").create()));
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                        dialog.show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void createActivity() {
