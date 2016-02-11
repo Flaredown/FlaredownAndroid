@@ -28,6 +28,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.SettingsActivity;
@@ -529,8 +530,8 @@ public class CheckinActivity extends AppCompatActivity {
      * Set all the text locales inside the activity
      */
     private void setLocales() { // TODO set locales for the activity
-        //bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
-        //tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
+        bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
+        tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
     }
 
     /**

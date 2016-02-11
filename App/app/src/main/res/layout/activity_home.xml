@@ -106,9 +106,9 @@
         android:id="@+id/ll_not_checked_in"
         android:background="@color/background"
         android:orientation="vertical"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/main_toolbar_view">
+        android:layout_below="@+id/main_toolbar_view"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -127,15 +127,16 @@
                 android:id="@+id/tv_not_checked_in_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="You haven&apos;t checked in yet today"
+                android:text="Placeholder, You have not checked in yet today"
                 android:layout_marginBottom="@dimen/sep_margin_medium"
-                android:textSize="@dimen/sub_title_font_size" />
+                android:textSize="@dimen/sub_title_font_size"
+                android:gravity="center_horizontal" />
 
             <Button
                 android:id="@+id/bt_not_checked_in_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Check-in"
+                android:text="Placeholder Check-in"
                 android:paddingLeft="@dimen/sep_margin_medium"
                 android:paddingRight="@dimen/sep_margin_medium"
                 android:paddingTop="@dimen/sep_margin_small"
