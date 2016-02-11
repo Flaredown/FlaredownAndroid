@@ -48,7 +48,7 @@ public class API {
     //public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
     public static final Date currentDate = new Date();
     private SharedPreferences sharedPreferences;
-    private static final int API_TIMEOUT_MILLISECONDS = 30;
+    private static final int API_TIMEOUT_MILLISECONDS = 300000;
 
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
