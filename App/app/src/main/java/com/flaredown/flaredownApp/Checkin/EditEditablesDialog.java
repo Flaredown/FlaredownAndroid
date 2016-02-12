@@ -41,10 +41,16 @@ public class EditEditablesDialog extends DialogFragment {
     LinearLayout ll_root;
     ScrollView sv_root;
     AlertDialog.Builder alertDialogBuilder;
+    CheckinCatalogQFragment updateFragment;
 
     public EditEditablesDialog initialize(String title, String catalog) {
+        return initialize(title, catalog, null);
+    }
+
+    public EditEditablesDialog initialize(String title, String catalog, CheckinCatalogQFragment updateFragment) {
         this.title = title;
         this.catalog = catalog;
+        this.updateFragment = updateFragment;
         return this;
     }
 
@@ -118,20 +124,11 @@ public class EditEditablesDialog extends DialogFragment {
                                 @Override
                                 public void onSuccess(String result) {
                                     progressDialog.hide();
-                                    List<ViewPagerFragmentBase> questionFragments = checkinActivity.getFragmentQuestions();
+                                    if(updateFragment != null) {
+                                        updateFragment.removeQuestion(editable.name);
+                                    }
                                     ll_root.removeView(editable);
                                     items.remove(editable.name);
-
-                                    //Get the index of the question and remove it...
-                                    int index = ViewPagerFragmentBase.indexOfQuestionsPage(editable.catalog, editable.name, questionFragments);
-                                    if(index != -1) {
-                                        if (questionFragments.get(index) instanceof CheckinCatalogQFragment) {
-                                            CheckinCatalogQFragment checkin_catalogQ_fragment = (CheckinCatalogQFragment) questionFragments.get(index);
-                                            checkin_catalogQ_fragment.removeQuestion(editable.name);
-                                        } else {
-                                            //checkinActivity.getScreenSlidePagerAdapter().removeFragment(index);
-                                        }
-                                    }
                                 }
                             });
                         }
@@ -212,9 +209,10 @@ public class EditEditablesDialog extends DialogFragment {
 
                                         //Alter the checkin pages.
 
-                                        CheckinCatalogQFragment catalogueFragment = (CheckinCatalogQFragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexesOfCatalog(catalog, checkinActivity.getFragmentQuestions()).get(0)); //TODO make safer
+                                        //CheckinCatalogQFragment catalogueFragment = (CheckinCatalogQFragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexesOfCatalog(catalog, checkinActivity.getFragmentQuestions()).get(0)); //TODO make safer
 
-                                        catalogueFragment.appendQuesiton(EntryParsers.createCatalogDefinition(catalog, name, EntryParsers.CatalogInputType.SELECT, EntryParsers.getDefaultInputSmilies()));
+                                        if(updateFragment != null)
+                                            updateFragment.appendQuesiton(EntryParsers.createCatalogDefinition(catalog, name, EntryParsers.CatalogInputType.SELECT, EntryParsers.getDefaultInputSmilies()));
 
 
                                         //JSONObject question = CheckinCatalogQFragment.getDefaultQuestionJson(name);

@@ -101,6 +101,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                         tv_catalogName.setText(Locales.read(getActivity(), "catalogs." + collectionCatalogDefinitions.get(0).getCatalog() + ".catalog_description").capitalize1Char().createAT());
                         break;
                 }
+                final CheckinCatalogQFragment thi = this;
                 //Open edit trackables dialog on catalog title click.
                 tv_catalogName.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -114,7 +115,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                                     String title = Locales.read(getActivity(), "onboarding.edit_" + catalog).create();
 
                                     final EditEditablesDialog editEditablesDialog = new EditEditablesDialog();
-                                    editEditablesDialog.initialize(title, catalog);
+                                    editEditablesDialog.initialize(title, catalog, thi);
                                     editEditablesDialog.show(getActivity().getFragmentManager(), "editablesdialog");
                                     api.getEditables(catalog, new API.OnApiResponse<List<String>>() {
                                         @Override

@@ -67,6 +67,14 @@ public class Checkin_summary_fragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Returns a list of fragments used in the summary view.
+     * @return List of fragments used in the summary view.
+     */
+    public List<ViewPagerFragmentBase> getFragments() {
+        return fragments;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,39 +180,5 @@ public class Checkin_summary_fragment extends Fragment {
         for (ViewPagerFragmentBase fragment : fragments) {
             fragment.onPageExit();
         }
-        //TODO update on close
-        /*//JSONArray responseArray = argResponseJson.optJSONArray("responses");
-        //if(responseArray == null) responseArray = new JSONArray();
-
-        for (ViewPagerFragmentBase fragment : fragments) {
-            JSONArray fragmentArray = fragment.activityClosing();
-            for(int i = 0; i < fragmentArray.length(); i++) {
-                JSONObject fragmentObject = fragmentArray.optJSONObject(i);
-                if(fragmentObject != null)
-                    responseArray.put(fragmentObject);
-            }
-        }
-
-        JSONObject responseObject = new JSONObject();
-        try {
-            responseObject.put("responses", responseArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        flaredownAPI.submitEntry(argDate, responseObject, new API.OnApiResponse<JSONObject>() {
-            @Override
-            public void onFailure(API_Error error) {
-                new DefaultErrors(getActivity(), error);
-            }
-
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-                    Toast.makeText(getActivity(), (result.optBoolean("success", false))? "DONE" : "FAILED", Toast.LENGTH_LONG).show(); // TODO A better confirmation
-                } catch (NullPointerException e) { // If the application has been closed a null pointer is thrown
-                }
-            }
-        });*/
     }
 }
