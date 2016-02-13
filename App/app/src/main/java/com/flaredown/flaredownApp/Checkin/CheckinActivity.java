@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -586,18 +585,6 @@ public class CheckinActivity extends AppCompatActivity {
             } else setView(Views.NOT_CHECKED_IN_YET);
         }
         List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
-        for (ViewPagerFragmentBase fragment : fragments) {
-            fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
-                @Override
-                public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
-                    try {
-                        if (catalogDefinition.getResponse() != null) {
-                            EntryParsers.findCatalogDefinition(CheckinActivity.this.collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
-                        }
-                    } catch (NullPointerException e) {e.printStackTrace();}
-                }
-            });
-        }
         if(vpa_questions == null) {
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
@@ -626,7 +613,7 @@ public class CheckinActivity extends AppCompatActivity {
                     currentCatalog = collectionCatalogDefinition.getCatalog(); // Add a new class to contain groups of catalog definitions.
                 }
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitions, new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
                 fragments.add(checkinCatalogQFragment);
                 section++;
             }
@@ -637,7 +624,7 @@ public class CheckinActivity extends AppCompatActivity {
                 List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitionsFiltered = EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions);
                 if(collectionCatalogDefinitionsFiltered.size() == 0)
                     collectionCatalogDefinitionsFiltered.add(EntryParsers.createBlankCollectionCatalogDefinition(catalogName));
-                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitionsFiltered, 0);
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitions, collectionCatalogDefinitionsFiltered, 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }

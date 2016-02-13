@@ -19,6 +19,7 @@ public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
     protected List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
+    protected List<EntryParsers.CollectionCatalogDefinition> fullCollectionCatalogDefinitions; // For updating the catalog with new questions.
 
     public List<EntryParsers.CollectionCatalogDefinition> getCollectionCatalogDefinitions() {
         return collectionCatalogDefinitions;

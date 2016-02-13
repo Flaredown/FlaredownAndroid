@@ -104,9 +104,7 @@ public class Checkin_summary_fragment extends Fragment {
 
 
     private void assembleFragments() {
-        //try {
-            //fragments = CheckinActivity.createFragments(argEntryJson.getJSONObject("entry"));
-            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions); //TODO pass responses
+            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions);
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
                 getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
@@ -114,42 +112,37 @@ public class Checkin_summary_fragment extends Fragment {
                     @Override
                     public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
                         try {
-                            if (catalogDefinition.getResponse() != null) {
-                                EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
-                                argResponseJson = EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions);
+                            argResponseJson = EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions);
 
-                                final API.OnApiResponse responseListener = new API.OnApiResponse<JSONObject>() {
-                                    @Override
-                                    public void onFailure(API_Error error) {
-                                        try {
-                                            new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submition"));
-                                        } catch (NullPointerException e) {e.printStackTrace();}
+                            final API.OnApiResponse responseListener = new API.OnApiResponse<JSONObject>() {
+                                @Override
+                                public void onFailure(API_Error error) {
+                                    try {
+                                        new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submition"));
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
                                     }
+                                }
 
-                                    @Override
-                                    public void onSuccess(JSONObject result) {
-                                        try {
-                                            if (result.optBoolean("success", false))
-                                                Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
-                                            else
-                                                new DefaultErrors(getActivity(), new API_Error().setStatusCode(500).setDebugString("Checkin_summary_fragment:assembleFragments:returnFalse"));
-                                        } catch (NullPointerException e) {
-                                            // If the activity closes too early getActivity returns null and crashes the app.
-                                        }
+                                @Override
+                                public void onSuccess(JSONObject result) {
+                                    try {
+                                        if (result.optBoolean("success", false))
+                                            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
+                                        else
+                                            new DefaultErrors(getActivity(), new API_Error().setStatusCode(500).setDebugString("Checkin_summary_fragment:assembleFragments:returnFalse"));
+                                    } catch (NullPointerException e) {
+                                        // If the activity closes too early getActivity returns null and crashes the app.
                                     }
-                                };
-                                flaredownAPI.submitEntry(argDate, argResponseJson, responseListener);
-                            }
+                                }
+                            };
+                            flaredownAPI.submitEntry(argDate, argResponseJson, responseListener);
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
                     }
                 });
-                fragment.onPageExit();
             }
-       // } catch (JSONException e) {
-        //    e.printStackTrace();
-        //}
     }
 
     @Override

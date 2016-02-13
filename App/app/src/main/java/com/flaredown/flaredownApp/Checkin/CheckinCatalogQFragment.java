@@ -7,7 +7,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -176,8 +175,9 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private List<BaseQuestion> questionViews = new ArrayList<>();
 
-    public void setQuestions(List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Integer section) {
+    public void setQuestions(List<EntryParsers.CollectionCatalogDefinition> fullCatalog, List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions, Integer section) {
         this.collectionCatalogDefinitions = collectionCatalogDefinitions;
+        this.fullCollectionCatalogDefinitions = fullCatalog;
         this.section = section;
     }
 
@@ -195,18 +195,21 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                 break;
         }
         if(questionView != null) {
-            if(collectionCatalogDefinitions.size() > 0) { // Add to list if not already there.
-                if(collectionCatalogDefinitions.get(0).indexOf(catalogDefinition) == -1) {
-                    collectionCatalogDefinitions.get(0).add(catalogDefinition);
-                }
+            // If not inside the catalog definitions, append it to the list.
+            if(EntryParsers.findCatalogDefinition(collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()) == null){
+                EntryParsers.CollectionCatalogDefinition epCCD= new EntryParsers.CollectionCatalogDefinition();
+                epCCD.add(catalogDefinition);
+                collectionCatalogDefinitions.add(epCCD);
+                fullCollectionCatalogDefinitions.add(epCCD);
             }
+
             ll_questionHolder.addView(questionView);
             questionViews.add(questionView);
         }
     }
 
     public void removeQuestion(String name) {
-        int location = indexOfQuestion(name);
+        /*int location = indexOfQuestion(name);
         for (EntryParsers.CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
             for (EntryParsers.CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
                 if(name.equals(catalogDefinition.getName())) {
@@ -219,7 +222,20 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         if(location != -1) {
             this.ll_questionHolder.removeView(questionViews.get(location));
             questionViews.remove(location);
+        }*/
+
+
+        int location = indexOfQuestion(name);
+        if(collectionCatalogDefinitions.size() > 0) {
+            EntryParsers.removeQuestion(fullCollectionCatalogDefinitions, collectionCatalogDefinitions.get(0).getCatalog(), name);
+            EntryParsers.removeQuestion(collectionCatalogDefinitions, collectionCatalogDefinitions.get(0).getCatalog(), name);
         }
+
+        if(location != -1) {
+            this.ll_questionHolder.removeView(questionViews.get(location));
+            questionViews.remove(location);
+        }
+        triggerOnUpdateListener(null);
     }
 
     public int indexOfQuestion(String name) {
