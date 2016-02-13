@@ -1,17 +1,16 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/llEditAccountProgress"
-            android:layout_gravity="center"
             android:orientation="vertical">
             <ProgressBar
                 android:id="@+id/editAccountProgress"
@@ -24,11 +23,11 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/llEditAccount"
             android:orientation="vertical">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvCountry"
                 android:padding="@dimen/sep_margin_small"
@@ -46,15 +45,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvBirthdate"
-                android:paddingTop="@dimen/sep_margin_small"
-                android:paddingLeft="@dimen/sep_margin_small"
-                android:paddingRight="@dimen/sep_margin_small"
+                android:padding="@dimen/sep_margin_small"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             <DatePicker
                 android:id="@+id/birthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/app_bar"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:measureAllChildren="true"
@@ -66,10 +62,11 @@
                 android:id="@+id/tvSex"
                 android:paddingLeft="@dimen/sep_margin_small"
                 android:paddingTop="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/sep_margin_small"
                 android:paddingRight="@dimen/sep_margin_small"

@@ -2,6 +2,14 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -340,6 +348,49 @@ public class CheckinActivity extends AppCompatActivity {
             setView(Views.SPLASH_SCREEN, false);
             displayCheckin(new Date());
         }
+
+        checkMinimumVersion();
+    }
+
+    private void checkMinimumVersion() {
+        //Validate minimum client version
+        flareDownAPI.getMinimumClient(new API.OnApiResponse<JSONObject>() {
+            @Override
+            public void onFailure(API_Error error) {
+                //unable to get min version from api, do nothing
+            }
+
+            @Override
+            public void onSuccess(JSONObject result) {
+                try {
+                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    JSONObject android = result.getJSONObject("android");
+                    String version = android.getString("major") + "." + android.getString("minor");
+                    Double minVersion = Double.parseDouble(version);
+
+                    if (pInfo.versionCode <= minVersion){
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
+                        dialog.setTitle(Locales.read(getApplicationContext(),"nice_errors.minimum_client_error").create());
+                        dialog.setCancelable(false);
+                        dialog.setMessage(Locales.read(getApplicationContext(),"nice_errors.minimum_client_error_description").create());
+                        dialog.setPositiveButton(Locales.read(getApplicationContext(),"nav.update").create(), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse(Locales.read(getApplicationContext(),"URI.android_app_uri").create()));
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+                        dialog.show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

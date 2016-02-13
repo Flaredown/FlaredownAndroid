@@ -727,4 +727,27 @@ public class API {
         editor.putString("api_endpoint_" + endpoint,json);
         editor.apply();
     }
+
+    /**
+     * Retrieves the end point /minimumClient, provides details regarding the minimum mobile app versions
+     * @param onApiResponse Callback with the response from the API.
+     */
+    public void getMinimumClient(final OnApiResponse<JSONObject> onApiResponse) {
+        JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, "https://api-staging.flaredown.com/minimumClient", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                onApiResponse.onSuccess(response);
+                cacheAPI("minimum_client",response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error));
+                cacheAPI("minimum_client","");
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonRequest);
+    }
 }
