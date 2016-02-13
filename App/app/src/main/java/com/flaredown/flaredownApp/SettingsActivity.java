@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -54,6 +54,8 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_treatmentRemindTitle;
     Switch sw_checkinReminder;
     LinearLayout ll_treatmentReminder;
+    LinearLayout llSettingsProgress;
+    RelativeLayout rlSettings;
     TextView tv_terms;
     TextView tv_policy;
     Intent alarmIntent;
@@ -62,6 +64,7 @@ public class SettingsActivity extends AppCompatActivity {
     Realm mRealm;
     Alarm mAlarm;
     Alarm mProxyAlarm;
+    JSONArray mTreatments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,11 @@ public class SettingsActivity extends AppCompatActivity {
         ll_treatmentReminder = (LinearLayout)findViewById(R.id.llTreatmentReminder);
         tv_terms = (TextView)findViewById(R.id.terms);
         tv_policy = (TextView)findViewById(R.id.privacy_policy);
+        llSettingsProgress = (LinearLayout) findViewById(R.id.llSettingsProgress);
+        rlSettings = (RelativeLayout) findViewById(R.id.rlSettings);
+
+        llSettingsProgress.setVisibility(View.VISIBLE);
+        rlSettings.setVisibility(View.GONE);
 
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
@@ -113,65 +121,50 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         //Get API information for treatments and display
-        flareDownAPI.entries(Calendar.getInstance().getTime(), new API.OnApiResponse<JSONObject>() {
+        if (flareDownAPI.apiFromCacheIsDirty("current_user")){
+            flareDownAPI.current_user(new API.OnApiResponse<JSONObject>() {
 
-            @Override
-            public void onFailure(API_Error error) {
-                new DefaultErrors(mContext, error);
-            }
-
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-                    JSONObject entry = result.getJSONObject("entry");
-                    JSONArray treatments = entry.getJSONArray("treatments");
-                    for (int i = 0; i < treatments.length(); i++) {
-                        JSONObject treatment = treatments.getJSONObject(i);
-                        Iterator<String> iter = treatment.keys();
-                        while (iter.hasNext()) {
-                            String key = iter.next();
-                            if (key.equals("name")) {
-                                LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                lparams.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.sep_margin_small));
-                                TextView tv = new TextView(mContext);
-                                tv.setTextAppearance(mContext, R.style.AppTheme_TextView_Link);
-                                tv.setLayoutParams(lparams);
-                                tv.setText(treatment.get(key).toString());
-                                Bundle bundle = new Bundle();
-                                bundle.putString("treatment_title", treatment.get(key).toString());
-                                ll_treatmentReminder.addView(tv);
-                                tv.setOnClickListener(new View.OnClickListener() {
-                                    private Bundle bundleTitle;
-
-                                    @Override
-                                    public void onClick(View view) {
-                                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                                        FragmentTreatmentReminder frag = new FragmentTreatmentReminder();
-                                        frag.setArguments(bundleTitle);
-                                        ft.attach(frag);
-                                        frag.show(ft, "dialog");
-                                    }
-
-                                    private View.OnClickListener init(Bundle bundle) {
-                                        bundleTitle = bundle;
-                                        return this;
-                                    }
-                                }.init(bundle));
-                            }
-                        }
-                    }
-                } catch (JSONException e) {
-                    Toast.makeText(mContext, Locales.read(mContext, "nice_errors.api_error_description").create(), Toast.LENGTH_LONG).show();
+                @Override
+                public void onFailure(API_Error error) {
+                    new DefaultErrors(mContext, error);
+                    llSettingsProgress.setVisibility(View.GONE);
+                    rlSettings.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onSuccess(JSONObject result){
+                    try {
+                        mTreatments = result.getJSONArray("treatments");
+                        llSettingsProgress.setVisibility(View.GONE);
+                        rlSettings.setVisibility(View.VISIBLE);
+                        showTreatments();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        else{
+            try {
+                JSONObject me = new JSONObject(flareDownAPI.getAPIFromCache("current_user"));
+                mTreatments = me.getJSONArray("treatments");
+                llSettingsProgress.setVisibility(View.GONE);
+                rlSettings.setVisibility(View.VISIBLE);
+                showTreatments();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        });
+        }
 
         //Listeners
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.edit_account_website)));
-                startActivity(intent);
+            public void onClick(View view) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                FragmentEditAccount frag = new FragmentEditAccount();
+                ft.attach(frag);
+                frag.show(ft, "edit_account");
+
             }
         });
 
@@ -274,6 +267,48 @@ public class SettingsActivity extends AppCompatActivity {
         updateLocales();
 
     }
+
+    private void showTreatments(){
+        try {
+            for (int i = 0; i < mTreatments.length(); i++) {
+                JSONObject treatment = mTreatments.getJSONObject(i);
+                Iterator<String> iter = treatment.keys();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+                    if (key.equals("name")) {
+                        LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        lparams.setMargins(0, 0, 0, (int) getResources().getDimension(R.dimen.sep_margin_small));
+                        TextView tv = new TextView(mContext);
+                        tv.setTextAppearance(mContext, R.style.AppTheme_TextView_Link);
+                        tv.setLayoutParams(lparams);
+                        tv.setText(treatment.get(key).toString());
+                        Bundle bundle = new Bundle();
+                        bundle.putString("treatment_title", treatment.get(key).toString());
+                        ll_treatmentReminder.addView(tv);
+                        tv.setOnClickListener(new View.OnClickListener() {
+                            private Bundle bundleTitle;
+
+                            @Override
+                            public void onClick(View view) {
+                                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                                FragmentTreatmentReminder frag = new FragmentTreatmentReminder();
+                                frag.setArguments(bundleTitle);
+                                ft.attach(frag);
+                                frag.show(ft, "dialog");
+                            }
+
+                            private View.OnClickListener init(Bundle bundle) {
+                                bundleTitle = bundle;
+                                return this;
+                            }
+                        }.init(bundle));
+                    }
+                }
+            }
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }    }
 
     private void addUpdateAlarm(){
         mRealm.beginTransaction();

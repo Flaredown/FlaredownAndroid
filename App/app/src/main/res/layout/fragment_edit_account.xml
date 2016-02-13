@@ -1,0 +1,102 @@
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/llEditAccountProgress"
+            android:orientation="vertical">
+            <ProgressBar
+                android:id="@+id/editAccountProgress"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:padding="@dimen/sep_margin_small">
+            </ProgressBar>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/llEditAccount"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvCountry"
+                android:padding="@dimen/sep_margin_small"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/country"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:paddingLeft="@dimen/sep_margin_small"
+                android:paddingRight="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvBirthdate"
+                android:padding="@dimen/sep_margin_small"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <DatePicker
+                android:id="@+id/birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner"
+                android:measureAllChildren="true"
+                android:spinnersShown="true"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvSex"
+                android:paddingLeft="@dimen/sep_margin_small"
+                android:paddingTop="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/sep_margin_small"
+                android:paddingRight="@dimen/sep_margin_small"
+                android:paddingBottom="@dimen/sep_margin_small">
+                <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/chkMale"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chkFemale"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chkOther"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chkPreferNotToStay"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editAccountSave"
+                    android:layout_gravity="right" />
+            </LinearLayout>
+        </LinearLayout>
+</LinearLayout>
+</ScrollView>
