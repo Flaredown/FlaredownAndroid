@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -15,6 +16,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.PreferenceKeys;
 
 import org.json.JSONArray;
@@ -41,7 +43,7 @@ public class API {
     private static final String SP_USER_EMAIL = "FlareDownAPI_useremail"; // String
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
     private static final String SP_ENTRIES_CACHE = "FlareDownAPI_entries_cache";
-    public static final String API_BASE_URL = "https://staging.flaredown.com/v1";
+    public static final String API_BASE_URL = BuildConfig.API_BASE_URI;
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
     public static final String CHAR_SET = "UTF-8";

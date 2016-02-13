@@ -192,6 +192,13 @@ public class EntryParsers {
         return outputJArray;
     }
 
+    /**
+     * Tries to find a catalog definition when given catalog name and definition name. Returns null if it could not find the value.
+     * @param collectionCatalogDefinitions The list to search through
+     * @param catalog Catalog name searching for.
+     * @param name Definition name searching for.
+     * @return Returns the catalog definition which matches the query, if not found returns null.
+     */
     public static CatalogDefinition findCatalogDefinition(List<CollectionCatalogDefinition> collectionCatalogDefinitions, String catalog, String name) {
         List<CollectionCatalogDefinition> ccds = getCatalogDefinitions(catalog, collectionCatalogDefinitions);
         for (CollectionCatalogDefinition ccd : ccds) {
@@ -247,6 +254,23 @@ public class EntryParsers {
      */
     public static Response createResponse(CatalogDefinition catalogDefinition, Object value) {
         return new Response(catalogDefinition, value);
+    }
+
+    public static boolean removeQuestion(List<CollectionCatalogDefinition> collectionCatalogDefinitions, String catalog, String name) {
+        boolean hasRemovedValue = false;
+        for (int i = 0; i < collectionCatalogDefinitions.size(); i++) {
+            CollectionCatalogDefinition collectionCatalogDefinition = collectionCatalogDefinitions.get(i);
+            for (int j = 0; j < collectionCatalogDefinition.size(); j++) {
+                CatalogDefinition catalogDefinition = collectionCatalogDefinition.get(j);
+                if(name.equals(catalogDefinition.getName()) && catalog.equals(catalogDefinition.getCatalog())) {
+                    collectionCatalogDefinition.remove(catalogDefinition);
+                    hasRemovedValue = true;
+                }
+            }
+            if(collectionCatalogDefinition.size() == 0 ) // If collection is empty remove.
+                collectionCatalogDefinitions.remove(collectionCatalogDefinition);
+        }
+        return hasRemovedValue;
     }
 
     /**

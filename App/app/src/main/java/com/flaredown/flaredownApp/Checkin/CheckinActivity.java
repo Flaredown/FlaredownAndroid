@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +27,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
+import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.SettingsActivity;
@@ -309,7 +309,7 @@ public class CheckinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.activity_home);
-        flareDownAPI = new API(getApplicationContext());
+        flareDownAPI = new API(CheckinActivity.this);
         if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
             new ForceLogin(this, flareDownAPI);
             return;
@@ -491,12 +491,12 @@ public class CheckinActivity extends AppCompatActivity {
         flareDownAPI.submitEntry(checkinDate, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions), new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
-                new DefaultErrors(getApplicationContext(), error);
+                new DefaultErrors(CheckinActivity.this, error);
             }
 
             @Override
             public void onSuccess(JSONObject result) {
-                Toast.makeText(getApplicationContext(), "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
+                Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
             }
         });
     }
@@ -529,8 +529,8 @@ public class CheckinActivity extends AppCompatActivity {
      * Set all the text locales inside the activity
      */
     private void setLocales() { // TODO set locales for the activity
-        //bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
-        //tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
+        bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
+        tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
     }
 
     /**
@@ -547,7 +547,7 @@ public class CheckinActivity extends AppCompatActivity {
         flareDownAPI.entries(date, new API.OnApiResponse<JSONObject>() {
             @Override
             public void onFailure(API_Error error) {
-                new DefaultErrors(getApplicationContext(), error);
+                new DefaultErrors(CheckinActivity.this, error);
             }
 
             @Override
@@ -560,7 +560,7 @@ public class CheckinActivity extends AppCompatActivity {
                     displayCheckin(date, ccds);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)"));
+                    new DefaultErrors(CheckinActivity.this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity.displayCheckin(Entry JSON has no entry object)"));
                 }
             }
         });
@@ -585,18 +585,6 @@ public class CheckinActivity extends AppCompatActivity {
             } else setView(Views.NOT_CHECKED_IN_YET);
         }
         List<ViewPagerFragmentBase> fragments = createFragments(collectionCatalogDefinitions);
-        for (ViewPagerFragmentBase fragment : fragments) {
-            fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
-                @Override
-                public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
-                    try {
-                        if (catalogDefinition.getResponse() != null) {
-                            EntryParsers.findCatalogDefinition(CheckinActivity.this.collectionCatalogDefinitions, catalogDefinition.getCatalog(), catalogDefinition.getName()).setResponse(catalogDefinition.getResponse());
-                        }
-                    } catch (NullPointerException e) {e.printStackTrace();}
-                }
-            });
-        }
         if(vpa_questions == null) {
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
@@ -625,7 +613,7 @@ public class CheckinActivity extends AppCompatActivity {
                     currentCatalog = collectionCatalogDefinition.getCatalog(); // Add a new class to contain groups of catalog definitions.
                 }
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitions, new ArrayList<EntryParsers.CollectionCatalogDefinition>(Arrays.asList(collectionCatalogDefinition)), section);
                 fragments.add(checkinCatalogQFragment);
                 section++;
             }
@@ -636,7 +624,7 @@ public class CheckinActivity extends AppCompatActivity {
                 List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitionsFiltered = EntryParsers.getCatalogDefinitions(catalogName, collectionCatalogDefinitions);
                 if(collectionCatalogDefinitionsFiltered.size() == 0)
                     collectionCatalogDefinitionsFiltered.add(EntryParsers.createBlankCollectionCatalogDefinition(catalogName));
-                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitionsFiltered, 0);
+                checkinCatalogQFragment.setQuestions(collectionCatalogDefinitions, collectionCatalogDefinitionsFiltered, 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }
