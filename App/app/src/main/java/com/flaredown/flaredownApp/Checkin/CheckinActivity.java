@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +10,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -38,7 +35,7 @@ import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 import com.flaredown.flaredownApp.MainToolbarView;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.SettingsActivity;
+import com.flaredown.flaredownApp.Settings.SettingsActivity;
 import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;

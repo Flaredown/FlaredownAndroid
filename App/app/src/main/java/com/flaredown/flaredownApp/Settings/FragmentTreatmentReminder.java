@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Settings;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -24,8 +24,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.flaredown.flaredownApp.FlareDown.Alarm;
-import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
+import com.flaredown.flaredownApp.Helpers.TimeHelper;
+import com.flaredown.flaredownApp.Models.Alarm;
+import com.flaredown.flaredownApp.R;
+import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
 import com.flaredown.flaredownApp.FlareDown.Locales;
 
 import java.text.SimpleDateFormat;
@@ -133,7 +135,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         //Add times to listview
                         SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
                         Calendar alarmTime = Calendar.getInstance();
-                        alarmTime.setTimeInMillis(x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                        alarmTime.setTimeInMillis(x.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         String timeFormatted = sdf.format(alarmTime.getTimeInMillis());
                         if (!mTimes.contains(timeFormatted)){
                             mTimes.add(timeFormatted);
@@ -288,7 +290,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-                        newAlarm.setTime(cal.getTimeInMillis()+ getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis()+ TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("sunday");
                         addUpdateOneAlarm(newAlarm);
@@ -305,7 +307,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
-                        newAlarm.setTime(cal.getTimeInMillis()+ getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis()+ TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("monday");
                         addUpdateOneAlarm(newAlarm);
@@ -322,7 +324,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY);
-                        newAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("tuesday");
                         addUpdateOneAlarm(newAlarm);
@@ -339,7 +341,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY);
-                        newAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("wednesday");
                         addUpdateOneAlarm(newAlarm);
@@ -356,7 +358,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY);
-                        newAlarm.setTime(cal.getTimeInMillis()+ getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis()+ TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("thursday");
                         addUpdateOneAlarm(newAlarm);
@@ -373,7 +375,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY);
-                        newAlarm.setTime(cal.getTimeInMillis()+ getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis()+ TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("friday");
                         addUpdateOneAlarm(newAlarm);
@@ -390,7 +392,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                         cal.set(Calendar.WEEK_OF_MONTH,curCal.get(Calendar.WEEK_OF_MONTH));
                         cal.clear(Calendar.SECOND);
                         cal.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
-                        newAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+                        newAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         newAlarm.setId(new Random().nextInt());
                         newAlarm.setDayOfWeek("saturday");
                         addUpdateOneAlarm(newAlarm);
@@ -413,9 +415,9 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
                 alarmIntent.putExtra("title",x.getTitle());
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, x.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    manager.setExact(AlarmManager.RTC_WAKEUP, x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
+                    manager.setExact(AlarmManager.RTC_WAKEUP, x.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
                 } else {
-                    manager.set(AlarmManager.RTC_WAKEUP, x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
+                    manager.set(AlarmManager.RTC_WAKEUP, x.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
                 }
             }
             return true;
@@ -440,10 +442,6 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         catch(Exception e){
             return false;
         }
-    }
-
-    private int getCurrentTimezoneOffset(Calendar c) {
-        return c.getTimeZone().getOffset(c.getTimeInMillis());
     }
 
     class ReminderListAdapter<String> extends ArrayAdapter<String> {

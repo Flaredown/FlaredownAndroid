@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Receivers;
 
 /**
  * Created by squigge on 10/15/2015.
@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
+import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.TimeHelper;
+import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 
@@ -51,7 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     for (Alarm x : alarms) {
                         mPendingIntent = PendingIntent.getBroadcast(context, x.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
                         cancelAlarm();
-                        setNewAlarm(x.getId(), x.getTitle(), x.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()));
+                        setNewAlarm(x.getId(), x.getTitle(), x.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                     }
                 }
             }
@@ -108,11 +111,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    private int getCurrentTimezoneOffset(Calendar c) {
-        return c.getTimeZone().getOffset(c.getTimeInMillis());
-    }
-
-
     private void setNewAlarm(int id, String title, Long alarmTime) {
         Intent alarmIntent = new Intent(mContext, AlarmReceiver.class);
         alarmIntent.putExtra("id", id);
@@ -141,14 +139,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         //see if alarm needs to fire
         //Get diff between current time and alarm time
         //negative value is alarm in past, postive value is alarm in future
-        Long diff = (firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
+        Long diff = (firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
         //Figure out if alarm has already been triggered within 60 seconds
         if (diff > 60000) {//yet to be triggered, do nothing
         } else if (diff < -60000) { //alarm already fired, reschedule
             //Reset alarm +1 day
             firingCal.add(Calendar.DATE, 1);
             cancelAlarm();
-            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
         } else { //fire now
             PendingIntent pi = PendingIntent.getActivity(mContext, 1, new Intent(mContext, CheckinActivity.class), 0);
             NotificationManager notificationManager;
@@ -167,7 +165,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             //Reset alarm + day
             firingCal.add(Calendar.DATE, 1);
             cancelAlarm();
-            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
             //save alarm in realm
             mRealm.beginTransaction();
             alarm.setTime(firingCal.getTimeInMillis());
@@ -185,14 +183,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         //see if alarm needs to fire
         //Get diff between current time and alarm time
         //negative value is alarm in past, postive value is alarm in future
-        Long diff = (firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
+        Long diff = (firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
         //Figure out if alarm has already been triggered within 60 seconds
         if (diff > 60000) {//yet to be triggered, do nothing
         } else if (diff < -60000) { //alarm already fired, reschedule
             //Reset alarm +7 day
             firingCal.add(Calendar.DATE, 7);
             cancelAlarm();
-            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
             //save alarm in realm
             mRealm.beginTransaction();
             alarm.setTime(firingCal.getTimeInMillis());
@@ -216,7 +214,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             //Reset alarm +7 day
             firingCal.add(Calendar.DATE, 7);
             cancelAlarm();
-            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
             //save alarm in realm
             mRealm.beginTransaction();
             alarm.setTime(firingCal.getTimeInMillis());

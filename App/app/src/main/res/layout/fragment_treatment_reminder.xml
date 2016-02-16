@@ -9,7 +9,7 @@
         android:id="@+id/rl_TreatmentReminderFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.flaredown.flaredownApp.FragmentTreatmentReminder">
+        tools:context=".Settings.FragmentTreatmentReminder">
 
         <TextView
             android:id="@+id/tvTreatmentReminderTitle"

@@ -27,6 +27,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
 
 import org.json.JSONObject;
 

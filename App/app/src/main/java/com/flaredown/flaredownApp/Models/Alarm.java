@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Models;
 
 import java.util.Random;
 

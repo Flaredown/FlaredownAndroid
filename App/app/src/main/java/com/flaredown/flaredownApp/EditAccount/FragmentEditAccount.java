@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.EditAccount;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -22,6 +22,7 @@ import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

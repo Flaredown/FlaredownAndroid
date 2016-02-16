@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Settings;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -23,13 +23,18 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.flaredown.flaredownApp.EditAccount.FragmentEditAccount;
 import com.flaredown.flaredownApp.FlareDown.API;
 import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.Alarm;
-import com.flaredown.flaredownApp.FlareDown.AlarmReceiver;
+import com.flaredown.flaredownApp.Helpers.TimeHelper;
+import com.flaredown.flaredownApp.LoginActivity;
+import com.flaredown.flaredownApp.Models.Alarm;
+import com.flaredown.flaredownApp.R;
+import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
 import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
 import com.flaredown.flaredownApp.FlareDown.ForceLogin;
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -199,7 +204,7 @@ public class SettingsActivity extends AppCompatActivity {
                     tv_checkinRemindTime.setText(currentTime);
                     tv_checkinRemindTime.setAlpha((float)1);
                     mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
-                    mAlarm.setTime(cal.getTimeInMillis() + getCurrentTimezoneOffset(Calendar.getInstance()));
+                    mAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                     mAlarm.setTitle("checkin_reminder");
                 } else {
                     tv_checkinRemindTime.setAlpha((float).20);
@@ -230,7 +235,7 @@ public class SettingsActivity extends AppCompatActivity {
                         cal.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
                         cal.set(Calendar.MINUTE, picker.getCurrentMinute());
                         cal.clear(Calendar.SECOND);
-                        mAlarm.setTime(cal.getTimeInMillis() + +getCurrentTimezoneOffset(Calendar.getInstance()));
+                        mAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                         tv_checkinRemindTime.setText(sdf.format(cal.getTimeInMillis()));
                         dialog.dismiss();
                     }
@@ -336,7 +341,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (sw_checkinReminder.isChecked()) { //reminder set
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
             Calendar c = Calendar.getInstance();
-            c.setTimeInMillis(mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()));
+            c.setTimeInMillis(mAlarm.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
             tv_checkinRemindTime.setText(sdf.format(c.getTime()));
         }
         else { //reminder not set, set blank
@@ -394,17 +399,14 @@ public class SettingsActivity extends AppCompatActivity {
             addUpdateAlarm();
             //Set Alarm
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                manager.setExact(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
+                manager.setExact(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
             } else {
-                manager.set(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
+                manager.set(AlarmManager.RTC_WAKEUP, mAlarm.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
             }
         }
         else { //delete alarm in realm and remove pending intent
             removeAlarm();
             manager.cancel(pendingIntent);
         }
-    }
-    public int getCurrentTimezoneOffset(Calendar c) {
-        return c.getTimeZone().getOffset(c.getTimeInMillis());
     }
 }

@@ -42,7 +42,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible"
             android:screenOrientation="behind"/>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="behind">
             <meta-data
@@ -53,7 +53,7 @@
             android:name=".Checkin.AddEditableActivity"
             android:label="@string/title_activity_add_adialog" />
 
-        <receiver android:name=".FlareDown.AlarmReceiver">
+        <receiver android:name=".Receivers.AlarmReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.TIME_SET" />
@@ -62,22 +62,22 @@
         </receiver>
 
         <activity
-            android:name=".PolicyWebView"
+            android:name=".Settings.PolicyWebView"
             android:label="@string/title_activity_policy_web_view"
             android:theme="@style/AppTheme"
             android:screenOrientation="behind">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.flaredown.flaredownApp.SettingsActivity" />
+                android:value=".Settings.SettingsActivity" />
         </activity>
         <activity
-            android:name=".FragmentEditAccount"
+            android:name=".EditAccount.FragmentEditAccount"
             android:label="@string/title_activity_edit_account"
-            android:parentActivityName=".SettingsActivity"
+            android:parentActivityName=".Settings.SettingsActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.flaredown.flaredownApp.SettingsActivity" />
+                android:value=".Settings.SettingsActivity" />
         </activity>
     </application>
 

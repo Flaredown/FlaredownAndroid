@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Settings;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.R;
 
 public class PolicyWebView extends AppCompatActivity {
 
