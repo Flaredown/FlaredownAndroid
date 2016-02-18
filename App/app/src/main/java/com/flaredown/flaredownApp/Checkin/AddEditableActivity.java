@@ -18,12 +18,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
 public class PolicyWebView extends AppCompatActivity {

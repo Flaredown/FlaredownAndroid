@@ -1,10 +1,9 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Helpers.API;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -17,7 +16,8 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.BuildConfig;
-import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
 import org.json.JSONArray;
 import org.json.JSONException;

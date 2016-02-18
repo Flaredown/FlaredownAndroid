@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 
 import java.util.ArrayList;
 import java.util.List;

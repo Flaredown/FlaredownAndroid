@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Helpers.API;
 
 import com.android.volley.VolleyError;
 

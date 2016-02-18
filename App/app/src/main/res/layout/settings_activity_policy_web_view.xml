@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context=".Settings.SettingsActivity">
 
-    <com.flaredown.flaredownApp.MainToolbarView
+    <com.flaredown.flaredownApp.Toolbars.MainToolbarView
         android:id="@+id/main_toolbar_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

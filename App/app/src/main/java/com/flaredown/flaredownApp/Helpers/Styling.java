@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Helpers;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -9,6 +9,8 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.View;
+
+import com.flaredown.flaredownApp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

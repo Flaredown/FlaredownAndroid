@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 
-import com.flaredown.flaredownApp.FlareDown.API;
+import com.flaredown.flaredownApp.Helpers.API.API;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,7 @@ import android.view.Gravity;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 import com.flaredown.flaredownApp.R;
 
 import org.apmem.tools.layouts.FlowLayout;

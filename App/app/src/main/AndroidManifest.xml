@@ -36,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Login.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible"

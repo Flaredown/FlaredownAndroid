@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Login;
 
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -23,10 +23,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
+import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
 
 import org.json.JSONObject;

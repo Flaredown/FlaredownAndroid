@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Helpers;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,8 +8,7 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
 
-import com.flaredown.flaredownApp.PreferenceKeys;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,10 +1,8 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.Html;
-
-import com.flaredown.flaredownApp.PreferenceKeys;
 
 import org.json.JSONArray;
 import org.json.JSONException;

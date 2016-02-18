@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Helpers;
 
 import org.json.JSONArray;
 import org.json.JSONException;

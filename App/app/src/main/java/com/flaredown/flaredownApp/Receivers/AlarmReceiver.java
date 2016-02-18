@@ -13,10 +13,10 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
-import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONArray;

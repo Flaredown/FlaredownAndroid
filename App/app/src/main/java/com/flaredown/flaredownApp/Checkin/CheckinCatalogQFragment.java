@@ -18,12 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,12 +1,10 @@
-package com.flaredown.flaredownApp.FlareDown;
+package com.flaredown.flaredownApp.Login;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.widget.ActionMenuView;
 
-import com.flaredown.flaredownApp.LoginActivity;
-import com.flaredown.flaredownApp.PreferenceKeys;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
 /**
  * Created by thunter on 14/09/15.

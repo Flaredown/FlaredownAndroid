@@ -28,15 +28,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
-import com.flaredown.flaredownApp.FlareDown.ForceLogin;
-import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Login.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Settings.SettingsActivity;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;

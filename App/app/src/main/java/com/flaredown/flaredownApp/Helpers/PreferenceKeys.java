@@ -1,9 +1,11 @@
-package com.flaredown.flaredownApp;
+package com.flaredown.flaredownApp.Helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.flaredown.flaredownApp.BuildConfig;
 
 /**
  * Created by thunter on 01/09/15.
