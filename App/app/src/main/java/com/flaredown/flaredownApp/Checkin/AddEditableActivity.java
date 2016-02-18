@@ -73,7 +73,7 @@ public class AddEditableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        setContentView(R.layout.activity_add_a_dialog);
+        setContentView(R.layout.checkin_activity_add_dialog);
         fdAPI = new API(this);
 
 
@@ -228,7 +228,7 @@ public class AddEditableActivity extends AppCompatActivity {
         private boolean readOnly = false;
         public Item(Context mContext, String value) {
             super(mContext);
-            item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.activity_add_a_dialog_result_item, null);
+            item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_activity_add_a_dialog_result_item, null);
             this.addView(item);
 
             tv_name = (TextView) item.findViewById(R.id.tv_name);

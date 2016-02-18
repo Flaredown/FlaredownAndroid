@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.settings_activity);
         mContext = this;
         Styling.setFont();
         mRealm = Realm.getInstance(mContext);

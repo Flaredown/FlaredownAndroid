@@ -19,7 +19,7 @@ public class PolicyWebView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_policy_web_view);
+        setContentView(R.layout.settings_activity_policy_web_view);
 
         //Set Toolbar
         Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);

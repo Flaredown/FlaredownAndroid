@@ -54,7 +54,7 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_account, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.edit_account_fragment, null);
         builder.setView(view);
         mContext = getActivity();
 

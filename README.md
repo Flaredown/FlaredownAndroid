@@ -1,13 +1,31 @@
-// By Thomas Hunter 2015
+# Flaredown Android Appliction.
+This is the android application for [Flaredown](http://www.flaredown.com/).
+Compatable with android 14-23. (KitKat to Marshmellow).
 
-Instructions for sampling the application.
+### Branches.
+- Master - Alpha, Beta and Production Releases.
+- Development - Master branch for development
+- Squiggie-dev - Landen's development branch.
+- Checkin - Thomas's development branch.
+- oldApp - The previous iteration of the android application.
 
-1. Download & Install Android Studio... http://developer.android.com/sdk/index.html
+### Contributors:
+- Thomas Hunter.
+- Landen Melton.
 
-2. Clone the repository and open in android studio (Open an existing android studio project, and navigate to the folder).
+### Installation.
+1. Download and install the latest version of [Android Studio](http://developer.android.com/sdk/index.html)
+2. Clone this repository 
+```sh
+git clone https://github.com/Flaredown/FlaredownAndroid.git
+```
+3. Open Android Stuido, select open an existing Android Studio and navigate to the folder.
+4. Create an emulator in android studio, version 14-23 (optional, can use an Android phone)
+5. Run the application selecting the emulator (which should already be running) or select phone, which is in developer mode.
 
-3. Create an emulator in android studio, version 14 - 23 (Android Kitkat to Marshmallow)
-
-4. Once android studio has finished indexing and the gradle has finished. Run the app... with the emulator already open. Android studio will ask which device, select the emulator and the app should boot automatically.
-
-Any problems please contact me.
+### TODO.
+- Checkin
+    - Day Tag.
+    - Treatments.
+    - Notes.
+- Implement intercom.io

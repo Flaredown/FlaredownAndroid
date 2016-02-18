@@ -65,7 +65,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        mView = getActivity().getLayoutInflater().inflate(R.layout.fragment_treatment_reminder, null);
+        mView = getActivity().getLayoutInflater().inflate(R.layout.settings_fragment_treatment_reminder, null);
         builder.setView(mView);
 
         mContext = mView.getContext();
@@ -453,7 +453,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         }
 
         ReminderListAdapter(List<String> times) {
-            super(mContext,R.layout.treatment_reminder_times, (List<String>) times);
+            super(mContext,R.layout.settings_treatment_reminder_times, (List<String>) times);
             this.mTimes = times;
         }
 
@@ -469,7 +469,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
             ViewHolder holder;
 
             if (convertView == null) {
-                row = LayoutInflater.from(mContext).inflate(R.layout.treatment_reminder_times, parent, false);
+                row = LayoutInflater.from(mContext).inflate(R.layout.settings_treatment_reminder_times, parent, false);
 
                 holder = new ViewHolder();
                 holder.tv1 = (TextView) row.findViewById(R.id.tvTreatmentReminderTime);

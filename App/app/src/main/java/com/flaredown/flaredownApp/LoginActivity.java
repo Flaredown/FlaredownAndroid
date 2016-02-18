@@ -65,7 +65,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mContext = this;
         Styling.setFont();
 
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.login_activity);
 
         // Set up the login form.
         tv_noInternetConnection = (TextView) findViewById(R.id.tv_noInternetConnection);

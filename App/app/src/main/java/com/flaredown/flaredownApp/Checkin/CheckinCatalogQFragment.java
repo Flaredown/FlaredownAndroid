@@ -81,7 +81,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
     }
 
     private void assignViews(LayoutInflater inflater, ViewGroup container) {
-        fragmentRoot = inflater.inflate(R.layout.fragment_checkin_catalog_q, container, false);
+        fragmentRoot = inflater.inflate(R.layout.checkin_fragment_catalog_q, container, false);
         ll_questionHolder = (LinearLayout) fragmentRoot.findViewById(R.id.ll_questionHolder);
         tv_catalogName = (TextView) fragmentRoot.findViewById(R.id.tv_catalog);
         tv_sectionTitle = (TextView) fragmentRoot.findViewById(R.id.tv_question);

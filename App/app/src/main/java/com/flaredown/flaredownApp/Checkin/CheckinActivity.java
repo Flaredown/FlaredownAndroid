@@ -313,7 +313,7 @@ public class CheckinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.checkin_activity);
         flareDownAPI = new API(CheckinActivity.this);
         if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
             new ForceLogin(this, flareDownAPI);
