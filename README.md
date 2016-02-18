@@ -2,6 +2,9 @@
 This is the android application for [Flaredown](http://www.flaredown.com/).
 Compatable with android 14-23. (KitKat to Marshmellow).
 
+### Code Design Spec.
+The application is following [this](https://guides.codepath.com/android/Organizing-your-Source-Files#organizing-resources-into-subfolders) specification. Naming packages by feature not by category.
+
 ### Branches.
 - Master - Alpha, Beta and Production Releases.
 - Development - Master branch for development
