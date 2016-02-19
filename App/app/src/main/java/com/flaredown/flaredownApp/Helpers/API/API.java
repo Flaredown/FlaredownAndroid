@@ -42,7 +42,6 @@ public class API {
     private static final String SP_USER_AUTHTOKEN = "FlareDownAPI_userauthtoken"; // String
     private static final String SP_USER_EMAIL = "FlareDownAPI_useremail"; // String
     private static final String SP_USER_SIGNED_IN = "FlareDownAPI_signedin"; // Boolean
-    private static final String SP_ENTRIES_CACHE = "FlareDownAPI_entries_cache";
     public static final String API_BASE_URL = BuildConfig.API_BASE_URI;
     public static final SimpleDateFormat API_DATE_FORMAT= new SimpleDateFormat("MMM-dd-yyyy");
     private static final String LOCALE_CACHE_FNAME = "localeCache";
@@ -321,10 +320,7 @@ public class API {
             @Override
             public void onResponse(JSONObject response) {
                 onApiResponse.onSuccess(response);
-                SharedPreferences.Editor sp = PreferenceKeys.getSharedPreferences(mContext).edit();
-
-                sp.putString(SP_ENTRIES_CACHE, response.toString());
-                sp.commit();
+                cacheAPI("entries", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -335,6 +331,7 @@ public class API {
                         entries(date, onApiResponse);
                     }
                 }));
+                cacheAPI("entries","");
             }
         }) {
             @Override

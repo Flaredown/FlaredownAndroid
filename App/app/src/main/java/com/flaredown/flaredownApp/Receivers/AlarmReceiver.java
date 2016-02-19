@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
+import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
@@ -105,10 +106,30 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 }
                 else if (intent.getStringExtra("title").contains("checkin_reminder")) { //Checkin Reminder
-                    createCheckinAlarm(intent);
+                    API flaredownAPI = new API(mContext);
+                    //They haven't checked in today
+                    if (flaredownAPI.getAPIFromCache("entries").isEmpty() || flaredownAPI.getAPIFromCache("entries").length() <= 0){
+                        createCheckinAlarm(intent);
+                    } else {
+                        //They have already checked, reschedule alarm
+                        rescheduleCheckinAlarm(intent);
+                    }
                 }
             }
         }
+    }
+
+    private void rescheduleCheckinAlarm(Intent intent) {
+        Calendar firingCal = Calendar.getInstance();
+        Alarm alarm;
+        RealmQuery<Alarm> query = mRealm.where(Alarm.class);
+        query.equalTo("id", intent.getIntExtra("id", 0));
+        alarm = query.findFirst();
+        firingCal.setTimeInMillis(alarm.getTime());
+        //Reset alarm +1 day
+        firingCal.add(Calendar.DATE, 1);
+        cancelAlarm();
+        setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
     }
 
     private void setNewAlarm(int id, String title, Long alarmTime) {
@@ -143,10 +164,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         //Figure out if alarm has already been triggered within 60 seconds
         if (diff > 60000) {//yet to be triggered, do nothing
         } else if (diff < -60000) { //alarm already fired, reschedule
-            //Reset alarm +1 day
-            firingCal.add(Calendar.DATE, 1);
-            cancelAlarm();
-            setNewAlarm(alarm.getId(), alarm.getTitle(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
+            rescheduleCheckinAlarm(intent);
         } else { //fire now
             PendingIntent pi = PendingIntent.getActivity(mContext, 1, new Intent(mContext, CheckinActivity.class), 0);
             NotificationManager notificationManager;
