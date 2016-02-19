@@ -9,7 +9,7 @@ The application is following [this](https://guides.codepath.com/android/Organizi
 - Master - Alpha, Beta and Production Releases.
 - Development - Master branch for development
 - Squiggie-dev - Landen's development branch.
-- Checkin - Thomas's development branch.
+- thomas-dev - Thomas's development branch.
 - oldApp - The previous iteration of the android application.
 
 ### Contributors:
