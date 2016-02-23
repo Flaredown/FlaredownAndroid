@@ -49,4 +49,9 @@ dependencies {
     compile 'io.realm:realm-android:0.84.2'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:support-v4:22.2.1'
+
+    //--- Used for JUnit Testing.
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile "org.robolectric:robolectric:3.0"
 }
