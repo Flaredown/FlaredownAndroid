@@ -16,6 +16,7 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.BuildConfig;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
@@ -228,10 +229,12 @@ public class API {
     }
 
     /**
-     * Gets a list of trackables/editables from the API
+     * Gets a list of trackables/editables from the API...
+     * You can now use the entry method to get an Entry object which can get a specific catalog.
      * @param catalog which catalog do you wish to filter down to.
      * @param onApiResponse Callback with the response from the API
      */
+    @Deprecated
     public void getEditables(final String catalog, final OnApiResponse<List<String>> onApiResponse) {
         Date currentDate = API.currentDate; // Getting entries endpoint for today.
         entries(currentDate, new OnApiResponse<JSONObject>() {
@@ -308,10 +311,12 @@ public class API {
 
 
     /**
-     * Retrieves the endpoint /entries
+     * Retrieves the endpoint /entries.
+     * Method DEPRECATED, use entry method runs exactly the same but returns entry object.
      * @param date The entry date to fetch.
      * @param onApiResponse Callback with the response from the API server.
      */
+    @Deprecated
     public void entries(final Date date, final OnApiResponse<JSONObject> onApiResponse) {
         Map<String, String> params = addAuthenticationParams();
         params.put("date", API_DATE_FORMAT.format(date));
@@ -337,6 +342,52 @@ public class API {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //return super.getParams();
+                Map<String, String> postParams = addAuthenticationParams();
+
+                postParams.put("date", API_DATE_FORMAT.format(date));
+
+                return postParams;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonRequest);
+    }
+
+    /**
+     * Retrieves the end point /entries.
+     * @param date The date for the entry to fetch.
+     * @param onApiResponse Callback with the response from the API server.
+     */
+    public void entry(final Date date, final OnApiResponse<Entry> onApiResponse) {
+        Map<String, String> params = addAuthenticationParams();
+        params.put("date", API_DATE_FORMAT.format(date));
+
+        final Runnable retry = new Runnable() {
+            @Override
+            public void run() {
+                entry(date, onApiResponse);
+            }
+        };
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, getEndpointUrl("/entries"), new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    onApiResponse.onSuccess(new Entry(response));
+                } catch (JSONException e) {
+                    onApiResponse.onFailure(new API_Error().setStatusCode(500).setRetry(retry));
+                }
+                cacheAPI("entries", response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(retry));
+                cacheAPI("entries", "");
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> postParams = addAuthenticationParams();
 
                 postParams.put("date", API_DATE_FORMAT.format(date));
