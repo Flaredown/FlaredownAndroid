@@ -22,6 +22,9 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.CatalogDefinition;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Input;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.InputKind;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
@@ -212,7 +215,8 @@ public class EditEditablesDialog extends DialogFragment {
                                         //CheckinCatalogQFragment catalogueFragment = (CheckinCatalogQFragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexesOfCatalog(catalog, checkinActivity.getFragmentQuestions()).get(0)); //TODO make safer
 
                                         if(updateFragment != null)
-                                            updateFragment.appendQuesiton(EntryParsers.createCatalogDefinition(catalog, name, EntryParsers.CatalogInputType.SELECT, EntryParsers.getDefaultInputSmilies()));
+                                            updateFragment.appendQuesiton(new CatalogDefinition(catalog, name, InputKind.SELECT, Input.createDefaultSmilySelect()));
+                                            //updateFragment.appendQuesiton(EntryParsers.createCatalogDefinition(catalog, name, EntryParsers.CatalogInputType.SELECT, EntryParsers.getDefaultInputSmilies()));
 
 
                                         //JSONObject question = CheckinCatalogQFragment.getDefaultQuestionJson(name);

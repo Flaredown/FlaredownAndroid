@@ -12,11 +12,11 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,18 +25,16 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Checkin_summary_fragment#newInstance} factory method to
+ * Use the {@link CheckInSummaryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Checkin_summary_fragment extends Fragment {
+public class CheckInSummaryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ENTRY_JSON = "entryJson";
-    private static final String ARG_RESPONSE_JSON = "responseJson";
     private static final String ARG_DATE_JSON = "date";
 
     private JSONObject argEntryJson;
-    private JSONArray argResponseJson;
-    private List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
+    private Entry entry;
     private Date argDate;
     private View root;
     private LinearLayout ll_fragmentHolder;
@@ -44,7 +42,7 @@ public class Checkin_summary_fragment extends Fragment {
     private TextView tv_checkinSuccess;
     private API flaredownAPI;
 
-    public Checkin_summary_fragment() {
+    public CheckInSummaryFragment() {
         // Required empty public constructor
     }
 
@@ -52,15 +50,13 @@ public class Checkin_summary_fragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param entryJson The entry json retrieved for checkin
-     * @param responseJson The response json submitted for checkin.
+     * @param entry The entry for the check in
      * @return A new instance of fragment Checkin_summary_fragment.
      */
-    public static Checkin_summary_fragment newInstance(JSONObject entryJson, JSONArray responseJson, Date date) {
-        Checkin_summary_fragment fragment = new Checkin_summary_fragment();
+    public static CheckInSummaryFragment newInstance(Entry entry, Date date) throws JSONException{
+        CheckInSummaryFragment fragment = new CheckInSummaryFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ENTRY_JSON, entryJson.toString());
-        args.putString(ARG_RESPONSE_JSON, responseJson.toString());
+        args.putString(ARG_ENTRY_JSON, entry.toJSONObject().toString());
         args.putLong(ARG_DATE_JSON, date.getTime());
         fragment.setArguments(args);
         return fragment;
@@ -81,12 +77,10 @@ public class Checkin_summary_fragment extends Fragment {
         if (getArguments() != null) {
             try {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
-                argResponseJson = new JSONArray(getArguments().getString(ARG_RESPONSE_JSON));
                 argDate = new Date(getArguments().getLong(ARG_DATE_JSON));
-                collectionCatalogDefinitions = EntryParsers.getCatalogDefinitions(argEntryJson, argResponseJson);
+                entry = new Entry(argEntryJson);
             } catch (JSONException e) {
                 argEntryJson = new JSONObject();
-                argResponseJson = new JSONArray();
                 e.printStackTrace();
             }
             argDate = new Date(getArguments().getLong(ARG_DATE_JSON, new Date().getTime()));
@@ -103,21 +97,20 @@ public class Checkin_summary_fragment extends Fragment {
 
 
     private void assembleFragments() {
-            fragments = CheckinActivity.createFragments(collectionCatalogDefinitions);
+        try {
+            fragments = CheckinActivity.createFragments(entry);
             int i = 0;
             for (ViewPagerFragmentBase fragment : fragments) {
-                getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag"+i).commit();
+                getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag" + i).commit();
                 fragment.addOnUpdateListener(new ViewPagerFragmentBase.OnResposneUpdate() {
                     @Override
-                    public void onUpdate(EntryParsers.CatalogDefinition catalogDefinition) {
+                    public void onUpdate(CatalogDefinition catalogDefinition) {
                         try {
-                            argResponseJson = EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions);
-
                             final API.OnApiResponse responseListener = new API.OnApiResponse<JSONObject>() {
                                 @Override
                                 public void onFailure(API_Error error) {
                                     try {
-                                        new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submition"));
+                                        new DefaultErrors(getActivity(), error.setDebugString("Checkin_summary_fragment:assembleFragments:submission"));
                                     } catch (NullPointerException e) {
                                         e.printStackTrace();
                                     }
@@ -135,13 +128,16 @@ public class Checkin_summary_fragment extends Fragment {
                                     }
                                 }
                             };
-                            flaredownAPI.submitEntry(argDate, argResponseJson, responseListener);
+                            flaredownAPI.submitEntry(argDate, entry.getResponses(), responseListener);
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
                     }
                 });
             }
+        } catch (JSONException e) {
+            new DefaultErrors(getActivity(), new API_Error().setDebugString("CheckInSummaryFragment:assembleFragments.JSONException").setStatusCode(500));
+        }
     }
 
     @Override
@@ -161,9 +157,12 @@ public class Checkin_summary_fragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_ENTRY_JSON, EntryParsers.getCatalogDefinitionsJSON(collectionCatalogDefinitions).toString());
-        outState.putString(ARG_RESPONSE_JSON, EntryParsers.getResponsesJSONCatalogDefinitionList(collectionCatalogDefinitions).toString());
-        outState.putLong(ARG_DATE_JSON, argDate.getTime());
+        try {
+            outState.putString(ARG_ENTRY_JSON, entry.toJSONObject().toString());
+            outState.putLong(ARG_DATE_JSON, argDate.getTime());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
