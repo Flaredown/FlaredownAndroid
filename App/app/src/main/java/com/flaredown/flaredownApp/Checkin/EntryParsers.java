@@ -139,7 +139,7 @@ public class EntryParsers {
     public static JSONObject getCatalogDefinitionsJSON(List<CollectionCatalogDefinition> collectionCatalogDefinitions) {
         JSONObject outputJObject = new JSONObject();
         try {
-            /*for (CollectionCatalogDefinition collectionCatalogDefinition : collectionCatalogDefinitions) {
+            /*for (CollectionCatalogDefinition collectionCatalogDefinition : visibleEntries) {
                 for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
                     JSONArray catalogJArray = new JSONArray();
                     if(outputJObject.has(collectionCatalogDefinition.getCatalog()))

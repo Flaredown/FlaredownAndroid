@@ -4,9 +4,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Used to Parse the entry endpoint.
@@ -37,6 +39,21 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
         if(entry.has("responses")) {
             this.setResponeses(entry.getJSONArray("responses"));
         }
+    }
+
+    /**
+     * Create Entry object with a list of CollectionCatalogDefinitions.
+     * @param list List of CollectionCatalogDefinitions.
+     */
+    public Entry(List<CollectionCatalogDefinition> list) {
+        super(list);
+    }
+
+    /**
+     * Default constructor for the Entry class.
+     */
+    public Entry() {
+
     }
 
     /**
@@ -95,8 +112,48 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
             collectionJObject.put(catalogDefinitions.toJSONArray());
         }
 
+        entryJObject.put("responses", this.getResponses().toJSONArray());
+
 
         return returnValue;
+    }
+
+    /**
+     * Get responses for the entry.
+     * @return Get the responses for the entry.
+     */
+    public Responses getResponses() {
+        Responses responses = new Responses();
+        for (CollectionCatalogDefinition collectionCatalogDefinition : this) {
+            for (CatalogDefinition catalogDefinition : collectionCatalogDefinition) {
+                if(catalogDefinition.getResponse() != null) {
+                    responses.add(catalogDefinition.getResponse());
+                }
+            }
+        }
+        return responses;
+    }
+
+    public boolean hasResponse() {
+        for (CollectionCatalogDefinition catalogDefinitions : this) {
+            for (CatalogDefinition catalogDefinition : catalogDefinitions) {
+                if(catalogDefinition.getResponse() != null)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Has entry have at least one catalog definition.
+     * @return True if entry has one catalog definition.
+     */
+    public boolean hasCatalogDefintion() {
+        for (CollectionCatalogDefinition collectionCatalogDefinition : this) {
+            if(collectionCatalogDefinition.size() > 0)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -113,6 +170,7 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
      * Returns the date for the entry.
      * @return The date for the entry.
      */
+    @Deprecated // TODO MAKE THIS WORK
     public Date getDate() {
         return this.entryDate;
     }
@@ -123,5 +181,48 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
      */
     public String getNotes() {
         return this.notes;
+    }
+
+
+    /**
+     * Get an entry with a specific catalog.
+     * @param catalogName The specific catalog.
+     * @return Entry with a specific catalog.
+     */
+    public Entry getCatalog(String catalogName) {
+        Entry entry = new Entry();
+        for (CollectionCatalogDefinition collectionCatalogDefinition : this) {
+            if(collectionCatalogDefinition.getCatalogName().equals(catalogName))
+                entry.add(collectionCatalogDefinition);
+        }
+        return entry;
+    }
+
+    /**
+     * Remove a catalog definition, safely from the entry.
+     * @param catalogName The catalog name for the definition.
+     * @param definitionName The definition name for the definition.
+     * @return True if item was successfully removed.
+     */
+    public boolean removeDefinition(String catalogName, String definitionName) {
+        boolean successful = false;
+        for (int i = 0; i < this.size(); i++) {
+
+        }
+        for (int i = 0; i < this.size(); i++) {
+            CollectionCatalogDefinition collectionCatalogDefinition = this.get(i);
+            if(collectionCatalogDefinition.getCatalogName().equals(catalogName)) {
+                for (int j = 0; j < collectionCatalogDefinition.size(); j++) {
+                    CatalogDefinition catalogDefinition = collectionCatalogDefinition.get(j);
+                    if(catalogDefinition.getCatalogName().equals(catalogName) && catalogDefinition.getDefinitionName().equals(definitionName)) {
+                        collectionCatalogDefinition.remove(catalogDefinition);
+                        successful = true;
+                    }
+                }
+                if(collectionCatalogDefinition.size() == 0)
+                    this.remove(collectionCatalogDefinition);
+            }
+        }
+        return successful;
     }
 }

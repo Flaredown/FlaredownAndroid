@@ -98,4 +98,15 @@ public class EntryTest extends TestCase{
         System.out.println(entry.toJSONObject().toString(4));
         fail("Manual Checking is needed at this point");
     }
+
+    @Test
+    public void testToAndFromJSONObject() throws Exception {
+        JSONObject _1stJO = createDefaultJSONObject();
+        Entry entry = new Entry(_1stJO);
+        JSONObject _2ndJO = entry.toJSONObject();
+        Entry entry2 = new Entry(_2ndJO);
+
+        assertEquals("Should have responses", true, entry2.hasResponse());
+        fail("Still needs completing.");
+    }
 }

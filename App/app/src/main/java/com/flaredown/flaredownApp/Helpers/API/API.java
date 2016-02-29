@@ -16,7 +16,7 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.BuildConfig;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
@@ -399,6 +399,7 @@ public class API {
         requestQueue.add(jsonRequest);
     }
 
+    @Deprecated
     public void submitEntry(Date date, JSONArray responses, OnApiResponse<JSONObject> onApiResponse) {
         try {
             submitEntry(date, new JSONObject().put("responses", responses), onApiResponse);
@@ -411,6 +412,7 @@ public class API {
      * @param response The response data.
      * @param onApiResponse
      */
+    @Deprecated
     public void submitEntry(final Date date, final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {
         HashMap<String, String> params = new HashMap<>();
         params.put("entry", response.toString());
@@ -450,6 +452,51 @@ public class API {
 
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(putRequest);
+    }
+
+    public void submitEntry(final Date date, final Responses responses, final OnApiResponse<JSONObject> onApiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                submitEntry(date, responses, onApiResponse);
+            }
+        };
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("entry", responses.toJSONObject().toString());
+
+
+            JsonObjectRequest putRequest = new JsonObjectRequest(Request.Method.PUT, getEndpointUrl("/entries/" + API_DATE_FORMAT.format(date) + ".json", params), responses.toJSONObject(), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        if (response.has("success") && response.getBoolean("success") == true) {
+                            onApiResponse.onSuccess(response);
+                        } else {
+                            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()requestNotReturnSuccess").setRetry(retryRunnable));
+                        }
+                    } catch (JSONException e) {
+                        onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API:submitEntry()JSONException").setRetry(retryRunnable));
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    onApiResponse.onFailure(new API_Error().setVolleyError(error).setRetry(retryRunnable));
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    //return super.getParams();
+                    Map<String, String> postParams = addAuthenticationParams();
+                    return postParams;
+                }
+            };
+            RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+            requestQueue.add(putRequest);
+        } catch (JSONException e) {
+            onApiResponse.onFailure(new API_Error().setStatusCode(500).setDebugString("API.submitEntry::JSONException2").setRetry(retryRunnable));
+        }
     }
 
     public void updateUser(final JSONObject response, final OnApiResponse<JSONObject> onApiResponse) {

@@ -11,6 +11,15 @@ import java.util.ArrayList;
  */
 public class CollectionCatalogDefinition extends ArrayList<CatalogDefinition> {
     String catalogName = "";
+
+    /**
+     * Default constructor for the CollectionCatalogDefinition.
+     * @param catalogName The name of the catalog the collection is for.
+     */
+    public CollectionCatalogDefinition(String catalogName) {
+        this.catalogName = catalogName;
+    }
+
     /**
      * Constructs the CollectionCatalogDefinition object from a JSON array of catalog definitions.
      * @param collectionCatalogDefinitionJArray JSON array of catalog definitions.

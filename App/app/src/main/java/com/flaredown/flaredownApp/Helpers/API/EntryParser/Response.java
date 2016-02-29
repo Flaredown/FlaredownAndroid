@@ -16,7 +16,7 @@ public class Response {
      * @param responseJObject JSON representation.
      * @throws JSONException
      */
-    Response(JSONObject responseJObject) throws JSONException{
+    public Response(JSONObject responseJObject) throws JSONException{
         this.catalogName = responseJObject.getString("catalog");
         this.value = responseJObject.get("value");
         this.definitionName = responseJObject.getString("name");
@@ -28,7 +28,7 @@ public class Response {
      * @param definitionName The definition name for the response.
      * @param value The value for the response.
      */
-    Response(String catalogName, String definitionName, Object value) {
+    public Response(String catalogName, String definitionName, Object value) {
         this.catalogName = catalogName;
         this.definitionName = definitionName;
         this.value = value;
@@ -52,6 +52,14 @@ public class Response {
      */
     public Object getValue() {
         return value;
+    }
+
+    /**
+     * Set the response value.
+     * @param value The response value.
+     */
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     /**

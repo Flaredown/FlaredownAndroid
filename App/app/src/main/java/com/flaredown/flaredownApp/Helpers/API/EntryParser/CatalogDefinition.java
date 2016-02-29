@@ -42,6 +42,24 @@ public class CatalogDefinition {
         }
     }
 
+    public CatalogDefinition(String catalogName, String definitionName, InputKind inputKind) {
+        this(catalogName, definitionName, inputKind, null);
+    }
+
+    /**
+     * Construct a catalog definition initialising it with the following values.
+     * @param catalogName The name of the catalog it is from.
+     * @param definitionName The definition name.
+     * @param inputKind The type of input.
+     * @param inputs The inputs for the definition.
+     */
+    public CatalogDefinition(String catalogName, String definitionName, InputKind inputKind, List<Input> inputs) {
+        this.catalogName = catalogName;
+        this.definitionName = definitionName;
+        this.kind = inputKind;
+        this.inputs = inputs;
+    }
+
     /**
      * Get the JSON object representing this object.
      * @return JSON object representing this object.
@@ -110,6 +128,22 @@ public class CatalogDefinition {
      */
     public Response getResponse() {
         return response;
+    }
+
+    /**
+     * Get the inputs for this catalog definition.
+     * @return The inputs for this catalog definition.
+     */
+    public List<Input> getInputs() {
+        return inputs;
+    }
+
+    /**
+     * Set the inputs for this catalog definition.
+     * @param inputs The inputs for this catalog definition.
+     */
+    public void setInputs(List<Input> inputs) {
+        this.inputs = inputs;
     }
 
     /**
