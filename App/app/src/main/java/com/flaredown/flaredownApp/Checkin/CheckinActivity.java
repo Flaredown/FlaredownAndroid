@@ -340,8 +340,8 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             }
         } else {
-            setView(Views.SPLASH_SCREEN, false);
-            displayCheckin(new Date());
+            //setView(Views.SPLASH_SCREEN, false); //TODO Re-enable check in
+            //displayCheckin(new Date());
         }
 
         checkMinimumVersion();
