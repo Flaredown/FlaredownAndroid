@@ -73,7 +73,7 @@
                         android:id="@+id/tv_loginTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/title_activity_login"
+                        android:text="@string/locales_unauthenticated_login"
                         android:layout_gravity="center_horizontal"
                         android:textSize="@dimen/title_font_size" />
 
