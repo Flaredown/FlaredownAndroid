@@ -26,7 +26,7 @@ android {
             resValue "string", "app_name", "@string/app_name_release"
             targetSdkVersion 22
             versionCode 1
-            versionName '1.0'
+            versionName '0.01'
         }
         productDebug {
             buildConfigField "String", "API_BASE_URI", "\"https://staging.flaredown.com/v1\""

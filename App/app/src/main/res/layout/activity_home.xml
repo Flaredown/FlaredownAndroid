@@ -80,12 +80,10 @@
                     android:layout_height="50dp"
                     android:text="SUBMIT"
                     android:id="@+id/bt_submitCheckin"
-                    android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp"
                     android:textColor="@color/accent"
                     android:background="@android:color/transparent"
-                    android:layout_weight="0.5"
                     android:visibility="gone" />
             </LinearLayout>
 
