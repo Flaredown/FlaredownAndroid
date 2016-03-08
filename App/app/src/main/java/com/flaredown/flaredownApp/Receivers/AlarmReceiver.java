@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Receivers;
 /**
  * Created by squigge on 10/15/2015.
  */
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,15 +16,19 @@ import android.support.v7.app.NotificationCompat;
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
-import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Random;
 
 import io.realm.Realm;
@@ -107,13 +112,43 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
                 else if (intent.getStringExtra("title").contains("checkin_reminder")) { //Checkin Reminder
                     API flaredownAPI = new API(mContext);
-                    //They haven't checked in today
-                    if (flaredownAPI.getAPIFromCache("entries").isEmpty() || flaredownAPI.getAPIFromCache("entries").length() <= 0){
-                        createCheckinAlarm(intent);
+                    String entriesCache = flaredownAPI.getAPIFromCache("entries");
+                    if (!entriesCache.isEmpty()){
+                        try {
+                            JSONObject entries = new JSONObject(entriesCache);
+                            JSONObject entry = entries.getJSONObject("entry");
+                            String jsonDate = entry.getString("date");
+                            String checkinComplete = entry.getString("complete");
+                            SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy", Locale.US);
+                            Calendar entryDate = Calendar.getInstance();
+                            Calendar today = Calendar.getInstance();
+                            entryDate.setTime(sdf.parse(jsonDate));
+
+                            today.set(Calendar.HOUR_OF_DAY, 0);
+                            today.set(Calendar.MINUTE, 0);
+                            today.set(Calendar.SECOND,0);
+                            today.set(Calendar.MILLISECOND,0);
+                            entryDate.set(Calendar.HOUR_OF_DAY,0);
+                            entryDate.set(Calendar.MINUTE,0);
+                            entryDate.set(Calendar.SECOND,0);
+                            entryDate.set(Calendar.MILLISECOND, 0);
+
+                            if (entryDate.before(today)){
+                                createCheckinAlarm(intent);
+                            } else {
+                                if (checkinComplete.contains("false")){
+                                    createCheckinAlarm(intent);
+                                } else {
+                                    rescheduleCheckinAlarm(intent);
+                                }
+                            }
+                        } catch (JSONException e) {
+                        } catch (ParseException e) {
+                        }
                     } else {
-                        //They have already checked, reschedule alarm
-                        rescheduleCheckinAlarm(intent);
+                        createCheckinAlarm(intent);
                     }
+
                 }
             }
         }

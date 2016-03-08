@@ -29,7 +29,6 @@ import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
 import com.flaredown.flaredownApp.Helpers.Locales;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
