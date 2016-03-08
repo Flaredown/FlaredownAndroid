@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.flaredown.flaredownApp.Checkin.AddEditableActivity">
+
+    <com.flaredown.flaredownApp.Toolbars.MainToolbarView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_toolbar_view">
+    </com.flaredown.flaredownApp.Toolbars.MainToolbarView>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:id="@+id/rl_titleBar">
+
+        <!--<TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add a something"
+            android:id="@+id/tv_title"
+            android:layout_centerInParent="true"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:id="@+id/tv_cancel_button"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:textColor="@color/checkin_selector_button_text" />-->
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_loading"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/et_input"
+        android:layout_below="@+id/main_toolbar_view"
+        android:background="@drawable/edittext_background_addadialog"
+        android:padding="@dimen/sep_margin_large" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/sv_results"
+        android:layout_below="@+id/et_input"
+        android:background="#fff" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/ll_results"></LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

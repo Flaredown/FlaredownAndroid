@@ -1,0 +1,150 @@
+<ScrollView
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Settings.SettingsActivity">
+
+    <com.flaredown.flaredownApp.Toolbars.MainToolbarView
+        android:id="@+id/main_toolbar_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/llSettingsProgress"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:orientation="vertical">
+        <ProgressBar
+            android:id="@+id/settingsProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/sep_margin_small">
+        </ProgressBar>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rlSettings"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:id="@+id/llCheckinReminder"
+            style="@style/AppTheme.Box"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_checkinRemindTitle"
+                style="@style/AppTheme.TextView.SubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Remind me to check in" />
+
+            <Switch
+                android:id="@+id/sw_checkinReminder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/sep_margin_small" />
+
+            <TextView
+                android:id="@+id/tv_checkinRemindTime"
+                style="@style/AppTheme.TextView.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/sep_margin_small"
+                android:text="Time"
+                android:textColor="@color/accent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTreatmentReminder"
+            style="@style/AppTheme.Box"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llCheckinReminder"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical|center_horizontal">
+
+            <TextView
+                android:id="@+id/tv_treatmentRemindTitle"
+                style="@style/AppTheme.TextView.SubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/sep_margin_small"
+                android:text="Treatment Reminders" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAccount"
+            style="@style/AppTheme.Box"
+            android:layout_width="@dimen/box_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/llTreatmentReminder"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_accountTitle"
+                style="@style/AppTheme.TextView.SubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/sep_margin_medium"
+                android:text="Account" />
+
+            <TextView
+                android:id="@+id/tv_editAccount"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/sep_margin_small"
+                android:text="Edit Account Info" />
+
+            <TextView
+                android:id="@+id/tv_settingsLogout"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="Logout" />
+        </LinearLayout>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/terms"
+        android:text="Terms and Conditions"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/sep_margin_small"
+        android:textColor="@color/sub_text_color" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/privacy_policy"
+        android:text="Privacy Policy"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/sep_margin_small"
+        android:textColor="@color/sub_text_color"
+        android:layout_marginBottom="@dimen/sep_margin_large" />
+</LinearLayout>
+</ScrollView>
