@@ -6,10 +6,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.Menu;
@@ -26,15 +26,15 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.EditAccount.FragmentEditAccount;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
+import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.Login.LoginActivity;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Login.ForceLogin;
-import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.Helpers.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +45,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Random;
 
+import io.intercom.android.sdk.Intercom;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -97,6 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_policy = (TextView)findViewById(R.id.privacy_policy);
         llSettingsProgress = (LinearLayout) findViewById(R.id.llSettingsProgress);
         rlSettings = (RelativeLayout) findViewById(R.id.rlSettings);
+        TextView tvHelp = (TextView) findViewById(R.id.tv_help);
 
         llSettingsProgress.setVisibility(View.VISIBLE);
         rlSettings.setVisibility(View.GONE);
@@ -202,12 +204,12 @@ public class SettingsActivity extends AppCompatActivity {
                     Calendar cal = Calendar.getInstance();
                     String currentTime = sdf.format(cal.getTimeInMillis());
                     tv_checkinRemindTime.setText(currentTime);
-                    tv_checkinRemindTime.setAlpha((float)1);
+                    tv_checkinRemindTime.setAlpha((float) 1);
                     mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
                     mAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
                     mAlarm.setTitle("checkin_reminder");
                 } else {
-                    tv_checkinRemindTime.setAlpha((float).20);
+                    tv_checkinRemindTime.setAlpha((float) .20);
                 }
             }
         });
@@ -255,7 +257,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PolicyWebView.class);
-                intent.putExtra("Identifier","policy");
+                intent.putExtra("Identifier", "policy");
                 startActivity(intent);
             }
         });
@@ -266,6 +268,13 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent intent = new Intent(mContext, PolicyWebView.class);
                 intent.putExtra("Identifier","terms");
                 startActivity(intent);
+            }
+        });
+
+        tvHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intercom.client().displayConversationsList();
             }
         });
 

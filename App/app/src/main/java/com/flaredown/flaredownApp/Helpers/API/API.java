@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.intercom.android.sdk.Intercom;
+import io.intercom.android.sdk.identity.Registration;
+
 /**
  * Created by thunter on 03/09/15.
  */
@@ -111,6 +114,9 @@ public class API {
                     sp.putBoolean(SP_USER_SIGNED_IN, true);
                     sp.commit();
 
+                    //Register Intercom
+                    Intercom.client().registerIdentifiedUser(new Registration().withEmail(jsonUser.getString("email")));
+
                     getLocales(new OnApiResponse<JSONObject>() {
                         @Override
                         public void onSuccess(JSONObject locales) {
@@ -175,6 +181,8 @@ public class API {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, getEndpointUrl("/users/sign_out"), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                //Reset Intercom
+                Intercom.client().reset();
                 users_sign_out_force();
                 onApiResponse.onSuccess(new JSONObject());
             }
@@ -685,6 +693,8 @@ public class API {
 
 
         if(!sp.getString(SP_USER_AUTHTOKEN, "").equals("") && !sp.getString(SP_USER_EMAIL, "").equals("") && sp.getBoolean(SP_USER_SIGNED_IN, false)) {
+            //Log into Intercom
+            Intercom.client().registerIdentifiedUser(new Registration().withEmail(sp.getString(SP_USER_EMAIL,"")));
             return true;
         } else {
             return false;
