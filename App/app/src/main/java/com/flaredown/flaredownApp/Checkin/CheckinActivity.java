@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -36,7 +35,6 @@ import com.flaredown.flaredownApp.Helpers.API.EntryParser.CollectionCatalogDefin
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
@@ -66,9 +64,6 @@ public class CheckinActivity extends AppCompatActivity {
     private JSONObject entriesJSONObject = null;
     private JSONObject responseJSONObject = null;
     private Entry entry;
-    private boolean mFirstCheckin;
-    private SharedPreferences sp;
-    SharedPreferences.Editor editor;
 
     /*
         View Variables.
@@ -326,8 +321,6 @@ public class CheckinActivity extends AppCompatActivity {
         Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.checkin_activity);
         flareDownAPI = new API(CheckinActivity.this);
-         sp = PreferenceKeys.getSharedPreferences(this);
-         editor = sp.edit();
 
         if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
             new ForceLogin(this, flareDownAPI);
@@ -360,8 +353,6 @@ public class CheckinActivity extends AppCompatActivity {
         }
 
         checkMinimumVersion();
-
-        mFirstCheckin = sp.getBoolean(KEY_FIRST_CHECKIN,true);
     }
 
     private void checkMinimumVersion() {
@@ -567,9 +558,6 @@ public class CheckinActivity extends AppCompatActivity {
                 Map eventData = new HashMap();
                 eventData.put("checkin_date", Calendar.getInstance().getTimeInMillis());
                 Intercom.client().logEvent("android_checkin", eventData);
-                if (mFirstCheckin){
-                    editor.putBoolean(KEY_FIRST_CHECKIN, false);
-                }
             }
         });
     }
