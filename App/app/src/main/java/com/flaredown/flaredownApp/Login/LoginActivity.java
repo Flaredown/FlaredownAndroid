@@ -222,39 +222,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 @Override
                 public void onFailure(Error result) {
                     setView(VIEW_LOGIN);
-                    new ErrorDialog(mContext, result);
+                    // Check for incorrect credentials
+                    if(result.getStatusCode() ==  401 && result.getErrorList().indexOf("invalid email or password") >= 0) {
+                        String errorMessage = mContext.getString(R.string.locales_nice_errors_bad_credentials);
+                        mEmailView.setError(errorMessage);
+                        mPasswordView.setError(errorMessage);
+                    } else
+                        new ErrorDialog(mContext, result);
                 }
             });
-
-
-//            flareDownAPI.users_sign_in(email, password, new API.OnApiResponse<JSONObject>() {
-//                @Override
-//                public void onSuccess(JSONObject jsonObject) {
-//                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
-//                    Intent intent = new Intent(mContext, CheckinActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                    startActivity(intent);
-//                    overridePendingTransition(0,0);
-//                    finish();
-//                }
-//
-//                @Override
-//                public void onFailure(API_Error error) {
-//                    setView(VIEW_LOGIN);
-//                    //TODO differentiate between no internet connection and incorrect user details.
-//                    //PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
-//                    // Check for incorrect credentials
-//                    if(error.statusCode == 422) {
-//                        String errorMessage = Locales.read(mContext, "nice_errors.bad_credentials").create();
-//                        mEmailView.setError(errorMessage);
-//                        mPasswordView.setError(errorMessage);
-//                    } else {
-//                        new DefaultErrors(mContext, error);
-//                    }
-//                }
-//            });
-
         }
     }
 

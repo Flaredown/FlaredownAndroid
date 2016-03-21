@@ -4,6 +4,12 @@ import android.support.annotation.Nullable;
 
 import com.android.volley.VolleyError;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 /**
  * Returned from the Communicate class when an error occurs when fetching data from the api.
  */
@@ -50,6 +56,25 @@ public class Error {
             this.statusCode = 503;
             this.internetConnection = false;
         }
+    }
+
+    /**
+     * Get a list of error messages which could (not a guarantee) be returned by the API.
+     * @return A list of error messages.
+     */
+    public ArrayList<String> getErrorList() {
+        ArrayList<String> output = new ArrayList<>();
+
+        try {
+            String responseString = new String(volleyError.networkResponse.data);
+            JSONObject responseObject = new JSONObject(responseString);
+            JSONArray errorJArray = responseObject.getJSONArray("errors");
+            for (int i = 0; i < errorJArray.length(); i++) {
+                output.add(errorJArray.getString(i));
+            }
+        } catch (Exception e) {e.printStackTrace();}
+
+        return output;
     }
 
     /**
