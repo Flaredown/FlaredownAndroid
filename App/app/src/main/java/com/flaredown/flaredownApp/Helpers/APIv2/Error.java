@@ -16,6 +16,16 @@ public class Error {
     @Nullable
     private Runnable retryRunnable;
 
+    public Error() {
+    }
+
+    /**
+     * Construct an Error object passing a volley error.
+     * @param volleyError
+     */
+    public Error(VolleyError volleyError) {
+        this.setVolleyError(volleyError);
+    }
 
     /**
      * Get the error information (if any) which is returned by volley.
@@ -86,8 +96,9 @@ public class Error {
      * SEt the debug string, which is an extra snippet of information passed to help debug an error.
      * @param debugString Extra snippet of information to help debug an error.
      */
-    public void setDebugString(String debugString) {
+    public Error setDebugString(String debugString) {
         this.debugString = debugString;
+        return this;
     }
 
     /**
