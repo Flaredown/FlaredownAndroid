@@ -27,6 +27,7 @@ import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
@@ -204,9 +205,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //mAuthTask = new UserLoginTask(email, password);
             //mAuthTask.execute((Void) null);
 
-            new Communicate(this).userSignIn(email, password, new APIResponse<JSONObject, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+            new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
                 @Override
-                public void onSuccess(JSONObject result) {
+                public void onSuccess(Session result) {
                     Intent intent = new Intent(mContext, CheckinActivity.class);
                     // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

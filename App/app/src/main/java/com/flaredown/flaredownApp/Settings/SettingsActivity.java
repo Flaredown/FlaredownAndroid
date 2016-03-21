@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         flareDownAPI = new API(mContext);
         if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
-            new ForceLogin(this, flareDownAPI);
+            new ForceLogin(this);
             return;
         }
 

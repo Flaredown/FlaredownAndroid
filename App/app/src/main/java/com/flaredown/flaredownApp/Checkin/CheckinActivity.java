@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.Locales;
@@ -314,8 +315,8 @@ public class CheckinActivity extends AppCompatActivity {
         Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.checkin_activity);
         flareDownAPI = new API(CheckinActivity.this);
-        if(!flareDownAPI.isLoggedIn()) { // Ensure the user is signed in.
-            new ForceLogin(this, flareDownAPI);
+        if(!new Communicate(this).isCredentialsSaved()) { // Ensure the user is signed in.
+            new ForceLogin(this);
             return;
         }
         Styling.setFont(); // Uses the Calligraphy library inject the font.
