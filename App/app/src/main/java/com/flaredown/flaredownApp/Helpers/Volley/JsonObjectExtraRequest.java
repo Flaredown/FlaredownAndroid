@@ -1,9 +1,13 @@
 package com.flaredown.flaredownApp.Helpers.Volley;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
 import org.json.JSONException;
@@ -15,6 +19,7 @@ import java.util.Map;
  * Injects authentication information into a Volley Request.
  */
 public class JsonObjectExtraRequest extends StringRequest {
+    private Context mContext;
     private WebAttributes headers = new WebAttributes();
     private WebAttributes params = new WebAttributes();
     /**
@@ -25,7 +30,7 @@ public class JsonObjectExtraRequest extends StringRequest {
      * @param errorListener Error listener, or null to ignore errors.
      * @return itself.
      */
-    public static JsonObjectExtraRequest createRequest(int method, String url, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
+    public static JsonObjectExtraRequest createRequest(Context context, int method, String url, final Response.Listener<JSONObject> listener, final Response.ErrorListener errorListener) {
         // It is done this way because the JSONObjectRequest provided by the volley language has
         // difficulty with attaching parameters with post requests.
         Response.Listener<String> stringListener = new Response.Listener<String>() {
@@ -39,12 +44,22 @@ public class JsonObjectExtraRequest extends StringRequest {
                 }
             }
         };
+        JsonObjectExtraRequest output = new JsonObjectExtraRequest(context, method, url, stringListener, errorListener);
 
-        return new JsonObjectExtraRequest(method, url, stringListener, errorListener);
+        // Pass authentication parameters if available.
+        if(new Communicate(context).isCredentialsSaved()) {
+            SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
+            WebAttributes headers = new WebAttributes();
+            headers.put("Authorization", "Token token=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, "") + "\", email=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, "") + "\"");
+            output.setHeaders(headers);
+        }
+
+        return output;
     }
 
-    private JsonObjectExtraRequest(int method, String url, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
+    private JsonObjectExtraRequest(Context context, int method, String url, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
         super(method, url, listener, errorListener);
+        this.mContext = context;
     }
 
     /**
@@ -67,9 +82,13 @@ public class JsonObjectExtraRequest extends StringRequest {
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        Map<String, String> headers = super.getHeaders();
-        headers.putAll(this.headers);
-        return headers;
+        WebAttributes output = new WebAttributes();
+        Map<String, String> superHeaders = super.getHeaders();
+        if(superHeaders != null)
+            output.putAll(this.headers);
+        if(this.headers.size() > 0)
+            output.putAll(this.headers);
+        return output;
     }
 
     @Override

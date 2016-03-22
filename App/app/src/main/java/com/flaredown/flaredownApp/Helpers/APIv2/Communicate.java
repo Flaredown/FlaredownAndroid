@@ -49,7 +49,7 @@ public class Communicate {
         parameters.put("user[email]", email);
         parameters.put("user[password]", password);
 
-        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(Request.Method.POST, EndPointUrl.getAPIUrl("sessions"), new Response.Listener<JSONObject>() {
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("sessions"), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Session session = new Session(response);
@@ -58,6 +58,7 @@ public class Communicate {
                 SharedPreferences.Editor spe = sp.edit();
                 spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, session.getEmail());
                 spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, session.getToken());
+                spe.putString(PreferenceKeys.SP_Av2_USER_ID, session.getUserId());
                 spe.commit();
 
                 apiResponse.onSuccess(session);
@@ -78,6 +79,6 @@ public class Communicate {
      */
     public boolean isCredentialsSaved() {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
-        return sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, null) != null && sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, null) != null;
+        return sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, null) != null && sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, null) != null && sp.getString(PreferenceKeys.SP_Av2_USER_ID, null) != null;
     }
 }
