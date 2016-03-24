@@ -29,5 +29,9 @@ android {
     compileSdkVersion 22
     buildToolsVersion = '22.0.1'
 }
-
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile "org.robolectric:robolectric:3.0"
+}
 apply from: 'rules.gradle'

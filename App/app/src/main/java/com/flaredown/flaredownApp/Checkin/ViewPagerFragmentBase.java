@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,11 +20,11 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    protected List<EntryParsers.CollectionCatalogDefinition> collectionCatalogDefinitions;
-    protected List<EntryParsers.CollectionCatalogDefinition> fullCollectionCatalogDefinitions; // For updating the catalog with new questions.
+    protected Entry visibleEntries;
+    protected Entry fullCollectionCatalogDefinitions; // For updating the catalog with new questions.
 
-    public List<EntryParsers.CollectionCatalogDefinition> getCollectionCatalogDefinitions() {
-        return collectionCatalogDefinitions;
+    public Entry getVisibleEntries() {
+        return visibleEntries;
     }
 
     public static int indexOfQuestionsPage(String catalogue, String question, List<ViewPagerFragmentBase> fragments) {
@@ -43,7 +45,7 @@ public class ViewPagerFragmentBase extends Fragment {
         List<Integer> integers = new ArrayList<>();
         for (int i = 0; i < fragments.size(); i++) {
             ViewPagerFragmentBase fragment = fragments.get(i);
-            if(fragment.collectionCatalogDefinitions.size() > 0 && fragment.collectionCatalogDefinitions.get(0).getCatalog().equals(catalog)) {
+            if(fragment.visibleEntries.size() > 0 && fragment.visibleEntries.get(0).getCatalogName().equals(catalog)) {
                 integers.add(i);
             }
         }
@@ -88,14 +90,14 @@ public class ViewPagerFragmentBase extends Fragment {
     public void removeOnUpdateListener(OnResposneUpdate onResposneUpdate) {
         onResposneUpdates.remove(onResposneUpdate);
     }
-    protected void triggerOnUpdateListener(EntryParsers.CatalogDefinition catalogDefinition) {
+    protected void triggerOnUpdateListener(CatalogDefinition catalogDefinition) {
         for (OnResposneUpdate onResposneUpdate : onResposneUpdates) {
             onResposneUpdate.onUpdate(catalogDefinition);
         }
     }
 
     public interface OnResposneUpdate {
-        void onUpdate(EntryParsers.CatalogDefinition catalogDefinition);
+        void onUpdate(CatalogDefinition catalogDefinition);
     }
 
 

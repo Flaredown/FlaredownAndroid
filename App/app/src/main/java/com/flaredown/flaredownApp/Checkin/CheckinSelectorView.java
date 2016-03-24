@@ -8,16 +8,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CheckinSelectorView extends LinearLayout { //TODO check no need for saved instance state
     private List<InputButton> buttons = new ArrayList<>();
-    private List<EntryParsers.Input> inputs;
+    private List<Input> inputs;
     private Object value = null;
     private OnValueChangeListener onValueChangeListener = null;
 
@@ -49,14 +50,14 @@ public class CheckinSelectorView extends LinearLayout { //TODO check no need for
         }
     }
 
-    public CheckinSelectorView setInputs(List<EntryParsers.Input> inputs) {
+    public CheckinSelectorView setInputs(List<Input> inputs) {
+        if(inputs == null) return this;
         final CheckinSelectorView t = this;
         this.inputs = inputs;
         this.removeAllViews();
         this.buttons = new ArrayList<>();
         this.setOrientation(VERTICAL);
-
-        for (EntryParsers.Input input : inputs) {
+        for (Input input : inputs) {
             InputButton inputButton = new InputButton(new ContextThemeWrapper(getContext(), R.style.AppTheme_Checkin_Selector_Button), null, R.style.AppTheme_Checkin_Selector_Button, input);
             inputButton.setOnClickListener(new OnClickListener() {
                 @Override
@@ -83,11 +84,11 @@ public class CheckinSelectorView extends LinearLayout { //TODO check no need for
     }
 
     private class InputButton extends Button {
-        private EntryParsers.Input entryInput;
+        private Input entryInput;
         private OnClickListener customOnClickListener;
         private boolean iconMode = false;
 
-        public InputButton(Context context, AttributeSet attrs, int defStyleAttr, EntryParsers.Input input) {
+        public InputButton(Context context, AttributeSet attrs, int defStyleAttr, Input input) {
             super(context, attrs, defStyleAttr);
             this.entryInput = input;
             super.setOnClickListener(new OnClickListener() {
