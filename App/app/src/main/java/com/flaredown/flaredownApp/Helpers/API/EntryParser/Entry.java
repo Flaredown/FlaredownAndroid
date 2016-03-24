@@ -1,28 +1,34 @@
 package com.flaredown.flaredownApp.Helpers.API.EntryParser;
 
+import com.flaredown.flaredownApp.Models.Treatment;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collection;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Used to Parse the entry endpoint.
  */
 public class Entry extends ArrayList<CollectionCatalogDefinition>{
-    private Date entryDate;
+    private Calendar entryDate;
     private String notes = "";
+    private boolean isComplete;
+    private ArrayList<Treatment> mTreatments = new ArrayList<>();
 
     /**
      * Creates an Entry object from an entry json object returned from the Flaredown API.
      * @param entryJObject Entry json object returned from the Flaredown API.
-     * @throws JSONException if json cannot be parsed.
+     * @throws JSONException, ParseException  if json cannot be parsed.
      */
-    public Entry(JSONObject entryJObject) throws JSONException {
+    public Entry(JSONObject entryJObject) throws JSONException, ParseException {
         JSONObject entry = entryJObject.getJSONObject("entry");
         JSONObject catalogsJObject = entry.getJSONObject("catalog_definitions");
 
@@ -36,9 +42,69 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
             }
         }
 
+        //Set entry date from JSON
+        if (entry.has("date")){
+            this.setDate(entry);
+        }
+
+        //Set if entry is complete or not
+        if (entry.has("complete")) {
+            this.setComplete(entry);
+        }
+
         if(entry.has("responses")) {
             this.setResponeses(entry.getJSONArray("responses"));
         }
+
+        //Get treatments
+        if (entry.has("treatments")){
+            this.setTreatments(entry.getJSONArray("treatments"));
+        }
+
+    }
+
+    private void setTreatments(JSONArray treatments){
+        for(int i =0; i < treatments.length(); i++){
+            try {
+                JSONObject treatmentJSON = treatments.getJSONObject(i);
+                Treatment treatment = new Treatment(treatmentJSON);
+                mTreatments.add(treatment);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    /**
+     * Sets if the entry is complete or not
+     * @param entry
+     * @throws JSONException
+     */
+    private void setComplete(JSONObject entry) throws JSONException {
+        String checkinComplete = entry.getString("complete");
+        if (checkinComplete.contains("true")){
+            isComplete = true;
+        } else {
+            isComplete = false;
+        }
+    }
+
+    /**
+     * Sets the date of the entry
+     * @param entry
+     * @throws JSONException
+     * @throws ParseException
+     */
+    private void setDate(JSONObject entry) throws JSONException, ParseException {
+        String jsonDate = entry.getString("date");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy", Locale.US);
+        entryDate = Calendar.getInstance();
+        entryDate.setTime(sdf.parse(jsonDate));
+        entryDate.set(Calendar.HOUR_OF_DAY,0);
+        entryDate.set(Calendar.MINUTE,0);
+        entryDate.set(Calendar.SECOND,0);
+        entryDate.set(Calendar.MILLISECOND, 0);
     }
 
     /**
@@ -170,9 +236,8 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
      * Returns the date for the entry.
      * @return The date for the entry.
      */
-    @Deprecated // TODO MAKE THIS WORK
-    public Date getDate() {
-        return this.entryDate;
+    public Calendar getEntryDate() {
+        return entryDate;
     }
 
     /**
@@ -225,4 +290,17 @@ public class Entry extends ArrayList<CollectionCatalogDefinition>{
         }
         return successful;
     }
+
+    /**
+     *
+     * @return if the entry is complete or not
+     */
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public List<Treatment> getTreatments() {
+        return mTreatments;
+    }
+
 }

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.R;
@@ -96,7 +97,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         tvTreatmentAddReminderTime.setOnClickListener(this);
 
         //Get all known treatment alarms
-        mTreatmentTitle = getArguments().getString("treatment_title");
+        mTreatmentTitle = getArguments().getString("treatment_title").toLowerCase();
         if (!mTreatmentTitle.isEmpty() || null != mTreatmentTitle){
             //Set Title
             tvTreatmentReminderTitle.setText(mTreatmentTitle + " Reminder");
@@ -410,8 +411,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         try {
             for (Alarm x : mAlarms) {
                 Intent alarmIntent = new Intent(mContext, AlarmReceiver.class);
-                alarmIntent.putExtra("id",x.getId());
-                alarmIntent.putExtra("title",x.getTitle());
+                alarmIntent.putExtra(FlaredownConstants.KEY_ALARM_ID,x.getId());
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, x.getId(), alarmIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     manager.setExact(AlarmManager.RTC_WAKEUP, x.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()), pendingIntent);
