@@ -343,7 +343,7 @@ public class CheckinActivity extends AppCompatActivity {
                     if(savedViewState == Views.SUMMARY) {
                         //displaySummary(entry, savedCheckinDate );
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

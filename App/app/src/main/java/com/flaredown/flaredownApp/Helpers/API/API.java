@@ -13,10 +13,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.flaredown.flaredownApp.BuildConfig;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Responses;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
@@ -33,6 +35,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.intercom.android.sdk.Intercom;
 import io.intercom.android.sdk.identity.Registration;
@@ -53,7 +58,7 @@ public class API {
     //public static final Date currentDate = new Date(new Date().getTime() + (1000*60*60*24));
     public static final Date currentDate = new Date();
     private SharedPreferences sharedPreferences;
-    private static final int API_TIMEOUT_MILLISECONDS = 30;
+    private static final int API_TIMEOUT_MILLISECONDS = 60000;
 
     public String getEndpointUrl(String endpoint) {
         return getEndpointUrl(endpoint, new HashMap<String, String>());
@@ -217,7 +222,7 @@ public class API {
             @Override
             public void onResponse(JSONObject response) {
                 onApiResponse.onSuccess(response);
-                cacheAPI("current_user",response.toString());
+                cacheAPI("current_user", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -228,7 +233,7 @@ public class API {
                         current_user(onApiResponse);
                     }
                 }));
-                cacheAPI("current_user","");
+                cacheAPI("current_user", "");
             }
         });
 
@@ -382,7 +387,7 @@ public class API {
             public void onResponse(JSONObject response) {
                 try {
                     onApiResponse.onSuccess(new Entry(response));
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     onApiResponse.onFailure(new API_Error().setStatusCode(500).setRetry(retry));
                 }
                 cacheAPI("entries", response.toString());
@@ -405,6 +410,30 @@ public class API {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.add(jsonRequest);
+    }
+
+    public JSONObject entryBlocking(final Date date){
+        Map<String, String> params = addAuthenticationParams();
+        params.put("date", API_DATE_FORMAT.format(date));
+
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,getEndpointUrl("/entries"),new JSONObject(params),future,future);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.add(jsonRequest);
+
+        try {
+            JSONObject response =  future.get(30, TimeUnit.SECONDS);
+            cacheAPI("entries", response.toString());
+            return response;
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            return null;
+        } catch (TimeoutException e) {
+            return null;
+        }
     }
 
     @Deprecated
@@ -789,25 +818,25 @@ public class API {
         SharedPreferences.Editor editor = prefs.edit();
         boolean isDirty;
 
-                String api_endpoint_updated = prefs.getString("api_endpoint_" + endpoint + "_updated", "");
-                String api_endpoint = prefs.getString("api_endpoint_" + endpoint, "");
-                if (api_endpoint_updated.isEmpty() || api_endpoint.isEmpty()) {
-                    //return that it is dirty
-                    isDirty = true;
-                }
-                else {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(Long.parseLong(api_endpoint_updated));
-                    if ((Calendar.getInstance().getTimeInMillis() - cal.getTimeInMillis()) > API_TIMEOUT_MILLISECONDS) {
-                        //Cache is old
-                        //Return that it is dirty
-                        isDirty = true;
-                    } else {
-                        //Cache is clean
-                        //Return false
-                        isDirty = false;
-                    }
-                }
+        String api_endpoint_updated = prefs.getString("api_endpoint_" + endpoint + "_updated", "");
+        String api_endpoint = prefs.getString("api_endpoint_" + endpoint, "");
+        if (api_endpoint_updated.isEmpty() || api_endpoint.isEmpty()) {
+            //return that it is dirty
+            isDirty = true;
+        }
+        else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(Long.parseLong(api_endpoint_updated));
+            if ((Calendar.getInstance().getTimeInMillis() - cal.getTimeInMillis()) > API_TIMEOUT_MILLISECONDS) {
+                //Cache is old
+                //Return that it is dirty
+                isDirty = true;
+            } else {
+                //Cache is clean
+                //Return false
+                isDirty = false;
+            }
+        }
         return isDirty;
     }
 

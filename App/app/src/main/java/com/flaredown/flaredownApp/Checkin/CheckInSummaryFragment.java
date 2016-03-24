@@ -79,7 +79,7 @@ public class CheckInSummaryFragment extends Fragment {
                 argEntryJson = new JSONObject(getArguments().getString(ARG_ENTRY_JSON));
                 argDate = new Date(getArguments().getLong(ARG_DATE_JSON));
                 entry = new Entry(argEntryJson);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 argEntryJson = new JSONObject();
                 e.printStackTrace();
             }
