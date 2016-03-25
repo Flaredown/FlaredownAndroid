@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
@@ -34,15 +35,15 @@ public class PolicyWebView extends AppCompatActivity {
         String identifier;
 
         if (bundle != null) {
-            identifier = bundle.getString("Identifier");
-            if (identifier.equals("terms")) {
-                title.setText("Terms of Service");
+            identifier = bundle.getString(FlaredownConstants.BUNDLE_IDENTIFIER_KEY);
+            if (identifier.equals(FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_TERMS)) {
+                title.setText(R.string.title_terms_of_service);
                 String html = Locales.read(context, "terms_of_service").create();
                 String mime = "text/html";
                 String encoding = "utf-8";
                 webview.loadDataWithBaseURL(null, html, mime, encoding, null);
-            } else if (identifier.equals("policy")) {
-                title.setText("Privacy Policy");
+            } else if (identifier.equals(FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_POLICY)) {
+                title.setText(R.string.title_privacy_policy);
                 String html = Locales.read(context, "privacy_policy").create();
                 String mime = "text/html";
                 String encoding = "utf-8";
