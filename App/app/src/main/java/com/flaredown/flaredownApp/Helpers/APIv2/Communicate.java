@@ -2,26 +2,17 @@ package com.flaredown.flaredownApp.Helpers.APIv2;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Map;
 
 /**
  * Contains methods used for communicating with the API.
