@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.APIv2;
 
 import com.flaredown.flaredownApp.BuildConfig;
+import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 
 import org.junit.Test;
 
@@ -21,18 +22,18 @@ public class CommunicateTest {
      */
     @Test
     public void getApiUrl1Test() throws Exception {
-        String output = Communicate.getApiUrl("test");
+        String output = EndPointUrl.getAPIUrl("test");
         assertEquals("Returning incorrect URL", BuildConfig.API_BASE_URI + "/test", output);
     }
 
     @Test
     public void getApiUrl2Test() throws Exception {
-        Map<String, String> map = new HashMap<>();
+        WebAttributes map = new WebAttributes();
         map.put("test", "testing");
         map.put("test2", "testing2");
         map.put("tj%@", "test%ing3");
 
-        String output = Communicate.getApiUrl("test", map);
+        String output = EndPointUrl.getAPIUrl("test", map);
 
         assertEquals("Returning incorrect URL", BuildConfig.API_BASE_URI + "/test?test=testing&tj%25%40=test%25ing3&test2=testing2", output);
 

@@ -25,4 +25,17 @@ public class CheckIns extends ArrayList<CheckIn> {
             this.add(new CheckIn(checkInsJArray.getJSONObject(i)));
         }
     }
+
+    public JSONObject toJson() throws JSONException{
+        JSONObject output = new JSONObject();
+        JSONArray checkinsJArray = new JSONArray();
+
+        for (CheckIn checkIn : this) {
+            checkinsJArray.put(checkIn.toJson());
+        }
+
+        output.put("checkins", checkinsJArray);
+
+        return output;
+    }
 }
