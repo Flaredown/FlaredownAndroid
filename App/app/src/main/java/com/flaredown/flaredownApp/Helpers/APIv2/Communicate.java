@@ -6,13 +6,19 @@ import android.content.SharedPreferences;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Calendar;
 
 /**
  * Contains methods used for communicating with the API.
@@ -60,6 +66,60 @@ public class Communicate {
                 apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.userSignIn::VolleyError"));
             }
         }).setParams(parameters);
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     * Get the check in object for a specific identification. // TODO needs testing.
+     * @param id
+     */
+    public void checkIn(String id, final APIResponse<CheckIn, Error> apiResponse) {
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins/" + id), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    apiResponse.onSuccess(new CheckIn(response));
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.chackIn::ParseError"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkIn::VolleyError"));
+            }
+        });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     * Get the check in object for a specific date. // TODO needs testing.
+     * @param date The date for the check in.
+     */
+    public void checkIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+        WebAttributes getParams = new WebAttributes();
+        getParams.put("date", Date.calendarToString(date));
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins", getParams), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    CheckIns checkIns = new CheckIns(response);
+                    if(checkIns.size() <= 0) {
+                        // No check ins found
+                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
+                    } else {
+                        apiResponse.onSuccess(checkIns.get(0));
+                    }
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.checkInDate::Exception"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError"));
+            }
+        });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 

@@ -17,6 +17,7 @@ public class Error {
     @Nullable
     private VolleyError volleyError;
     private boolean internetConnection = true; // Assuming true.
+    private Exception exceptionThrown = null;
     private int statusCode = 500;
     private String debugString = ""; // Extra detail to the error.
     @Nullable
@@ -56,6 +57,17 @@ public class Error {
             this.statusCode = 503;
             this.internetConnection = false;
         }
+    }
+
+    public Exception getExceptionThrown() {
+        return exceptionThrown;
+    }
+
+    public Error setExceptionThrown(Exception e) {
+        this.exceptionThrown = e;
+        this.statusCode = 500;
+
+        return this;
     }
 
     /**

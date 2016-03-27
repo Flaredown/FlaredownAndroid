@@ -69,6 +69,8 @@ public class ErrorDialog {
         output += "<br/><br/>---App is in debug mode extra details below ---<br/>";
         output += "<b>Debug String:</b> " + apiError.getDebugString() + "<br/>";
         output += "<b>Error code:</b> " + apiError.getStatusCode() + "<br/>";
+        if(apiError.getExceptionThrown() != null)
+            output += "<b>Exception Thrown</b>" + apiError.getExceptionThrown().getMessage() + "<br/>";
         output += "<b>Response: </b> ";
 
         String response = "<b>No Response</b>";
