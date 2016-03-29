@@ -116,22 +116,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         //Get checkin reminder from realm if one exists
         RealmQuery<Alarm> query = mRealm.where(Alarm.class);
-        query.contains("title", "checkin_reminder");
+        query.contains(FlaredownConstants.ALARM_TITLE_NAME, FlaredownConstants.ALARM_TITLE_VALUE_CHECKIN_REMINDER);
         mProxyAlarm = query.findFirst();
 
         if (mProxyAlarm != null){
             mAlarm = new Alarm();
-            mAlarm.setTime(mProxyAlarm.getTime());
-            mAlarm.setId(mProxyAlarm.getId());
             mAlarm.setTitle(mProxyAlarm.getTitle());
+            mAlarm.setDayOfWeek(mProxyAlarm.getDayOfWeek());
+            mAlarm.setId(mProxyAlarm.getId());
+            mAlarm.setTime(mProxyAlarm.getTime());
             sw_checkinReminder.setChecked(true);
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
             String time = sdf.format(mAlarm.getTime());
             tv_checkinRemindTime.setText(time);
         }
 
         //Get API information for treatments and display
-        if (flareDownAPI.apiFromCacheIsDirty("entries")){
+        if (flareDownAPI.apiFromCacheIsDirty(FlaredownConstants.API_CACHE_ENTRIES)){
             flareDownAPI.entry(Calendar.getInstance().getTime(), new API.OnApiResponse<Entry>() {
 
                 @Override
@@ -152,7 +153,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         else{
             try {
-                Entry entry = new Entry(new JSONObject(flareDownAPI.getAPIFromCache("entries")));
+                Entry entry = new Entry(new JSONObject(flareDownAPI.getAPIFromCache(FlaredownConstants.API_CACHE_ENTRIES)));
                 mTreatments = entry.getTreatments();
                 llSettingsProgress.setVisibility(View.GONE);
                 rlSettings.setVisibility(View.VISIBLE);
@@ -169,7 +170,7 @@ public class SettingsActivity extends AppCompatActivity {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 FragmentEditAccount frag = new FragmentEditAccount();
                 ft.attach(frag);
-                frag.show(ft, "edit_account");
+                frag.show(ft, FlaredownConstants.EDIT_ACCOUNT_FRAGMENT_TITLE);
 
             }
         });
@@ -199,14 +200,14 @@ public class SettingsActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     mAlarm = new Alarm();
-                    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                    SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
                     Calendar cal = Calendar.getInstance();
                     String currentTime = sdf.format(cal.getTimeInMillis());
                     tv_checkinRemindTime.setText(currentTime);
                     tv_checkinRemindTime.setAlpha((float) 1);
                     mAlarm.setId(new Random(Calendar.getInstance().getTimeInMillis()).nextInt());
                     mAlarm.setTime(cal.getTimeInMillis() + TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
-                    mAlarm.setTitle("checkin_reminder");
+                    mAlarm.setTitle(FlaredownConstants.ALARM_TITLE_VALUE_CHECKIN_REMINDER);
                 } else {
                     tv_checkinRemindTime.setAlpha((float) .20);
                 }
@@ -231,7 +232,7 @@ public class SettingsActivity extends AppCompatActivity {
                 alertDialog.setPositiveButton(Locales.read(mContext, "nav.done").create(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                        SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
                         Calendar cal = Calendar.getInstance();
                         cal.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
                         cal.set(Calendar.MINUTE, picker.getCurrentMinute());
@@ -256,7 +257,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PolicyWebView.class);
-                intent.putExtra("Identifier", "policy");
+                intent.putExtra(FlaredownConstants.BUNDLE_IDENTIFIER_KEY, FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_POLICY);
                 startActivity(intent);
             }
         });
@@ -265,7 +266,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, PolicyWebView.class);
-                intent.putExtra("Identifier","terms");
+                intent.putExtra(FlaredownConstants.BUNDLE_IDENTIFIER_KEY, FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_TERMS);
                 startActivity(intent);
             }
         });
@@ -291,7 +292,7 @@ public class SettingsActivity extends AppCompatActivity {
             tv.setLayoutParams(lparams);
             tv.setText(treatment.getName());
             Bundle bundle = new Bundle();
-            bundle.putString("treatment_title", treatment.getName());
+            bundle.putString(FlaredownConstants.BUNDLE_TREATMENT_TITLE_KEY, treatment.getName());
             ll_treatmentReminder.addView(tv);
             tv.setOnClickListener(new View.OnClickListener() {
                 private Bundle bundleTitle;
@@ -321,7 +322,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void removeAlarm(){
         mRealm.beginTransaction();
-        mRealm.where(Alarm.class).equalTo("title","checkin_reminder").findAll().clear();
+        mRealm.where(Alarm.class).equalTo(FlaredownConstants.ALARM_TITLE_NAME, FlaredownConstants.ALARM_TITLE_VALUE_CHECKIN_REMINDER).findAll().clear();
         mRealm.commitTransaction();
     }
 
@@ -334,7 +335,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         //If reminder is already set, get it from realm and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+            SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(mAlarm.getTime() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
             tv_checkinRemindTime.setText(sdf.format(c.getTime()));

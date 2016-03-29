@@ -13,4 +13,6 @@
     <string name="title_activity_policy_web_view">PolicyWebView</string>
     <string name="title_activity_edit_account">EditAccountActivity</string>
     <string name="help_feedback">Help and Feedback</string>
+    <string name="title_terms_of_service">Terms of Service</string>
+    <string name="title_privacy_policy">Privacy Policy</string>
 </resources>
