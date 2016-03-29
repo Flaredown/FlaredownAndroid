@@ -21,10 +21,14 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.APIv2.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
@@ -36,6 +40,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -47,8 +52,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private Context mContext;
     private static final String IS_RESTORING = "restoring";
     private final String DEBUG_TAG = "LoginActivity";
-    private API flareDownAPI;
-    private boolean localesLoaded = false;
+    //private API flareDownAPI;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -95,12 +99,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
         });
 
-        // Populate form if debug... makes signing in a little easier :D.
-        if(PreferenceKeys.DEBUGGING) {
-            mEmailView.setText("test@flaredown.com");
-            mPasswordView.setText("testing123");
-        }
-
         Button mEmailSignInButton = (Button) findViewById(R.id.bt_sign_in);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -111,17 +109,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.ll_email_login_form);
 
-        flareDownAPI = new API(mContext);
-        PreferenceKeys.log(PreferenceKeys.LOG_W, DEBUG_TAG, "Locales not loaded, trying to load");
-        loadLocales(savedInstanceState == null);
         // Listen out for internet connectivity
         InternetStatusBroadcastReceiver.setUp(mContext, new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = true;
+                setView(VIEW_LOGIN);
                 setViewInternetConnectivity(true);
-                if (!localesLoaded)
-                    loadLocales(false);
             }
         }, new Runnable() {
             @Override
@@ -130,38 +124,25 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 setViewInternetConnectivity(false);
             }
         });
-    }
-    private void loadLocales(final boolean animate) {
-        flareDownAPI.getLocales(new API.OnApiResponse<JSONObject>() {
-            @Override
-            public void onSuccess(JSONObject locales) {
-                localesLoaded = true;
-                populateLocales(animate);
-            }
 
-            @Override
-            public void onFailure(API_Error error) {
-                if(flareDownAPI.checkInternet())
-                    new DefaultErrors(mContext, error);
-            }
-        });
-    }
-    private void populateLocales(final Boolean animate) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if(animate)
-                    Thread.sleep(2000);
+        if(savedInstanceState == null) {
+            // Display splash screen for 3 seconds, then display the login window.
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             setView(VIEW_LOGIN);
                         }
                     });
-                } catch (Exception e) {e.printStackTrace();}
-            }
-        }).start();
+                }
+            }).start();
+        } else setView(VIEW_LOGIN); //TODO restore correct view on rotate (if there is no internet connectivity).
     }
 
     private void populateAutoComplete() {
@@ -224,35 +205,32 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //mAuthTask = new UserLoginTask(email, password);
             //mAuthTask.execute((Void) null);
 
-
-            flareDownAPI.users_sign_in(email, password, new API.OnApiResponse<JSONObject>() {
+            new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
                 @Override
-                public void onSuccess(JSONObject jsonObject) {
-                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_TAG, "Successful login");
+                public void onSuccess(Session result) {
                     Intent intent = new Intent(mContext, CheckinActivity.class);
+                    // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    // Prevents the user going back.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
+                    // Stop the transition animation from occurring.
                     overridePendingTransition(0,0);
                     finish();
                 }
 
                 @Override
-                public void onFailure(API_Error error) {
+                public void onFailure(Error result) {
                     setView(VIEW_LOGIN);
-                    //TODO differentiate between no internet connection and incorrect user details.
-                    //PreferenceKeys.log(PreferenceKeys.LOG_E, DEBUG_TAG, "An error has occured");
                     // Check for incorrect credentials
-                    if(error.statusCode == 422) {
-                        String errorMessage = Locales.read(mContext, "nice_errors.bad_credentials").create();
+                    if(result.getStatusCode() ==  401 && result.getErrorList().indexOf("invalid email or password") >= 0) {
+                        String errorMessage = mContext.getString(R.string.locales_nice_errors_bad_credentials);
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
-                    } else {
-                        new DefaultErrors(mContext, error);
-                    }
+                    } else
+                        new ErrorDialog(mContext, result);
                 }
             });
-
         }
     }
 

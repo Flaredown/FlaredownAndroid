@@ -15,6 +15,7 @@ import org.json.JSONObject;
 /**
  * Created by thunter on 22/09/2015.
  */
+@Deprecated
 public class DefaultErrors {
     API_Error apiError;
     Context context;
