@@ -25,6 +25,7 @@ import com.flaredown.flaredownApp.Helpers.API.EntryParser.CollectionCatalogDefin
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.Response;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.RestrictionsNumber;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.Styling;
@@ -182,9 +183,9 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private List<BaseQuestion> questionViews = new ArrayList<>();
 
-    public void setQuestions(Entry entry, Entry visibleEntries, Integer section) {
+    public void setQuestions(CheckIn checkIn, Entry visibleEntries, Integer section) {
         this.visibleEntries = visibleEntries;
-        this.fullCollectionCatalogDefinitions = entry;
+        this.checkIn = checkIn;
         this.section = section;
     }
 
@@ -203,11 +204,11 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         }
         if(questionView != null) {
             // If not inside the catalog definitions, append it to the list.
-            if(fullCollectionCatalogDefinitions.findCatalogDefinition(catalogDefinition.getCatalogName(), catalogDefinition.getDefinitionName()) == null){
+            if(checkIn.findCatalogDefinition(catalogDefinition.getCatalogName(), catalogDefinition.getDefinitionName()) == null){
                 CollectionCatalogDefinition epCCD = new CollectionCatalogDefinition(catalogDefinition.getCatalogName());
                 epCCD.add(catalogDefinition);
                 visibleEntries.add(epCCD);
-                fullCollectionCatalogDefinitions.add(epCCD);
+                checkIn.add(epCCD);
             }
 
             ll_questionHolder.addView(questionView);
@@ -234,7 +235,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
         int location = indexOfQuestion(name);
         if(visibleEntries.size() > 0) {
-            fullCollectionCatalogDefinitions.removeDefinition(visibleEntries.get(0).getCatalogName(), name);
+            checkIn.removeDefinition(visibleEntries.get(0).getCatalogName(), name);
             visibleEntries.removeDefinition(visibleEntries.get(0).getCatalogName(), name);
         }
 

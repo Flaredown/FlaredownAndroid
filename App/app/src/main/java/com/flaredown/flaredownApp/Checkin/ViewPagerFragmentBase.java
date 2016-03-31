@@ -20,8 +20,7 @@ import java.util.List;
 public class ViewPagerFragmentBase extends Fragment {
     private EditText editTextFocus;
 
-    protected Entry visibleEntries;
-    protected Entry fullCollectionCatalogDefinitions; // For updating the catalog with new questions.
+    protected Entry checkIn; // For updating the catalog with new questions.
 
     public Entry getVisibleEntries() {
         return visibleEntries;

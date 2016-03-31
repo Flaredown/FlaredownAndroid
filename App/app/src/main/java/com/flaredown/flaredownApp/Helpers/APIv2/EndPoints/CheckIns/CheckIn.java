@@ -76,6 +76,26 @@ public class CheckIn {
         return output;
     }
 
+    /**
+     * Has the user previously submitted a response for this check in.
+     * @return True if the user has previously submitted a response for this check in.
+     */
+    public boolean hasResponse() {
+        for (Trackable condition : conditions) {
+            if(condition.getValue() != null)
+                return true;
+        }
+        for (Trackable symptom : symptoms) {
+            if(symptom.getValue() != null)
+                return true;
+        }
+        for (Trackable treatment : treatments) {
+            if(treatment.getValue() != null)
+                return true;
+        }
+        return false;
+    }
+
     //============ Getter's and Setters ===========
 
     public String getId() {

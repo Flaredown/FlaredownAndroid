@@ -31,7 +31,9 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.Styling;
@@ -56,13 +58,12 @@ import io.intercom.android.sdk.Intercom;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
-    API flareDownAPI;
-
-    private Date checkinDate = null;
+    Communicate API;
+    private Calendar checkinDate = null;
     private boolean isLoadingCheckin = false;
     private JSONObject entriesJSONObject = null;
     private JSONObject responseJSONObject = null;
-    private Entry entry;
+    private CheckIn checkIn;
 
     /*
         View Variables.
@@ -319,8 +320,8 @@ public class CheckinActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
         setContentView(R.layout.checkin_activity);
-        flareDownAPI = new API(CheckinActivity.this);
-        if(!new Communicate(this).isCredentialsSaved()) { // Ensure the user is signed in.
+        API = new Communicate(this);
+        if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
             new ForceLogin(this);
             return;
         }
@@ -331,15 +332,16 @@ public class CheckinActivity extends AppCompatActivity {
 
         if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
             Views savedViewState = (Views) savedInstanceState.getSerializable(SI_CURRENT_VIEW);
-            Date savedCheckinDate = new Date(savedInstanceState.getLong(SI_CHECKIN_DATE));
+            Calendar savedCheckinDate = Calendar.getInstance();
+            savedCheckinDate.setTime(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
             setView(savedViewState, false);
             if(savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER) && savedInstanceState.containsKey(SI_ENTRIES_JSON)) {
                 try {
                     JSONObject entriesJObject = new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON));
-                    Entry entry = new Entry(entriesJObject);
+                    CheckIn entry = new CheckIn(entriesJObject);
                     displayCheckin(savedCheckinDate, entry);
                     if(savedViewState == Views.SUMMARY) {
-                        //displaySummary(entry, savedCheckinDate );
+                        //displaySummary(checkIn, savedCheckinDate );
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -350,57 +352,57 @@ public class CheckinActivity extends AppCompatActivity {
             //displayCheckin(new Date());
         }
 
-        checkMinimumVersion();
+        //checkMinimumVersion();
     }
-
-    private void checkMinimumVersion() {
-        //Validate minimum client version
-        flareDownAPI.getMinimumClient(new API.OnApiResponse<JSONObject>() {
-            @Override
-            public void onFailure(API_Error error) {
-                //unable to get min version from api, do nothing
-            }
-
-            @Override
-            public void onSuccess(JSONObject result) {
-                try {
-                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                    JSONObject android = result.getJSONObject("android");
-                    String version = android.getString("major") + "." + android.getString("minor");
-                    Double minVersion = Double.parseDouble(version);
-
-                    if (pInfo.versionCode <= minVersion) {
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
-                        dialog.setTitle(Locales.read(getApplicationContext(), "nice_errors.minimum_client_error").create());
-                        dialog.setCancelable(false);
-                        dialog.setMessage(Locales.read(getApplicationContext(), "nice_errors.minimum_client_error_description").create());
-                        dialog.setPositiveButton(Locales.read(getApplicationContext(), "nav.update").create(), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse(Locales.read(getApplicationContext(), "URI.android_app_uri").create()));
-                                startActivity(intent);
-                                finish();
-                            }
-                        });
-                        dialog.show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+// TODO ensure implemented into the new API (same endpoint and formatting preferably).
+//    private void checkMinimumVersion() {
+//        //Validate minimum client version
+//        flareDownAPI.getMinimumClient(new API.OnApiResponse<JSONObject>() {
+//            @Override
+//            public void onFailure(API_Error error) {
+//                //unable to get min version from api, do nothing
+//            }
+//
+//            @Override
+//            public void onSuccess(JSONObject result) {
+//                try {
+//                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+//                    JSONObject android = result.getJSONObject("android");
+//                    String version = android.getString("major") + "." + android.getString("minor");
+//                    Double minVersion = Double.parseDouble(version);
+//
+//                    if (pInfo.versionCode <= minVersion) {
+//                        AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
+//                        dialog.setTitle(Locales.read(getApplicationContext(), "nice_errors.minimum_client_error").create());
+//                        dialog.setCancelable(false);
+//                        dialog.setMessage(Locales.read(getApplicationContext(), "nice_errors.minimum_client_error_description").create());
+//                        dialog.setPositiveButton(Locales.read(getApplicationContext(), "nav.update").create(), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                                intent.setData(Uri.parse(Locales.read(getApplicationContext(), "URI.android_app_uri").create()));
+//                                startActivity(intent);
+//                                finish();
+//                            }
+//                        });
+//                        dialog.show();
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(entry != null) {
+        if(checkIn != null) {
             try {
-                outState.putString(SI_ENTRIES_JSON, entry.toJSONObject().toString());
-                outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime());
+                outState.putString(SI_ENTRIES_JSON, checkIn.toJson().toString());
+                outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
                 outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
             } catch(JSONException e) {
                 e.printStackTrace();
@@ -493,7 +495,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 submitCheckin();
-                displaySummary(entry, checkinDate);
+                displaySummary(checkIn, checkinDate);
                 setView(Views.SUMMARY);
             }
         });
@@ -503,10 +505,9 @@ public class CheckinActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isLoadingCheckin) {
                     setView(Views.SPLASH_SCREEN);
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(checkinDate);
+                    Calendar c = (Calendar) checkinDate.clone();
                     c.add(Calendar.DATE, 1);
-                    displayCheckin(c.getTime());
+                    displayCheckin(c);
                 }
             }
         });
@@ -515,22 +516,19 @@ public class CheckinActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!isLoadingCheckin) {
                     setView(Views.SPLASH_SCREEN);
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(checkinDate);
+                    Calendar c = (Calendar) checkinDate.clone();
                     c.add(Calendar.DATE, -1);
-                    displayCheckin(c.getTime());
+                    displayCheckin(c);
                 }
             }
         });
     }
 
-    private void updateDateButtons(Date date) {
+    private void updateDateButtons(Calendar date) {
         Calendar today = Calendar.getInstance();
         today.setTime(new Date());
 
-        Calendar dateDisplayingC = Calendar.getInstance();
-        dateDisplayingC.setTime(date);
-        if(today.get(Calendar.DAY_OF_YEAR) == dateDisplayingC.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == dateDisplayingC.get(Calendar.YEAR)) {
+        if(today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.YEAR) == date.get(Calendar.YEAR)) {
             mainToolbarView.setPrevButtonState(MainToolbarView.ButtonState.VISIBLE);
             mainToolbarView.setNextButtonState(MainToolbarView.ButtonState.HIDDEN);
         } else {
@@ -543,27 +541,29 @@ public class CheckinActivity extends AppCompatActivity {
      * Submits the checkin to flaredown and displays the summary page.
      */
     private void submitCheckin() {
-        flareDownAPI.submitEntry(checkinDate, entry.getResponses(), new API.OnApiResponse<JSONObject>() {
-            @Override
-            public void onFailure(API_Error error) {
-                new DefaultErrors(CheckinActivity.this, error);
-            }
-
-            @Override
-            public void onSuccess(JSONObject result) {
-                Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
-                //Record checkin in Intercom
-                Map eventData = new HashMap();
-                eventData.put("checkin_date", Calendar.getInstance().getTimeInMillis());
-                Intercom.client().logEvent("android_checkin", eventData);
-            }
-        });
+//        flareDownAPI.submitEntry(checkinDate, entry.getResponses(), new API.OnApiResponse<JSONObject>() {
+//            @Override
+//            public void onFailure(API_Error error) {
+//                new DefaultErrors(CheckinActivity.this, error);
+//            }
+//
+//            @Override
+//            public void onSuccess(JSONObject result) {
+//                Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
+//                //Record checkin in Intercom
+//                Map eventData = new HashMap();
+//                eventData.put("checkin_date", Calendar.getInstance().getTimeInMillis());
+//                Intercom.client().logEvent("android_checkin", eventData);
+//            }
+//        });
+        // TODO implement submission
+        Toast.makeText(getApplicationContext(), "Still need to implement", Toast.LENGTH_LONG).show();
     }
 
-    private void displaySummary(Entry entry, Date date) {
+    private void displaySummary(CheckIn checkIn, Calendar date) {
         try {
-            f_checkin_sumary = CheckInSummaryFragment.newInstance(entry, date);
-            //f_checkin_sumary = CheckInSummaryFragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(entry), EntryParsers.getResponsesJSONCatalogDefinitionList(entry), date);
+            f_checkin_sumary = CheckInSummaryFragment.newInstance(checkIn, date);
+            //f_checkin_sumary = CheckInSummaryFragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(checkIn), EntryParsers.getResponsesJSONCatalogDefinitionList(checkIn), date);
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 
         /*if(f_checkin_sumary != null)
@@ -601,26 +601,26 @@ public class CheckinActivity extends AppCompatActivity {
      * Display the check in for a specific date.
      * @param date The date for the check in.
      */
-    private void displayCheckin(final Date date) {
+    private void displayCheckin(final Calendar date) {
         removeSummary();
         updateDateButtons(date);
-        entry = null;
+        checkIn = null;
         toolbarTitle.setText(Styling.displayDateLong(date));
         checkinDate = date;
         isLoadingCheckin = true;
-        flareDownAPI.entry(date, new API.OnApiResponse<Entry>() {
+        API.checkIn(date, new APIResponse<CheckIn, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
             @Override
-            public void onFailure(API_Error error) {
-                new DefaultErrors(CheckinActivity.this, error);
-            }
-
-            @Override
-            public void onSuccess(Entry result) {
+            public void onSuccess(CheckIn result) {
                 try {
                     displayCheckin(date, result);
                 } catch (JSONException e) {
-                    new DefaultErrors(CheckinActivity.this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:displayCheckin...JSONException"));
+                    new ErrorDialog(getApplicationContext(), new Error().setExceptionThrown(e).setDebugString("CheckinActivity.displayCheckin::JSONException"));
                 }
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                new ErrorDialog(getApplicationContext(), result);
             }
         });
     }
@@ -628,22 +628,22 @@ public class CheckinActivity extends AppCompatActivity {
     /**
      * Display the check in for a specific date, passing the entries json object.
      * @param date The date for the check in.
-     * @param entry Prefetched entries json object, including response.
+     * @param checkIn Prefetched entries json object, including response.
      */
-    private void displayCheckin(final Date date, Entry entry) throws JSONException{
+    private void displayCheckin(final Calendar date, CheckIn checkIn) throws JSONException{
         this.checkinDate = date;
-        this.entry = entry;
+        this.checkIn = checkIn;
         removeSummary();
         updateDateButtons(date);
         toolbarTitle.setText(Styling.displayDateLong(date));
         if(currentView == Views.SPLASH_SCREEN) {
-            if(entry.hasResponse()) // Show the correct view
+            if(checkIn.hasResponse()) // Show the correct view
             {
                 setView(Views.SUMMARY);
-                displaySummary(entry, checkinDate);
+                displaySummary(checkIn, checkinDate);
             } else setView(Views.NOT_CHECKED_IN_YET);
         }
-        List<ViewPagerFragmentBase> fragments = createFragments(entry);
+        List<ViewPagerFragmentBase> fragments = createFragments(checkIn);
         if(vpa_questions == null) {
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
@@ -657,22 +657,22 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Creates a list array of fragment objects for each question specified in the JSON object
-     * @param entry Specification for each question.
+     * @param checkIn Specification for each question.
      * @return A list array of Fragments extending the View Pager Fragment.
      * @throws JSONException
      */
-    public static List<ViewPagerFragmentBase> createFragments(Entry entry) throws JSONException {
+    public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) throws JSONException {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         String currentCatalog = null;
         Integer section = 1;
-        for (CollectionCatalogDefinition collectionCatalogDefinition : entry) {
+        for (CollectionCatalogDefinition collectionCatalogDefinition : checkIn) {
             if (CatalogNames.toEnum(collectionCatalogDefinition.getCatalogName()) == CatalogNames.SPECIALISED) { // Check that it isn't a grouped catalog.
                 if (!collectionCatalogDefinition.getCatalogName().equals(currentCatalog)) {
                     section = 1;
                     currentCatalog = collectionCatalogDefinition.getCatalogName(); // Add a new class to contain groups of catalog definitions.
                 }
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(entry, new Entry(Arrays.asList(collectionCatalogDefinition)), section);
+                checkinCatalogQFragment.setQuestions(checkIn, new Entry(Arrays.asList(collectionCatalogDefinition)), section);
                 fragments.add(checkinCatalogQFragment);
                 section++;
             }
@@ -680,10 +680,10 @@ public class CheckinActivity extends AppCompatActivity {
         for (CatalogNames catalogName : CatalogNames.values()) { // Handling the grouped catalogs.
             if(catalogName != CatalogNames.TREATMENTS && catalogName != CatalogNames.SPECIALISED) {
                 CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                Entry collectionCatalogDefinitionsFiltered = entry.getCatalog(catalogName.getName());
+                Entry collectionCatalogDefinitionsFiltered = checkIn.getCatalog(catalogName.getName());
                 if (collectionCatalogDefinitionsFiltered.size() == 0)
                     collectionCatalogDefinitionsFiltered.add(new CollectionCatalogDefinition(catalogName.getName()));
-                checkinCatalogQFragment.setQuestions(entry, collectionCatalogDefinitionsFiltered, 0);
+                checkinCatalogQFragment.setQuestions(checkIn, collectionCatalogDefinitionsFiltered, 0);
                 fragments.add(checkinCatalogQFragment);
             }
         }
