@@ -25,7 +25,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name=".FlaredownApp">
         <activity
             android:name=".Checkin.CheckinActivity"
             android:label="@string/app_name">
@@ -35,12 +36,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Login.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible"
             android:screenOrientation="behind"/>
+
         <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -49,6 +52,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.flaredown.flaredownApp.Checkin.CheckinActivity" />
         </activity>
+
         <activity
             android:name=".Checkin.AddEditableActivity"
             android:label="@string/title_activity_add_adialog" />
@@ -70,6 +74,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Settings.SettingsActivity" />
         </activity>
+
         <activity
             android:name=".EditAccount.FragmentEditAccount"
             android:label="@string/title_activity_edit_account"
@@ -79,6 +84,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Settings.SettingsActivity" />
         </activity>
+
+        <service android:enabled="true" android:name=".Receivers.AlarmIntentService" />
     </application>
 
 </manifest>

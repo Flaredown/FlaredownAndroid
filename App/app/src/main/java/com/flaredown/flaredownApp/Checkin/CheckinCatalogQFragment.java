@@ -18,15 +18,17 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.InputKind;
 import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.CatalogDefinition;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.CollectionCatalogDefinition;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Response;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.RestrictionsNumber;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +62,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
             try {
                 visibleEntries = new Entry(new JSONObject(savedInstanceState.getString(SI_ENTRY_JSON)));
                 section = savedInstanceState.getInt(SI_SECTION);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

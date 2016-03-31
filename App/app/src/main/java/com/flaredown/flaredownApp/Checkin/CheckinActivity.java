@@ -3,15 +3,15 @@ package com.flaredown.flaredownApp.Checkin;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.support.v4.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -33,23 +33,26 @@ import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
+import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Settings.SettingsActivity;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import io.intercom.android.sdk.Intercom;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
@@ -92,6 +95,8 @@ public class CheckinActivity extends AppCompatActivity {
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
     private static final String SI_CHECKIN_PAGE_NUMBER = "checkin page number";
+    private static final String KEY_FIRST_CHECKIN = "first_checkin";
+
 
     private enum Views {
         SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY
@@ -336,7 +341,7 @@ public class CheckinActivity extends AppCompatActivity {
                     if(savedViewState == Views.SUMMARY) {
                         //displaySummary(entry, savedCheckinDate );
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -547,6 +552,10 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onSuccess(JSONObject result) {
                 Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
+                //Record checkin in Intercom
+                Map eventData = new HashMap();
+                eventData.put("checkin_date", Calendar.getInstance().getTimeInMillis());
+                Intercom.client().logEvent("android_checkin", eventData);
             }
         });
     }
