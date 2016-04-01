@@ -1,12 +1,9 @@
 package com.flaredown.flaredownApp.Receivers;
 
-/**
- * Created by squigge on 10/15/2015.
- */
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 
@@ -20,6 +17,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 serviceIntent.putExtra(FlaredownConstants.KEY_ALARM_RECEIVER_RESET,FlaredownConstants.VALUE_ALARM_RECEIVER_RESET_ALL);
                 context.startService(serviceIntent);
             } else if (intent.hasExtra(FlaredownConstants.KEY_ALARM_ID)){
+                Log.d("AlarmReceiver","Intent Key Found");
                 Intent serviceIntent = new Intent(context,AlarmIntentService.class);
                 serviceIntent.putExtra(FlaredownConstants.KEY_ALARM_ID,intent.getIntExtra(FlaredownConstants.KEY_ALARM_ID,0));
                 context.startService(serviceIntent);

@@ -1,10 +1,10 @@
 <ScrollView
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="Remind me to check in" />
+                tools:text="Remind me to check in" />
 
             <Switch
                 android:id="@+id/sw_checkinReminder"
@@ -70,7 +70,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/sep_margin_small"
-                android:text="Time"
                 android:textColor="@color/accent" />
 
         </LinearLayout>
@@ -92,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/sep_margin_small"
-                android:text="Treatment Reminders" />
+                tools:text="Treatment Reminders" />
         </LinearLayout>
 
         <LinearLayout
@@ -110,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/sep_margin_medium"
-                android:text="Account" />
+                tools:text="Account" />
             <TextView
                 android:id="@+id/tv_help"
                 style="@style/AppTheme.TextView.Link"
@@ -118,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="@dimen/sep_margin_small"
-                android:text="@string/help_feedback" />
+                tools:text="@string/help_feedback" />
             <TextView
                 android:id="@+id/tv_editAccount"
                 style="@style/AppTheme.TextView.Link"
@@ -126,14 +125,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="@dimen/sep_margin_small"
-                android:text="Edit Account Info" />
+                tools:text="Edit Account Info" />
 
             <TextView
                 android:id="@+id/tv_settingsLogout"
                 style="@style/AppTheme.TextView.Link"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:text="Logout" />
+                tools:text="Logout" />
         </LinearLayout>
     </RelativeLayout>
     <TextView

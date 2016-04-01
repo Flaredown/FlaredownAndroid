@@ -63,7 +63,8 @@
     <string name="locales_summary_title">Check-in saved ✔</string>
     <string name="locales_oops_no_treatments_being_tracked">You aren\'t tracking any treatments.</string>
     <string name="locales_graph_for_x_days">for {{days}} days</string>
-    <string name="locales_alarm_reminder_title">Reminder</string>
+    <string name="locales_alarm_reminder_title">Check In Reminder</string>
+    <string name="locales_checkin_alarm_title">Remind me to check in</string>
     <string name="locales_oops_no_conditions_being_tracked">You aren\'t tracking any conditions.</string>
     <string name="locales_are_you_sure">Are you sure?</string>
     <string name="locales_tag_search_placeholder">Add tag</string>
@@ -114,7 +115,7 @@
     <string name="locales_conditions_question_prompt">How active were your condition(s)?</string>
     <string name="locales_confirm_treatment_remove">Are you sure you want to remove the treatment "{{treatment}}" for this Checkin?</string>
     <string name="locales_reports_title">Reports here</string>
-    <string name="locales_alarm_reminder_text">Don’t forget to check into Flaredown today!</string>
+    <string name="locales_alarm_reminder_text">Don\’t forget to check into Flaredown today!</string>
     <string name="locales_tags">Tags</string>
     <string name="locales_how_active_were_your_conditions">How active were your conditions today?</string>
     <string name="locales_labels_very_well">Very well</string>
@@ -226,6 +227,12 @@
     <string name="locales_leave_a_note">Leave a note</string>
     <string name="locales_treatment_unit_prompt">mg</string>
     <string name="locales_confirm_condition_remove">Are you sure you want to remove the conditions "{{condition}}" for this Checkin?</string>
+    <string name="locales_nice_errors_logout_failed">Error logging out</string>
+    <string name="locales_edit_account_info">Edit Account Info</string>
+    <string name="locales_treatment_reminder_title">Treatment Reminders</string>
+    <string name="locales_alarm_saved">Alarms Saved</string>
+    <string name="locales_intercom_help_text">Help and Feedback</string>
+    <string name="locales_treatment_reminder_text">Don\'t forget to take</string>
     <string name="locales_nice_errors_no_within_allowed_values">Not within allowed values</string>
     <string name="locales_nice_errors_field_required">{{field}} is required</string>
     <string name="locales_nice_errors_431">server is unwilling to process the request</string>
@@ -620,6 +627,7 @@
     <string name="locales_use_different_dose">Use a different dose...</string>
     <string name="locales_today">Today</string>
     <string name="locales_menu_item_investigations">investigations</string>
+    <string name="locales_settings_saved">Settings Saved</string>
     <string name="locales_terms_of_service">&amp;lt;h2&amp;gt;Flaredown &amp;lt;/h2&amp;gt;
 &amp;lt;h4&amp;gt;Terms of Service&amp;lt;/h4&amp;gt;
 &amp;lt;h5&amp;gt;Updated 5/16/2015&amp;lt;/h5&amp;gt;

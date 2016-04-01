@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -29,13 +28,12 @@ import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
-import com.flaredown.flaredownApp.Helpers.Locales;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
-
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
@@ -232,18 +230,18 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         // Save/Update all alarms
         if (mTimes.size() > 0){
             if (updateAllAlarms() && scheduleAllAlarms()){
-                Toast.makeText(context,Locales.read(context,"confirmation_message.alarms_saved").create(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,R.string.locales_alarm_saved, Toast.LENGTH_SHORT).show();
             }
             else{
-                Toast.makeText(context,Locales.read(context,"nice_errors.general_error_description").create(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,R.string.locales_nice_errors_general_error_description, Toast.LENGTH_SHORT).show();
             }
         }
         else { //they removed all times or alarms
             if (removeAllAlarms()&& unscheduleAllAlarms()){
-                Toast.makeText(context, Locales.read(context, "confirmation_message.alarms_saved").create(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.locales_alarm_saved, Toast.LENGTH_SHORT).show();
             }
             else{
-                Toast.makeText(context,Locales.read(context,"nice_errors.general_error_description").create(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,R.string.locales_nice_errors_general_error_description, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -452,7 +450,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
         }
 
         ReminderListAdapter(List<String> times) {
-            super(mContext,R.layout.settings_treatment_reminder_times, (List<String>) times);
+            super(mContext,R.layout.settings_treatment_reminder_times, times);
             this.mTimes = times;
         }
 
