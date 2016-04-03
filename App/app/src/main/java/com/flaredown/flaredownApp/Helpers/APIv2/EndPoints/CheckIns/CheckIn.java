@@ -7,10 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+
+import io.intercom.com.google.gson.JsonObject;
 
 /**
  * An element of the JSON returned from the check in endpoint.
@@ -24,13 +24,18 @@ public class CheckIn implements Serializable{
     private ArrayList<Trackable> conditions = new ArrayList<>();
     private ArrayList<Trackable> symptoms = new ArrayList<>();
     private ArrayList<Trackable> treatments = new ArrayList<>();
+    private ArrayList<Integer> tagIds = new ArrayList<>();
 
     public CheckIn(String id, Calendar date) {
         this.id = id;
         this.date = date;
     }
 
-    public CheckIn(JSONObject jsonObject) throws JSONException {
+    public CheckIn(JSONObject inputJsonObject) throws JSONException {
+        JSONObject jsonObject = inputJsonObject;
+        if(inputJsonObject.has("checkin")) {
+            jsonObject = inputJsonObject.getJSONObject("checkin");
+        }
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.createdAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
@@ -59,6 +64,11 @@ public class CheckIn implements Serializable{
         output.put("symptoms", createTrackableJArray(this.symptoms));
         output.put("treatments", createTrackableJArray(this.treatments));
 
+        JSONArray tagIdsJArray = new JSONArray();
+        for (Integer tagId : tagIds) {
+            tagIdsJArray.put(tagId);
+        }
+        output.put("tag_ids", tagIdsJArray);
         return output;
     }
 
@@ -203,5 +213,38 @@ public class CheckIn implements Serializable{
                 return;
             }
         }
+    }
+
+    /**
+     * Get the response json for the entire check in.
+     * @return The response json for the entire check in.
+     * @throws JSONException
+     */
+    public JSONObject getResponseJson() throws JSONException {
+        JSONObject rootJObject = new JSONObject();
+        JSONObject checkinJObject = new JSONObject();
+        rootJObject.put("checkin", checkinJObject);
+
+        checkinJObject.put("date", Date.calendarToString(date));
+        checkinJObject.put("note", note);
+
+        for (TrackableType trackableType : TrackableType.values()) {
+            String name = trackableType.name().toLowerCase() + "s_attributes";
+            JSONArray trackablesJArray = new JSONArray();
+            ArrayList<Trackable> trackables = getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                trackablesJArray.put(trackable.getResponseJson());
+            }
+
+            checkinJObject.put(name, trackablesJArray);
+        }
+
+        JSONArray tagIdsJArray = new JSONArray();
+        for (Integer tagId : tagIds) {
+            tagIdsJArray.put(tagId);
+        }
+        checkinJObject.put("tag_ids", tagIdsJArray);
+
+        return rootJObject;
     }
 }

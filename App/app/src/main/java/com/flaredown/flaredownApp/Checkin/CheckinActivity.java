@@ -2,14 +2,10 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -28,16 +24,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.*;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Settings.SettingsActivity;
@@ -46,17 +37,12 @@ import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import io.intercom.android.sdk.Intercom;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
@@ -586,6 +572,27 @@ public class CheckinActivity extends AppCompatActivity {
             trans.();
             f_checkin_sumary = null;
         }*/
+    }
+
+    /**
+     * Call when the check in has been changed, this will notify and update the API.
+     */
+    public void checkInUpdate() {
+        final Snackbar snackbar = SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_saving_changes, Snackbar.LENGTH_INDEFINITE));
+        snackbar.show();
+        API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
+            @Override
+            public void onSuccess(CheckIn result) {
+                snackbar.dismiss();
+                SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                snackbar.dismiss();
+                new ErrorDialog(CheckinActivity.this, result);
+            }
+        });
     }
 
     /**

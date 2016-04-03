@@ -99,7 +99,7 @@ public class Communicate {
                                 }
                                 completeCount.add(result);
 
-                                if(completeCount.size() >= TrackableType.values().length) {
+                                if (completeCount.size() >= TrackableType.values().length) {
                                     apiResponse.onSuccess(checkIn);
                                 }
                             }
@@ -135,7 +135,7 @@ public class Communicate {
             public void onResponse(JSONObject response) {
                 try {
                     CheckIns checkIns = new CheckIns(response);
-                    if(checkIns.size() <= 0) {
+                    if (checkIns.size() <= 0) {
                         // No check ins found
                         apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
                     } else {
@@ -151,7 +151,7 @@ public class Communicate {
                                     }
                                     completeCount.add(result);
 
-                                    if(completeCount.size() >= TrackableType.values().length) {
+                                    if (completeCount.size() >= TrackableType.values().length) {
                                         apiResponse.onSuccess(checkIn);
                                     }
                                 }
@@ -174,6 +174,33 @@ public class Communicate {
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void submitCheckin(CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
+        try {
+            JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("checkins/" + checkIn.getId()), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        apiResponse.onSuccess(new CheckIn(response));
+                    } catch (JSONException e) {
+                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException"));
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitCheckin::volley"));
+                }
+            });
+            jsonObjectExtraRequest.setRequestBody(checkIn.getResponseJson().toString());
+            WebAttributes headers = new WebAttributes();
+            headers.put("Content-Type", "application/json");
+            jsonObjectExtraRequest.setHeaders(headers);
+            QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+        } catch (JSONException e) {
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.submitCheckin::JSONException2"));
+        }
     }
 
     /**

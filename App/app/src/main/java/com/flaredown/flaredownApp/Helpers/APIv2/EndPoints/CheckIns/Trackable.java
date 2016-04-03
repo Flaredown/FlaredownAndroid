@@ -59,6 +59,22 @@ public class Trackable {
         return output;
     }
 
+    /**
+     * Get the response json for a single trackable.
+     * @return The response json for a single trackable.
+     * @throws JSONException
+     */
+    public JSONObject getResponseJson() throws JSONException {
+        JSONObject rootJObject = new JSONObject();
+        rootJObject.put("_destroy", null);
+        rootJObject.put("checkin_id", checkInId);
+        rootJObject.put("color_id", colourId);
+        rootJObject.put(this.type.getTrackableIdKey(), trackableId);
+        rootJObject.put("id", id);
+        rootJObject.put("value", value);
+        return rootJObject;
+    }
+
     // ======== Getters and Setters ========
 
     public TrackableType getType() {

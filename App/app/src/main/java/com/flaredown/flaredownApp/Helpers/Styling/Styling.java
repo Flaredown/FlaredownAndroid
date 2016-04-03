@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.Helpers;
+package com.flaredown.flaredownApp.Helpers.Styling;
 
 import android.app.Activity;
 import android.app.Dialog;

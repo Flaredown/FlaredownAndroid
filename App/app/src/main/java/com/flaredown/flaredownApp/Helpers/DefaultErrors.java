@@ -9,6 +9,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 
 import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 
 import org.json.JSONException;
 import org.json.JSONObject;

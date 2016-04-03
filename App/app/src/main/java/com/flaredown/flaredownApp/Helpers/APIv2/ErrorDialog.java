@@ -7,7 +7,7 @@ import android.content.DialogInterface;
 import android.text.Html;
 
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 
 /**

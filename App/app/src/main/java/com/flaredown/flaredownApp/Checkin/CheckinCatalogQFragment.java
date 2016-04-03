@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Checkin.InputViews.InputContainerView;
 import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRating;
+import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRatingOnValueChange;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
@@ -86,10 +87,17 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
 
     private void inflateQuestions() {
         ArrayList<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
-        for (Trackable trackable : trackables) {
+        for (final Trackable trackable : trackables) {
             SmileyRating smileyRating = new SmileyRating(getContext());
             if(trackable.getValue() != null)
                 smileyRating.setValue(trackable.getValue());
+            smileyRating.addOnValueChangeListener(new SmileyRatingOnValueChange() {
+                @Override
+                public void onClick(int value, Integer oldValue) {
+                    trackable.setValue(value);
+                    getCheckInActivity().checkInUpdate();
+                }
+            });
             try {
                 InputContainerView inputContainerView = new InputContainerView(getContext(), trackable)
                         .setQuestionTitle(trackable.getMetaTrackable().getName()) // TODO safe

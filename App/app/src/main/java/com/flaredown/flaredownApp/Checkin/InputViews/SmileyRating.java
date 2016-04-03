@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 
 import java.util.ArrayList;
@@ -18,7 +18,8 @@ import java.util.ArrayList;
  * Input view for a smiley face rating used for symptom and condition tracking.
  */
 public class SmileyRating extends LinearLayout{
-    ArrayList<Button> buttons = new ArrayList<>();
+    private ArrayList<Button> buttons = new ArrayList<>();
+    private ArrayList<SmileyRatingOnValueChange> onValueChangeListeners = new ArrayList<>();
     private ButtonClickerListener buttonClickerListener = new ButtonClickerListener();
     private Integer value = null;
     public SmileyRating(final Context context) {
@@ -70,13 +71,27 @@ public class SmileyRating extends LinearLayout{
         }
     }
 
-    public class ButtonClickerListener implements OnClickListener {
+    public void addOnValueChangeListener(SmileyRatingOnValueChange smileyRatingOnValueChange) {
+        onValueChangeListeners.add(smileyRatingOnValueChange);
+    }
+
+    private void triggerValueChangeListeners(int value, Integer oldValue) {
+        for (SmileyRatingOnValueChange onValueChangeListener : onValueChangeListeners) {
+            onValueChangeListener.onClick(value, oldValue);
+        }
+    }
+
+
+    private class ButtonClickerListener implements OnClickListener {
         @Override
         public void onClick(View v) {
             if(v instanceof Button) {
                 int value = buttons.indexOf(v);
-                if(value != -1)
+                if(value != -1) {
+                    if(SmileyRating.this.value == null || !SmileyRating.this.value.equals(value))
+                        triggerValueChangeListeners(value, SmileyRating.this.value);
                     setValue(value);
+                }
             }
         }
     }

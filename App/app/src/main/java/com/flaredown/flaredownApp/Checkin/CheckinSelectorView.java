@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 
 import java.util.ArrayList;
 import java.util.List;
