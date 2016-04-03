@@ -34,4 +34,16 @@ public enum TrackableType {
     public String getTrackableIdKey() {
         return this.name().toLowerCase() + "_id";
     }
+
+    /**
+     * Allows to search for plurals.
+     * @param name The name to search for.
+     */
+    public static TrackableType valueOfs(String name) throws IllegalArgumentException {
+        try {
+            return TrackableType.valueOf(name.toUpperCase());
+        } catch (Exception e) {
+            return TrackableType.valueOf(name.toUpperCase().substring(0, name.length() - 1));
+        }
+    }
 }

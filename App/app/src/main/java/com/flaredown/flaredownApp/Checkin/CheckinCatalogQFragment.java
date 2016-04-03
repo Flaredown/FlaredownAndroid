@@ -87,13 +87,13 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         ArrayList<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
         for (Trackable trackable : trackables) {
             SmileyRating smileyRating = new SmileyRating(getContext());
-
-            InputContainerView inputContainerView = new InputContainerView(getContext(), trackable)
-                    .setQuestionTitle("TEMP")
-                    .setInputView(smileyRating);
-
-            inputContainerViews.add(inputContainerView);
-            ll_questionHolder.addView(inputContainerView);
+            try {
+                InputContainerView inputContainerView = new InputContainerView(getContext(), trackable)
+                        .setQuestionTitle(trackable.getMetaTrackable().getName()) // TODO safe
+                        .setInputView(smileyRating);
+                inputContainerViews.add(inputContainerView);
+                ll_questionHolder.addView(inputContainerView);
+            } catch (NullPointerException e) { e.printStackTrace(); }
         }
     }
 }

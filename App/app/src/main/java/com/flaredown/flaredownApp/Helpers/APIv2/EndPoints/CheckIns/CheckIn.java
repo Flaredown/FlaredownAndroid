@@ -180,4 +180,28 @@ public class CheckIn implements Serializable{
        }
         return null;
     }
+
+    /**
+     * Get the trackable ids for a specific trackable type.
+     * @param trackableType The trackable type.
+     * @return The ids inside the trackable type.
+     */
+    public ArrayList<Integer> getTrackableIds(TrackableType trackableType) {
+        ArrayList<Integer> result = new ArrayList<>();
+        ArrayList<Trackable> trackables = getTrackables(trackableType);
+        for (Trackable trackable : trackables) {
+            result.add(trackable.getTrackableId());
+        }
+        return result;
+    }
+
+    public void attachMetaTrackables(TrackableType trackableType, MetaTrackable metaTrackable) {
+        ArrayList<Trackable> trackables = getTrackables(trackableType);
+        for (Trackable trackable : trackables) {
+            if(metaTrackable.getId() == trackable.getTrackableId()) {
+                trackable.setMetaTrackable(metaTrackable);
+                return;
+            }
+        }
+    }
 }

@@ -21,7 +21,7 @@ public class SmileyRating extends LinearLayout{
     ArrayList<Button> buttons = new ArrayList<>();
     private ButtonClickerListener buttonClickerListener = new ButtonClickerListener();
     private Integer value = null;
-    public SmileyRating(Context context) {
+    public SmileyRating(final Context context) {
         super(context);
 
         // Set parameters.
@@ -40,9 +40,9 @@ public class SmileyRating extends LinearLayout{
             newButton.setText("");
             int margins = (int) Styling.getInDP(context, 5);
             ((MarginLayoutParams) newButton.getLayoutParams()).setMargins(margins, margins, margins, margins);
-
             buttons.add(newButton);
             this.addView(newButton);
+
         }
         // Set a smiley face for the 1st button
         Styling.setBackground(context, buttons.get(0), R.drawable.button_selector_meta_smiley_selector);
@@ -65,6 +65,8 @@ public class SmileyRating extends LinearLayout{
                 Button button = buttons.get(i);
                 button.setSelected(i <= this.value);
             }
+            if(this.value != 0)
+                buttons.get(0).setSelected(false);
         }
     }
 

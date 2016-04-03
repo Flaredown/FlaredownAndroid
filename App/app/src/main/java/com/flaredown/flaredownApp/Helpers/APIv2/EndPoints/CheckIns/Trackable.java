@@ -19,6 +19,7 @@ public class Trackable {
     private Integer value;
     private Integer trackableId;
     private String colourId;
+    private MetaTrackable metaTrackable = null;
 
     /**
      * Default constructor for the trackable object.
@@ -122,5 +123,13 @@ public class Trackable {
 
     public void setColourId(String colourId) {
         this.colourId = colourId;
+    }
+
+    public MetaTrackable getMetaTrackable() {
+        return metaTrackable;
+    }
+
+    public void setMetaTrackable(MetaTrackable metaTrackable) {
+        this.metaTrackable = metaTrackable;
     }
 }
