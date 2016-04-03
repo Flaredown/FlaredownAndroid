@@ -16,6 +16,7 @@ import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRating;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;

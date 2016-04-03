@@ -503,7 +503,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 submitCheckin();
-                displaySummary(checkIn, checkinDate);
+                displaySummary();
                 setView(Views.SUMMARY);
             }
         });
@@ -568,24 +568,15 @@ public class CheckinActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Still need to implement", Toast.LENGTH_LONG).show();
     }
 
-    private void displaySummary(CheckIn checkIn, Calendar date) {
-//        try {
-//            //f_checkin_sumary = CheckInSummaryFragment.newInstance(checkIn, date); // TODO implement summary page
-//            //f_checkin_sumary = CheckInSummaryFragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(checkIn), EntryParsers.getResponsesJSONCatalogDefinitionList(checkIn), date);
-//            //FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-//
-//        /*if(f_checkin_sumary != null)
-//            trans.remove(f_checkin_sumary);
-//        trans.add(fl_checkin_summary.getId(), f_checkin_sumaryNew);
-//
-//
-//        trans.commit();
-//        f_checkin_sumary = f_checkin_sumaryNew;*/
-//
-//            //trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
-//        } catch (Exception e) { // was jsonException
-//            new DefaultErrors(CheckinActivity.this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:displaySummary..JSONException")); // TODO update to new error
-//        }
+    private void displaySummary() {
+        try {
+            f_checkin_sumary = CheckInSummaryFragment.newInstance(); // TODO implement summary page
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+
+            trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
+        } catch (Exception e) { // was jsonException
+            new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary..JSONException")); // TODO update to new error
+        }
     }
 
     private void removeSummary() {
@@ -633,11 +624,11 @@ public class CheckinActivity extends AppCompatActivity {
         updateDateButtons(date);
         toolbarTitle.setText(Styling.displayDateLong(date));
         if(currentView == Views.SPLASH_SCREEN) {
-//            if(checkIn.hasResponse()) // Show the correct view
-//            {
-//                setView(Views.SUMMARY);
-//                displaySummary(checkIn, checkinDate); // TODO display summary if check in completed
-//            } else
+            if(checkIn.hasResponse()) // Show the correct view
+            {
+                setView(Views.SUMMARY);
+                displaySummary(); // TODO display summary if check in completed
+            } else
             setView(Views.NOT_CHECKED_IN_YET);
         }
         List<ViewPagerFragmentBase> fragments = createFragments(checkIn);

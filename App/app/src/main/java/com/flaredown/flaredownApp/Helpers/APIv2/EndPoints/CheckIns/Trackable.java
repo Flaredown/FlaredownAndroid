@@ -40,7 +40,7 @@ public class Trackable {
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value"))? jsonObject.optInt("value") : null;
+        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optInt("value") : null;
         this.colourId = jsonObject.optString("color_id", null);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
     }

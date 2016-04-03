@@ -72,7 +72,6 @@ public class CheckInSummaryFragment extends Fragment {
     private void initUI() {
         ll_fragmentHolder = (LinearLayout) root.findViewById(R.id.ll_fragmentholder);
         tv_checkinSuccess = (TextView) root.findViewById(R.id.tv_checkinSuccess);
-        tv_checkinSuccess.setText(Locales.read(getActivity(), "summary_title").createAT());
         assembleFragments();
     }
 
