@@ -25,7 +25,8 @@
                     android:id="@+id/tv_checkinSuccess"
                     android:layout_centerInParent="true"
                     android:textSize="@dimen/sub_title_font_size"
-                    android:layout_marginTop="@dimen/sep_margin_medium" />
+                    android:layout_marginTop="@dimen/sep_margin_medium"
+                    android:text="@string/locales_summary_page_title" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

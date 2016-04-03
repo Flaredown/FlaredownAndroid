@@ -30,7 +30,7 @@ import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Locales;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.Login.LoginActivity;

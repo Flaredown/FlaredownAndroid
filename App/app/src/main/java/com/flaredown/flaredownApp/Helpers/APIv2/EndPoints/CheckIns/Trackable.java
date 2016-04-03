@@ -19,6 +19,7 @@ public class Trackable {
     private Integer value;
     private Integer trackableId;
     private String colourId;
+    private MetaTrackable metaTrackable = null;
 
     /**
      * Default constructor for the trackable object.
@@ -39,7 +40,7 @@ public class Trackable {
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value"))? jsonObject.optInt("value") : null;
+        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optInt("value") : null;
         this.colourId = jsonObject.optString("color_id", null);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
     }
@@ -56,6 +57,22 @@ public class Trackable {
         output.put(this.type.getTrackableIdKey(), this.trackableId);
 
         return output;
+    }
+
+    /**
+     * Get the response json for a single trackable.
+     * @return The response json for a single trackable.
+     * @throws JSONException
+     */
+    public JSONObject getResponseJson() throws JSONException {
+        JSONObject rootJObject = new JSONObject();
+        rootJObject.put("_destroy", null);
+        rootJObject.put("checkin_id", checkInId);
+        rootJObject.put("color_id", colourId);
+        rootJObject.put(this.type.getTrackableIdKey(), trackableId);
+        rootJObject.put("id", id);
+        rootJObject.put("value", value);
+        return rootJObject;
     }
 
     // ======== Getters and Setters ========
@@ -122,5 +139,13 @@ public class Trackable {
 
     public void setColourId(String colourId) {
         this.colourId = colourId;
+    }
+
+    public MetaTrackable getMetaTrackable() {
+        return metaTrackable;
+    }
+
+    public void setMetaTrackable(MetaTrackable metaTrackable) {
+        this.metaTrackable = metaTrackable;
     }
 }

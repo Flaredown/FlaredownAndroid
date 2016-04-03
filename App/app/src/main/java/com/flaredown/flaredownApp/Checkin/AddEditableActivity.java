@@ -23,7 +23,7 @@ import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Helpers.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;
