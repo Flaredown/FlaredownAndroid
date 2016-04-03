@@ -126,7 +126,7 @@
                 android:id="@+id/tv_not_checked_in_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Placeholder, You have not checked in yet today"
+                android:text="@string/locales_you_havent_checked_in_yet"
                 android:layout_marginBottom="@dimen/sep_margin_medium"
                 android:textSize="@dimen/sub_title_font_size"
                 android:gravity="center_horizontal" />
@@ -135,7 +135,7 @@
                 android:id="@+id/bt_not_checked_in_checkin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Placeholder Check-in"
+                android:text="@string/locales_onboarding_checkin"
                 android:paddingLeft="@dimen/sep_margin_medium"
                 android:paddingRight="@dimen/sep_margin_medium"
                 android:paddingTop="@dimen/sep_margin_small"

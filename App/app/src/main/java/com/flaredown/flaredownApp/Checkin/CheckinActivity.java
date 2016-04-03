@@ -33,6 +33,7 @@ import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.DefaultErrors;
 import com.flaredown.flaredownApp.Helpers.Locales;
@@ -45,6 +46,7 @@ import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -61,8 +63,15 @@ public class CheckinActivity extends AppCompatActivity {
     Communicate API;
     private Calendar checkinDate = null;
     private boolean isLoadingCheckin = false;
-    private JSONObject entriesJSONObject = null;
-    private JSONObject responseJSONObject = null;
+
+    /**
+     * Get the current check in for the activity.
+     * @return The current check in for the activity.
+     */
+    public CheckIn getCheckIn() {
+        return checkIn;
+    }
+
     private CheckIn checkIn;
 
     /*
@@ -327,7 +336,6 @@ public class CheckinActivity extends AppCompatActivity {
         }
         Styling.setFont(); // Uses the Calligraphy library inject the font.
         assignViews();
-        setLocales();
         initialise();
 
         if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
@@ -348,8 +356,8 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             }
         } else {
-            //setView(Views.SPLASH_SCREEN, false); //TODO Re-enable check in
-            //displayCheckin(new Date());
+            setView(Views.SPLASH_SCREEN, false);
+            displayCheckin(Calendar.getInstance());
         }
 
         //checkMinimumVersion();
@@ -561,23 +569,23 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     private void displaySummary(CheckIn checkIn, Calendar date) {
-        try {
-            f_checkin_sumary = CheckInSummaryFragment.newInstance(checkIn, date);
-            //f_checkin_sumary = CheckInSummaryFragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(checkIn), EntryParsers.getResponsesJSONCatalogDefinitionList(checkIn), date);
-            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-
-        /*if(f_checkin_sumary != null)
-            trans.remove(f_checkin_sumary);
-        trans.add(fl_checkin_summary.getId(), f_checkin_sumaryNew);
-
-
-        trans.commit();
-        f_checkin_sumary = f_checkin_sumaryNew;*/
-
-            trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
-        } catch (JSONException e) {
-            new DefaultErrors(getApplicationContext(), new API_Error().setStatusCode(500).setDebugString("CheckinActivity:displaySummary..JSONException"));
-        }
+//        try {
+//            //f_checkin_sumary = CheckInSummaryFragment.newInstance(checkIn, date); // TODO implement summary page
+//            //f_checkin_sumary = CheckInSummaryFragment.newInstance(EntryParsers.getCatalogDefinitionsJSON(checkIn), EntryParsers.getResponsesJSONCatalogDefinitionList(checkIn), date);
+//            //FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+//
+//        /*if(f_checkin_sumary != null)
+//            trans.remove(f_checkin_sumary);
+//        trans.add(fl_checkin_summary.getId(), f_checkin_sumaryNew);
+//
+//
+//        trans.commit();
+//        f_checkin_sumary = f_checkin_sumaryNew;*/
+//
+//            //trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
+//        } catch (Exception e) { // was jsonException
+//            new DefaultErrors(CheckinActivity.this, new API_Error().setStatusCode(500).setDebugString("CheckinActivity:displaySummary..JSONException")); // TODO update to new error
+//        }
     }
 
     private void removeSummary() {
@@ -587,14 +595,6 @@ public class CheckinActivity extends AppCompatActivity {
             trans.();
             f_checkin_sumary = null;
         }*/
-    }
-
-    /**
-     * Set all the text locales inside the activity
-     */
-    private void setLocales() { // TODO set locales for the activity
-        bt_not_checked_in_checkin.setText(Locales.read(this, "onboarding.checkin").createAT());
-        tv_not_checked_in_checkin.setText(Locales.read(this, "you_havent_checked_in_yet").createAT());
     }
 
     /**
@@ -611,16 +611,12 @@ public class CheckinActivity extends AppCompatActivity {
         API.checkIn(date, new APIResponse<CheckIn, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
             @Override
             public void onSuccess(CheckIn result) {
-                try {
-                    displayCheckin(date, result);
-                } catch (JSONException e) {
-                    new ErrorDialog(getApplicationContext(), new Error().setExceptionThrown(e).setDebugString("CheckinActivity.displayCheckin::JSONException"));
-                }
+                displayCheckin(date, result);
             }
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(getApplicationContext(), result);
+                new ErrorDialog(CheckinActivity.this, result);
             }
         });
     }
@@ -630,18 +626,19 @@ public class CheckinActivity extends AppCompatActivity {
      * @param date The date for the check in.
      * @param checkIn Prefetched entries json object, including response.
      */
-    private void displayCheckin(final Calendar date, CheckIn checkIn) throws JSONException{
+    private void displayCheckin(final Calendar date, CheckIn checkIn) {
         this.checkinDate = date;
         this.checkIn = checkIn;
         removeSummary();
         updateDateButtons(date);
         toolbarTitle.setText(Styling.displayDateLong(date));
         if(currentView == Views.SPLASH_SCREEN) {
-            if(checkIn.hasResponse()) // Show the correct view
-            {
-                setView(Views.SUMMARY);
-                displaySummary(checkIn, checkinDate);
-            } else setView(Views.NOT_CHECKED_IN_YET);
+//            if(checkIn.hasResponse()) // Show the correct view
+//            {
+//                setView(Views.SUMMARY);
+//                displaySummary(checkIn, checkinDate); // TODO display summary if check in completed
+//            } else
+            setView(Views.NOT_CHECKED_IN_YET);
         }
         List<ViewPagerFragmentBase> fragments = createFragments(checkIn);
         if(vpa_questions == null) {
@@ -661,29 +658,11 @@ public class CheckinActivity extends AppCompatActivity {
      * @return A list array of Fragments extending the View Pager Fragment.
      * @throws JSONException
      */
-    public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) throws JSONException {
+    public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
-        String currentCatalog = null;
-        Integer section = 1;
-        for (CollectionCatalogDefinition collectionCatalogDefinition : checkIn) {
-            if (CatalogNames.toEnum(collectionCatalogDefinition.getCatalogName()) == CatalogNames.SPECIALISED) { // Check that it isn't a grouped catalog.
-                if (!collectionCatalogDefinition.getCatalogName().equals(currentCatalog)) {
-                    section = 1;
-                    currentCatalog = collectionCatalogDefinition.getCatalogName(); // Add a new class to contain groups of catalog definitions.
-                }
-                CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                checkinCatalogQFragment.setQuestions(checkIn, new Entry(Arrays.asList(collectionCatalogDefinition)), section);
-                fragments.add(checkinCatalogQFragment);
-                section++;
-            }
-        }
-        for (CatalogNames catalogName : CatalogNames.values()) { // Handling the grouped catalogs.
-            if(catalogName != CatalogNames.TREATMENTS && catalogName != CatalogNames.SPECIALISED) {
-                CheckinCatalogQFragment checkinCatalogQFragment = new CheckinCatalogQFragment();
-                Entry collectionCatalogDefinitionsFiltered = checkIn.getCatalog(catalogName.getName());
-                if (collectionCatalogDefinitionsFiltered.size() == 0)
-                    collectionCatalogDefinitionsFiltered.add(new CollectionCatalogDefinition(catalogName.getName()));
-                checkinCatalogQFragment.setQuestions(checkIn, collectionCatalogDefinitionsFiltered, 0);
+        for (TrackableType trackableType : TrackableType.values()) {
+            if(!TrackableType.TREATMENT.equals(trackableType)) { // TODO enable treatments.
+                CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
                 fragments.add(checkinCatalogQFragment);
             }
         }

@@ -69,7 +69,7 @@ public class Styling {
             sdf = new SimpleDateFormat("MMMM d");
         else
             sdf = new SimpleDateFormat("MMMM d, yyyy");
-        return sdf.format(date);
+        return sdf.format(date.getTime());
     }
 
 

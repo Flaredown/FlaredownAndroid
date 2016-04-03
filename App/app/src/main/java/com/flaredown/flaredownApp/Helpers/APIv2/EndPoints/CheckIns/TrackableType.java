@@ -1,10 +1,31 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
+import com.flaredown.flaredownApp.R;
+
 /**
  * The type of trackable.
  */
 public enum TrackableType {
-    CONDITION, SYMPTOM, TREATMENT;
+    CONDITION(R.string.locales_conditions, R.string.locales_conditions_question_prompt),
+    SYMPTOM(R.string.locales_symptoms, R.string.locales_how_active_were_your_symptoms),
+    TREATMENT(R.string.locales_treatments, R.string.locales_which_treatments_taken_today);
+
+    private int nameResId;
+    private int questionResId;
+
+
+    TrackableType(@android.support.annotation.StringRes int nameResId, @android.support.annotation.StringRes int questionResId) {
+        this.nameResId = nameResId;
+        this.questionResId = questionResId;
+    }
+
+    public int getNameResId() {
+        return nameResId;
+    }
+
+    public int getQuestionResId() {
+        return questionResId;
+    }
 
     /**
      * Get the Json key for the trackable id (for example. condition_id, symptom_id, treatment_id).

@@ -6,14 +6,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * An element of the JSON returned from the check in endpoint.
  */
-public class CheckIn {
+public class CheckIn implements Serializable{
     private String id;
     private Calendar createdAt;
     private Calendar updatedAt;
@@ -136,5 +138,46 @@ public class CheckIn {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public ArrayList<Trackable> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(ArrayList<Trackable> conditions) {
+        this.conditions = conditions;
+    }
+
+    public ArrayList<Trackable> getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(ArrayList<Trackable> symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public ArrayList<Trackable> getTreatments() {
+        return treatments;
+    }
+
+    public void setTreatments(ArrayList<Trackable> treatments) {
+        this.treatments = treatments;
+    }
+
+    /**
+     * Returns an ArrayList of trackables for the specific trackable type.
+     * @param trackableType The trackable type for the array returned.
+     * @return ArrayLost of trackables for the specific trackable type.
+     */
+    public ArrayList<Trackable> getTrackables(TrackableType trackableType) {
+       switch (trackableType) {
+           case CONDITION:
+               return getConditions();
+           case SYMPTOM:
+               return getSymptoms();
+           case TREATMENT:
+               return getTreatments();
+       }
+        return null;
     }
 }
