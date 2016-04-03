@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="locales_saving_changes">Saving Changes&#8230;</string>
+    <string name="locales_summary_page_title">Summary</string>
+    <!-- Java locales converter available at https://github.com/thunter1000/FlaredownAndroidLocalesConverter it takes the old locales endpoint and converts it into a string.xml -->
+    <!-- Imported from locales -->
+    <string name="locales_percentage_of_time_in_remission">percentage of time in remission</string>
+    <string name="locales_treatment_units_drop">drop</string>
+    <string name="locales_treatment_units_capsule">capsule</string>
+    <string name="locales_treatment_units_carton">carton</string>
+    <string name="locales_treatment_units_ring">ring</string>
+    <string name="locales_treatment_units_bag">bag</string>
+    <string name="locales_treatment_units_box">box</string>
+    <string name="locales_treatment_units_fl_oz">fl oz</string>
+    <string name="locales_treatment_units_bottle">bottle</string>
+    <string name="locales_treatment_units_pill">pill</string>
+    <string name="locales_treatment_units_serving">serving</string>
+    <string name="locales_treatment_units_mcg">mcg</string>
+    <string name="locales_treatment_units_tsp">tsp</string>
+    <string name="locales_treatment_units_patch">patch</string>
+    <string name="locales_treatment_units_can">can</string>
+    <string name="locales_treatment_units_tablet">tablet</string>
+    <string name="locales_treatment_units_bar">bar</string>
+    <string name="locales_treatment_units_strip">strip</string>
+    <string name="locales_treatment_units_tampon">tampon</string>
+    <string name="locales_treatment_units_spoonful">spoonful</string>
+    <string name="locales_treatment_units_kit">kit</string>
+    <string name="locales_treatment_units_scoopful">scoopful</string>
+    <string name="locales_treatment_units_mg">mg</string>
+    <string name="locales_treatment_units_jar">jar</string>
+    <string name="locales_treatment_units_stick">stick</string>
+    <string name="locales_treatment_units_case">case</string>
+    <string name="locales_treatment_units_ml">ml</string>
+    <string name="locales_treatment_units_pouch">pouch</string>
+    <string name="locales_treatment_units_g">g</string>
+    <string name="locales_treatment_units_vial">vial</string>
+    <string name="locales_treatment_units_oz">oz</string>
+    <string name="locales_treatment_units_l">l</string>
+    <string name="locales_treatment_units_IU">IU</string>
+    <string name="locales_treatment_units_packet">packet</string>
+    <string name="locales_treatment_units_puff">puff</string>
+    <string name="locales_treatment_units_cartridge">cartridge</string>
+    <string name="locales_treatment_units_tube">tube</string>
+    <string name="locales_treatment_units_unit">unit</string>
+    <string name="locales_treatment_units_wafer">wafer</string>
+    <string name="locales_treatment_units_piece">piece</string>
+    <string name="locales_treatment_units_suppository">suppository</string>
+    <string name="locales_treatment_units_tbsp">tbsp</string>
+    <string name="locales_treatment_units_injection">injection</string>
+    <string name="locales_treatment_units_cup">cup</string>
+    <string name="locales_graph_total_days_tracked">total days tracked</string>
+    <string name="locales_x_of_y_things">{{x}} of {{y}} {{things}}</string>
+    <string name="locales_showing_symptoms_and_treatments_over_days">Displaying &amp;lt;b&amp;gt;{{numSymptoms}}&amp;lt;/b&amp;gt;, &amp;lt;b&amp;gt;{{numConditions}}&amp;lt;/b&amp;gt;, and &amp;lt;b&amp;gt;{{numTreatments}}&amp;lt;/b&amp;gt; with &amp;lt;b&amp;gt;{{numDays}}&amp;lt;/b&amp;gt; days visible</string>
+    <string name="locales_complications_question_prompt">Check any complications</string>
+    <string name="locales_oops_no_symptoms_being_tracked">You aren\'t tracking any symptoms.</string>
+    <string name="locales_here_is_registration_form">here is the registration form</string>
+    <string name="locales_tips_onboarding_conditions">A condition is an umbrella problem that may include many symptoms. For example, Crohn’s Disease or fibromyalgia.</string>
+    <string name="locales_tips_onboarding_symptoms">Symptoms are the specific physical or mental problems that you want to treat. For example, chest pain or fatigue.</string>
+    <string name="locales_tips_onboarding_treatments_2">List all treatments you are currently using, each day we will ask which you took, and let you enter dosages.</string>
+    <string name="locales_tips_onboarding_treatments">Treatments can be anything you use to improve your symptoms. For example: prednisone or a dairy-free diet.</string>
+    <string name="locales_treatments">Treatments</string>
+    <string name="locales_no_scores_in_date_range">No scores in date range</string>
+    <string name="locales_edit_treatments">Edit treatments</string>
+    <string name="locales_add_trackable_users">users</string>
+    <string name="locales_summary_title">Check-in saved ✔</string>
+    <string name="locales_oops_no_treatments_being_tracked">You aren\'t tracking any treatments.</string>
+    <string name="locales_graph_for_x_days">for {{days}} days</string>
+    <string name="locales_alarm_reminder_title">Reminder</string>
+    <string name="locales_oops_no_conditions_being_tracked">You aren\'t tracking any conditions.</string>
+    <string name="locales_are_you_sure">Are you sure?</string>
+    <string name="locales_tag_search_placeholder">Add tag</string>
+    <string name="locales_nav_next">Next</string>
+    <string name="locales_nav_cancel">Cancel</string>
+    <string name="locales_nav_edit">Edit</string>
+    <string name="locales_nav_edit_lowercase">edit</string>
+    <string name="locales_nav_next_caps">NEXT</string>
+    <string name="locales_nav_edit_caps">EDIT</string>
+    <string name="locales_nav_back">Back</string>
+    <string name="locales_nav_done">Done</string>
+    <string name="locales_nav_cancel_caps">CANCEL</string>
+    <string name="locales_nav_done_caps">DONE</string>
+    <string name="locales_nav_back_caps">BACK</string>
+    <string name="locales_nav_ok_caps">OK</string>
+    <string name="locales_nav_ok">Ok</string>
+    <string name="locales_past_add_treatment">Add treatment</string>
+    <string name="locales_past_remove_dose">Remove dose</string>
+    <string name="locales_past_which_treatments_taken_today">Which treatments did you take today?</string>
+    <string name="locales_past_all_done">All done!</string>
+    <string name="locales_past_edit_treatment_name_placeholder">Name of treatment</string>
+    <string name="locales_past_oops_no_symptoms_being_tracked">You weren\'t tracking any symptoms on this day.</string>
+    <string name="locales_past_used_x_times_before">used {{count}} times</string>
+    <string name="locales_past_no_rating">No rating</string>
+    <string name="locales_past_edit_treatments">Edit treatments</string>
+    <string name="locales_past_you_havent_checked_in_yet">You didn\'t check in on this day</string>
+    <string name="locales_past_add_tag_prompt">Add this tag</string>
+    <string name="locales_past_oops_no_treatments_being_tracked">You weren\'t tracking any treatments on this day.</string>
+    <string name="locales_past_edit_treatments_caps">EDIT TREATMENTS</string>
+    <string name="locales_past_what_else_happened_today">What else happened today?</string>
+    <string name="locales_past_popular">Popular</string>
+    <string name="locales_past_oops_no_conditions_being_tracked">You weren\'t tracking any conditions on this day.</string>
+    <string name="locales_past_leave_a_note">Leave a note</string>
+    <string name="locales_past_tap_next_to_start">Tap &amp;lt;b&amp;gt;next&amp;lt;/b&amp;gt; to get started!</string>
+    <string name="locales_past_tag_search_placeholder">Add tag</string>
+    <string name="locales_past_tag_your_day">Tag this past day</string>
+    <string name="locales_past_treatment_unit_prompt">mg</string>
+    <string name="locales_past_how_active_were_your_conditions">How active were your conditions on this day?</string>
+    <string name="locales_past_how_active_were_your_symptoms">How active were your symptoms on this day?</string>
+    <string name="locales_past_add_dose">Add dose</string>
+    <string name="locales_past_checkin_complete">Checkin complete!</string>
+    <string name="locales_past_x_of_y_sections_completed">{{x}} of {{y}} sections completed</string>
+    <string name="locales_past_add_new_treatment">Add new treatment</string>
+    <string name="locales_past_edit_treatment_unit_placeholder">Units (i.e. mgtags)</string>
+    <string name="locales_past_edit_treatment_dose_placeholder">Daily dose (i.e. 30)</string>
+    <string name="locales_number_question_prompt">How many {{name}} today?</string>
+    <string name="locales_alarm_off_caps">OFF</string>
+    <string name="locales_conditions_question_prompt">How active were your condition(s)?</string>
+    <string name="locales_confirm_treatment_remove">Are you sure you want to remove the treatment "{{treatment}}" for this Checkin?</string>
+    <string name="locales_reports_title">Reports here</string>
+    <string name="locales_alarm_reminder_text">Don’t forget to check into Flaredown today!</string>
+    <string name="locales_tags">Tags</string>
+    <string name="locales_how_active_were_your_conditions">How active were your conditions today?</string>
+    <string name="locales_labels_very_well">Very well</string>
+    <string name="locales_labels_several_days">Several days</string>
+    <string name="locales_labels_some_difficulty">With some difficulty</string>
+    <string name="locales_labels_definite">Definite</string>
+    <string name="locales_labels_no_difficulty">Without any difficulty</string>
+    <string name="locales_labels_mild">Mild</string>
+    <string name="locales_labels_nearly_every_day">Nearly every day</string>
+    <string name="locales_labels_much_difficulty">With much difficulty</string>
+    <string name="locales_labels_not_at_all">Not at all</string>
+    <string name="locales_labels_none">None</string>
+    <string name="locales_labels_definite_and_tender">Definite and tender</string>
+    <string name="locales_labels_unable">Unable to do</string>
+    <string name="locales_labels_poor">Poor</string>
+    <string name="locales_labels_severe">Severe</string>
+    <string name="locales_labels_dubious">Dubious</string>
+    <string name="locales_labels_more_than_half_the_days">More than half the days</string>
+    <string name="locales_labels_very_poor">Very poor</string>
+    <string name="locales_labels_slightly_below_par">Slightly below par</string>
+    <string name="locales_labels_terrible">Terrible</string>
+    <string name="locales_labels_extreme">Extreme</string>
+    <string name="locales_labels_moderate">Moderate</string>
+    <string name="locales_symptoms">Symptoms</string>
+    <string name="locales_conditions">Conditions</string>
+    <string name="locales_graph_date_range_label">Date range</string>
+    <string name="locales_menu_item_graph">graph</string>
+    <string name="locales_all_done">All done!</string>
+    <string name="locales_edit_treatment_name_placeholder">Name of treatment</string>
+    <string name="locales_used_x_times_before">used {{count}} times</string>
+    <string name="locales_not_tracking_trackable">You aren\'t tracking any {{type}}.</string>
+    <string name="locales_not_taken">Not taken</string>
+    <string name="locales_no_rating">No rating</string>
+    <string name="locales_percentage_of_time_with_active_disease">percentage of time with active</string>
+    <string name="locales_add_tag_prompt">Add this tag</string>
+    <string name="locales_taken">Taken</string>
+    <string name="locales_onboarding_change_these_later">Not required, and you can change these later</string>
+    <string name="locales_onboarding_occupation">How you spend most of your day</string>
+    <string name="locales_onboarding_optional_research">Donate extra data for research (optional)</string>
+    <string name="locales_onboarding_ethnic_origin">Ethnic Origin</string>
+    <string name="locales_onboarding_highest_education">Highest level of education completed</string>
+    <string name="locales_onboarding_no_research_questions_for_conditions">No research questions for your conditions</string>
+    <string name="locales_onboarding_add_symptom_button">Add symptom</string>
+    <string name="locales_onboarding_ready_for_checkin">You’re ready for your first check-in:</string>
+    <string name="locales_onboarding_dob_year_placeholder">1986</string>
+    <string name="locales_onboarding_ethnic_origin_placeholder">Ethnic Origin (select all that apply)</string>
+    <string name="locales_onboarding_activity_level">How many hours a day do you spend walking or exercising, on average?</string>
+    <string name="locales_onboarding_symptoms_to_track">What symptoms will you track?</string>
+    <string name="locales_onboarding_checkin">Check-in</string>
+    <string name="locales_onboarding_edit_symptoms">Edit symptoms</string>
+    <string name="locales_onboarding_continue">Continue</string>
+    <string name="locales_onboarding_occupation_options_0">Lying down</string>
+    <string name="locales_onboarding_occupation_options_1">Sitting down or at a computer</string>
+    <string name="locales_onboarding_occupation_options_2">On your feet</string>
+    <string name="locales_onboarding_occupation_options_3">Driving around</string>
+    <string name="locales_onboarding_occupation_options_4">Working with your hands</string>
+    <string name="locales_onboarding_occupation_options_descriptions_0">bedridden</string>
+    <string name="locales_onboarding_occupation_options_descriptions_1">e.g. student, programmer, architect</string>
+    <string name="locales_onboarding_occupation_options_descriptions_2">e.g. physician, retail salesperson, tour guide</string>
+    <string name="locales_onboarding_occupation_options_descriptions_3">e.g. pharmaceutical representative, taxi driver, truck driver</string>
+    <string name="locales_onboarding_occupation_options_descriptions_4">e.g. farmer, fishery worker, landscaper</string>
+    <string name="locales_onboarding_setup_complete">Set up complete! You\'re ready for your first checkin.</string>
+    <string name="locales_onboarding_dob_month_placeholder">08</string>
+    <string name="locales_onboarding_edit_conditions">Edit conditions</string>
+    <string name="locales_onboarding_treatments_to_track">What treatments will you track?</string>
+    <string name="locales_onboarding_get_started">Create an account to get started</string>
+    <string name="locales_onboarding_ethnic_origin_options_middle_eastern">Middle Eastern or North African</string>
+    <string name="locales_onboarding_ethnic_origin_options_other">Other</string>
+    <string name="locales_onboarding_ethnic_origin_options_latino">Latino or Hispanic</string>
+    <string name="locales_onboarding_ethnic_origin_options_white">European or White</string>
+    <string name="locales_onboarding_ethnic_origin_options_south_asian">South Asian</string>
+    <string name="locales_onboarding_ethnic_origin_options_african">Sub-Saharan African</string>
+    <string name="locales_onboarding_ethnic_origin_options_not_sure">I\'m not sure</string>
+    <string name="locales_onboarding_ethnic_origin_options_oceanian">Pacific Islander or Oceanian</string>
+    <string name="locales_onboarding_ethnic_origin_options_east_asian">East Asian</string>
+    <string name="locales_onboarding_ethnic_origin_options_black">African American or Black</string>
+    <string name="locales_onboarding_ethnic_origin_options_native_american">Native American or Alaska Native</string>
+    <string name="locales_onboarding_research_questions_for_conditions">Here are some questions we’ll ask based on your conditions:</string>
+    <string name="locales_onboarding_sex_options_other">Other</string>
+    <string name="locales_onboarding_sex_options_unspecified">Prefer not to say</string>
+    <string name="locales_onboarding_sex_options_female">Female</string>
+    <string name="locales_onboarding_sex_options_male">Male</string>
+    <string name="locales_onboarding_sex">Sex</string>
+    <string name="locales_onboarding_dob_month">Month</string>
+    <string name="locales_onboarding_add_new_condition">Add new condition</string>
+    <string name="locales_onboarding_highest_education_options_0">Less than high school</string>
+    <string name="locales_onboarding_highest_education_options_1">High school diploma</string>
+    <string name="locales_onboarding_highest_education_options_2">Some college or associate\'s degree</string>
+    <string name="locales_onboarding_highest_education_options_3">Bachelor\'s degree</string>
+    <string name="locales_onboarding_highest_education_options_4">Advanced degree</string>
+    <string name="locales_onboarding_add_a_symptom_title">Add a symptom</string>
+    <string name="locales_onboarding_dob_day_placeholder">13</string>
+    <string name="locales_onboarding_dob_year">Year</string>
+    <string name="locales_onboarding_choose_up_to_8_symptoms">Choose up to 8 symptoms to track</string>
+    <string name="locales_onboarding_dob">Birth Date</string>
+    <string name="locales_onboarding_add_new_symptom">Add new symptom</string>
+    <string name="locales_onboarding_add_condition">Add condition</string>
+    <string name="locales_onboarding_location_placeholder">Select a country</string>
+    <string name="locales_onboarding_conditions_to_track">What conditions will you track?</string>
+    <string name="locales_onboarding_location">Country</string>
+    <string name="locales_onboarding_edit_conditions_caps">Edit conditions</string>
+    <string name="locales_onboarding_dob_day">Day</string>
+    <string name="locales_onboarding_your_first_check_in">It\'s your first check-in</string>
+    <string name="locales_onboarding_edit_symptoms_caps">Edit symptoms</string>
+    <string name="locales_edit_treatments_caps">EDIT TREATMENTS</string>
+    <string name="locales_percentage_of_time_with_severe_disease">percentage of time with severe disease</string>
+    <string name="locales_popular">Popular</string>
+    <string name="locales_all_things">all {{things}}</string>
+    <string name="locales_leave_a_note">Leave a note</string>
+    <string name="locales_treatment_unit_prompt">mg</string>
+    <string name="locales_confirm_condition_remove">Are you sure you want to remove the conditions "{{condition}}" for this Checkin?</string>
+    <string name="locales_nice_errors_no_within_allowed_values">Not within allowed values</string>
+    <string name="locales_nice_errors_field_required">{{field}} is required</string>
+    <string name="locales_nice_errors_431">server is unwilling to process the request</string>
+    <string name="locales_nice_errors_invalid_date">Invalid Date</string>
+    <string name="locales_nice_errors_510">further extensions to the request are required</string>
+    <string name="locales_nice_errors_598">network read timeout behind the proxy</string>
+    <string name="locales_nice_errors_search_add_treatment_error">Error creating treatment</string>
+    <string name="locales_nice_errors_511">client needs to authenticate to gain network access</string>
+    <string name="locales_nice_errors_599">network connect timeout behind the proxy</string>
+    <string name="locales_nice_errors_invalid_date_description">We couldn\'t make sense of that date, please double check it.</string>
+    <string name="locales_nice_errors_bad_credentials">Invalid Login Credentials</string>
+    <string name="locales_nice_errors_invite_not_found_description">We couldn\'t find that invitation, perhaps it\'s already been used.</string>
+    <string name="locales_nice_errors_100_char_max_length">Name cannot be longer then 100 characters</string>
+    <string name="locales_nice_errors_only_alphanumeric_hyphens_and_spaces">Name can only include alphanumeric characters, hyphens and spaces</string>
+    <string name="locales_nice_errors_unknown_locale_description">The date you specified was not valid.</string>
+    <string name="locales_nice_errors_search_error_details">We couldn’t get your search results, please try again.</string>
+    <string name="locales_nice_errors_search_add_symptom_error_description">Looks like there was an issue creating the new symptom; please check the symptom name and try again.</string>
+    <string name="locales_nice_errors_search_add_treatment_error_description">Looks like there was an issue creating the new treatment; please check the treatment name and try again.</string>
+    <string name="locales_nice_errors_general_error">Oops!</string>
+    <string name="locales_nice_errors_no_obscenities">No obscene language please</string>
+    <string name="locales_nice_errors_must_be_boolean">Must be true or false</string>
+    <string name="locales_nice_errors_444">server returns no information and closes the connection</string>
+    <string name="locales_nice_errors_search_add_condition_error">Error creating condition</string>
+    <string name="locales_nice_errors_no_checkins_before_signup">Too far back!</string>
+    <string name="locales_nice_errors_name_exists">Name already exists</string>
+    <string name="locales_nice_errors_404">The content or page you were looking for couldn\'t be found</string>
+    <string name="locales_nice_errors_invite_not_found">Invite Not Found</string>
+    <string name="locales_nice_errors_449">request should be retried after performing action</string>
+    <string name="locales_nice_errors_406">content not acceptable according to the Accept headers</string>
+    <string name="locales_nice_errors_407">client must first authenticate itself with the proxy</string>
+    <string name="locales_nice_errors_408">server timed out waiting for the request</string>
+    <string name="locales_nice_errors_409">request could not be processed because of conflict</string>
+    <string name="locales_nice_errors_search_add_symptom_error">Error creating symptom</string>
+    <string name="locales_nice_errors_general_error_description">Something went wrong here, please check all the usually suspects and try again.</string>
+    <string name="locales_nice_errors_future_date">No Time Travel (forwards)</string>
+    <string name="locales_nice_errors_450">Windows Parental Controls blocking access to webpage</string>
+    <string name="locales_nice_errors_field_invalid">{{field}} is invalid</string>
+    <string name="locales_nice_errors_451">The server cannot reach the client\'s mailbox.</string>
+    <string name="locales_nice_errors_410">resource is no longer available and will not be available again</string>
+    <string name="locales_nice_errors_411">request did not specify the length of its content</string>
+    <string name="locales_nice_errors_499">connection closed by client while HTTP server is processing</string>
+    <string name="locales_nice_errors_412">server does not meet request preconditions</string>
+    <string name="locales_nice_errors_413">request is larger than the server is willing or able to process</string>
+    <string name="locales_nice_errors_414">URI provided was too long for the server to process</string>
+    <string name="locales_nice_errors_415">server does not support media type</string>
+    <string name="locales_nice_errors_416">client has asked for unprovidable portion of the file</string>
+    <string name="locales_nice_errors_417">server cannot meet requirements of Expect request-header field</string>
+    <string name="locales_nice_errors_distant_past_date">Too far back!</string>
+    <string name="locales_nice_errors_search_error">Error retrieving results</string>
+    <string name="locales_nice_errors_future_date_description">No future dates are allowed. Time travel backwards is alright.</string>
+    <string name="locales_nice_errors_search_add_condition_error_description">Looks like there was an issue creating the new condition; please check the condition name and try again.</string>
+    <string name="locales_nice_errors_unknown_locale">Invalid Date</string>
+    <string name="locales_nice_errors_422">request unable to be followed due to semantic errors</string>
+    <string name="locales_nice_errors_423">resource that is being accessed is locked</string>
+    <string name="locales_nice_errors_500">Something went wrong, perhaps try again</string>
+    <string name="locales_nice_errors_no_checkins_before_signup_description">You can only check in on days after the date you originally signed up</string>
+    <string name="locales_nice_errors_424">request failed due to failure of a previous request</string>
+    <string name="locales_nice_errors_501">server does not recognize method or lacks ability to fulfill</string>
+    <string name="locales_nice_errors_502">server received an invalid response from upstream server</string>
+    <string name="locales_nice_errors_426">client should switch to a different protocol</string>
+    <string name="locales_nice_errors_503">server is currently unavailable</string>
+    <string name="locales_nice_errors_distant_past_date_description">You can only check in up to two weeks in the past</string>
+    <string name="locales_nice_errors_504">gateway did not receive response from upstream server</string>
+    <string name="locales_nice_errors_bad_credentials_description">Either the email or password you submitted was incorrect.</string>
+    <string name="locales_nice_errors_428">origin server requires the request to be conditional</string>
+    <string name="locales_nice_errors_505">server does not support the HTTP protocol version</string>
+    <string name="locales_nice_errors_429">user has sent too many requests in a given amount of time</string>
+    <string name="locales_nice_errors_506">content negotiation for the request results in a circular reference</string>
+    <string name="locales_nice_errors_507">server is unable to store the representation</string>
+    <string name="locales_nice_errors_508">server detected an infinite loop while processing the request</string>
+    <string name="locales_nice_errors_509">bandwidth limit exceeded</string>
+    <string name="locales_edit_treatment_unit_placeholder">Units (i.e. mg)</string>
+    <string name="locales_add_treatment">Add treatment</string>
+    <string name="locales_menu_item_upcoming">upcoming</string>
+    <string name="locales_remove_dose">Remove dose</string>
+    <string name="locales_helpers_basic_0">Not active</string>
+    <string name="locales_helpers_basic_3">Very active</string>
+    <string name="locales_helpers_basic_4">Extremely active</string>
+    <string name="locales_helpers_basic_1">Not very active</string>
+    <string name="locales_helpers_basic_2">Fairly active</string>
+    <string name="locales_symptom_question_prompt">How active is the symptom: {{name}}?</string>
+    <string name="locales_editing_the_past_warning">You are currently editing in the past, changes made here won\'t be taken into account for future checkins</string>
+    <string name="locales_condition_question_prompt">How active is the condition: {{name}}?</string>
+    <string name="locales_you_havent_checked_in_yet">You haven\'t checked in yet today</string>
+    <string name="locales_menu_item_logout">Logout</string>
+    <string name="locales_tap_next_to_start">Tap &amp;lt;b&amp;gt;next&amp;lt;/b&amp;gt; to get started!</string>
+    <string name="locales_menu_item_print">Print</string>
+    <string name="locales_trackable_remove_tooltip">No longer tracking this?</string>
+    <string name="locales_insights_title">Insights here</string>
+    <string name="locales_location_options_PR">Puerto Rico</string>
+    <string name="locales_location_options_PS">Palestinian Territories</string>
+    <string name="locales_location_options_PT">Portugal</string>
+    <string name="locales_location_options_PU">U.S. Miscellaneous Pacific Islands</string>
+    <string name="locales_location_options_PW">Palau</string>
+    <string name="locales_location_options_PY">Paraguay</string>
+    <string name="locales_location_options_PZ">Panama Canal Zone</string>
+    <string name="locales_location_options_QA">Qatar</string>
+    <string name="locales_location_options_AD">Andorra</string>
+    <string name="locales_location_options_AE">United Arab Emirates</string>
+    <string name="locales_location_options_AF">Afghanistan</string>
+    <string name="locales_location_options_AG">Antigua and Barbuda</string>
+    <string name="locales_location_options_AI">Anguilla</string>
+    <string name="locales_location_options_AL">Albania</string>
+    <string name="locales_location_options_AM">Armenia</string>
+    <string name="locales_location_options_AN">Netherlands Antilles</string>
+    <string name="locales_location_options_AO">Angola</string>
+    <string name="locales_location_options_AQ">Antarctica</string>
+    <string name="locales_location_options_AR">Argentina</string>
+    <string name="locales_location_options_AS">American Samoa</string>
+    <string name="locales_location_options_AT">Austria</string>
+    <string name="locales_location_options_RE">Réunion</string>
+    <string name="locales_location_options_AU">Australia</string>
+    <string name="locales_location_options_AW">Aruba</string>
+    <string name="locales_location_options_AX">Åland Islands</string>
+    <string name="locales_location_options_AZ">Azerbaijan</string>
+    <string name="locales_location_options_RO">Romania</string>
+    <string name="locales_location_options_BA">Bosnia and Herzegovina</string>
+    <string name="locales_location_options_BB">Barbados</string>
+    <string name="locales_location_options_RS">Serbia</string>
+    <string name="locales_location_options_BD">Bangladesh</string>
+    <string name="locales_location_options_BE">Belgium</string>
+    <string name="locales_location_options_RU">Russia</string>
+    <string name="locales_location_options_BF">Burkina Faso</string>
+    <string name="locales_location_options_BG">Bulgaria</string>
+    <string name="locales_location_options_RW">Rwanda</string>
+    <string name="locales_location_options_BH">Bahrain</string>
+    <string name="locales_location_options_BI">Burundi</string>
+    <string name="locales_location_options_BJ">Benin</string>
+    <string name="locales_location_options_BL">Saint Barthélemy</string>
+    <string name="locales_location_options_BM">Bermuda</string>
+    <string name="locales_location_options_BN">Brunei</string>
+    <string name="locales_location_options_BO">Bolivia</string>
+    <string name="locales_location_options_SA">Saudi Arabia</string>
+    <string name="locales_location_options_BQ">British Antarctic Territory</string>
+    <string name="locales_location_options_SB">Solomon Islands</string>
+    <string name="locales_location_options_BR">Brazil</string>
+    <string name="locales_location_options_SC">Seychelles</string>
+    <string name="locales_location_options_BS">Bahamas</string>
+    <string name="locales_location_options_SD">Sudan</string>
+    <string name="locales_location_options_BT">Bhutan</string>
+    <string name="locales_location_options_SE">Sweden</string>
+    <string name="locales_location_options_BV">Bouvet Island</string>
+    <string name="locales_location_options_SG">Singapore</string>
+    <string name="locales_location_options_BW">Botswana</string>
+    <string name="locales_location_options_SH">Saint Helena</string>
+    <string name="locales_location_options_SI">Slovenia</string>
+    <string name="locales_location_options_BY">Belarus</string>
+    <string name="locales_location_options_SJ">Svalbard and Jan Mayen</string>
+    <string name="locales_location_options_BZ">Belize</string>
+    <string name="locales_location_options_SK">Slovakia</string>
+    <string name="locales_location_options_SL">Sierra Leone</string>
+    <string name="locales_location_options_SM">San Marino</string>
+    <string name="locales_location_options_SN">Senegal</string>
+    <string name="locales_location_options_SO">Somalia</string>
+    <string name="locales_location_options_CA">Canada</string>
+    <string name="locales_location_options_SR">Suriname</string>
+    <string name="locales_location_options_CC">Cocos [Keeling] Islands</string>
+    <string name="locales_location_options_CD">Congo - Kinshasa</string>
+    <string name="locales_location_options_ST">São Tomé and Príncipe</string>
+    <string name="locales_location_options_SU">Union of Soviet Socialist Republics</string>
+    <string name="locales_location_options_CF">Central African Republic</string>
+    <string name="locales_location_options_SV">El Salvador</string>
+    <string name="locales_location_options_CG">Congo - Brazzaville</string>
+    <string name="locales_location_options_CH">Switzerland</string>
+    <string name="locales_location_options_CI">Côte d’Ivoire</string>
+    <string name="locales_location_options_SY">Syria</string>
+    <string name="locales_location_options_SZ">Swaziland</string>
+    <string name="locales_location_options_CK">Cook Islands</string>
+    <string name="locales_location_options_CL">Chile</string>
+    <string name="locales_location_options_CM">Cameroon</string>
+    <string name="locales_location_options_CN">China</string>
+    <string name="locales_location_options_CO">Colombia</string>
+    <string name="locales_location_options_CR">Costa Rica</string>
+    <string name="locales_location_options_TC">Turks and Caicos Islands</string>
+    <string name="locales_location_options_TD">Chad</string>
+    <string name="locales_location_options_CS">Serbia and Montenegro</string>
+    <string name="locales_location_options_CT">Canton and Enderbury Islands</string>
+    <string name="locales_location_options_CU">Cuba</string>
+    <string name="locales_location_options_TF">French Southern Territories</string>
+    <string name="locales_location_options_CV">Cape Verde</string>
+    <string name="locales_location_options_TG">Togo</string>
+    <string name="locales_location_options_TH">Thailand</string>
+    <string name="locales_location_options_CX">Christmas Island</string>
+    <string name="locales_location_options_CY">Cyprus</string>
+    <string name="locales_location_options_TJ">Tajikistan</string>
+    <string name="locales_location_options_CZ">Czech Republic</string>
+    <string name="locales_location_options_TK">Tokelau</string>
+    <string name="locales_location_options_TL">Timor-Leste</string>
+    <string name="locales_location_options_TM">Turkmenistan</string>
+    <string name="locales_location_options_TN">Tunisia</string>
+    <string name="locales_location_options_TO">Tonga</string>
+    <string name="locales_location_options_TR">Turkey</string>
+    <string name="locales_location_options_DD">East Germany</string>
+    <string name="locales_location_options_TT">Trinidad and Tobago</string>
+    <string name="locales_location_options_DE">Germany</string>
+    <string name="locales_location_options_TV">Tuvalu</string>
+    <string name="locales_location_options_TW">Taiwan</string>
+    <string name="locales_location_options_DJ">Djibouti</string>
+    <string name="locales_location_options_TZ">Tanzania</string>
+    <string name="locales_location_options_DK">Denmark</string>
+    <string name="locales_location_options_DM">Dominica</string>
+    <string name="locales_location_options_DO">Dominican Republic</string>
+    <string name="locales_location_options_UA">Ukraine</string>
+    <string name="locales_location_options_UG">Uganda</string>
+    <string name="locales_location_options_DZ">Algeria</string>
+    <string name="locales_location_options_UM">U.S. Minor Outlying Islands</string>
+    <string name="locales_location_options_EC">Ecuador</string>
+    <string name="locales_location_options_US">United States</string>
+    <string name="locales_location_options_EE">Estonia</string>
+    <string name="locales_location_options_EG">Egypt</string>
+    <string name="locales_location_options_EH">Western Sahara</string>
+    <string name="locales_location_options_UY">Uruguay</string>
+    <string name="locales_location_options_UZ">Uzbekistan</string>
+    <string name="locales_location_options_VA">Vatican City</string>
+    <string name="locales_location_options_ER">Eritrea</string>
+    <string name="locales_location_options_VC">Saint Vincent and the Grenadines</string>
+    <string name="locales_location_options_VD">North Vietnam</string>
+    <string name="locales_location_options_ES">Spain</string>
+    <string name="locales_location_options_ET">Ethiopia</string>
+    <string name="locales_location_options_VE">Venezuela</string>
+    <string name="locales_location_options_VG">British Virgin Islands</string>
+    <string name="locales_location_options_VI">U.S. Virgin Islands</string>
+    <string name="locales_location_options_VN">Vietnam</string>
+    <string name="locales_location_options_VU">Vanuatu</string>
+    <string name="locales_location_options_FI">Finland</string>
+    <string name="locales_location_options_FJ">Fiji</string>
+    <string name="locales_location_options_FK">Falkland Islands</string>
+    <string name="locales_location_options_FM">Micronesia</string>
+    <string name="locales_location_options_FO">Faroe Islands</string>
+    <string name="locales_location_options_FQ">French Southern and Antarctic Territories</string>
+    <string name="locales_location_options_FR">France</string>
+    <string name="locales_location_options_WF">Wallis and Futuna</string>
+    <string name="locales_location_options_FX">Metropolitan France</string>
+    <string name="locales_location_options_WK">Wake Island</string>
+    <string name="locales_location_options_GA">Gabon</string>
+    <string name="locales_location_options_GB">United Kingdom</string>
+    <string name="locales_location_options_WS">Samoa</string>
+    <string name="locales_location_options_GD">Grenada</string>
+    <string name="locales_location_options_GE">Georgia</string>
+    <string name="locales_location_options_GF">French Guiana</string>
+    <string name="locales_location_options_GG">Guernsey</string>
+    <string name="locales_location_options_GH">Ghana</string>
+    <string name="locales_location_options_GI">Gibraltar</string>
+    <string name="locales_location_options_GL">Greenland</string>
+    <string name="locales_location_options_GM">Gambia</string>
+    <string name="locales_location_options_GN">Guinea</string>
+    <string name="locales_location_options_false">Norway</string>
+    <string name="locales_location_options_GP">Guadeloupe</string>
+    <string name="locales_location_options_GQ">Equatorial Guinea</string>
+    <string name="locales_location_options_GR">Greece</string>
+    <string name="locales_location_options_GS">South Georgia and the South Sandwich Islands</string>
+    <string name="locales_location_options_GT">Guatemala</string>
+    <string name="locales_location_options_GU">Guam</string>
+    <string name="locales_location_options_GW">Guinea-Bissau</string>
+    <string name="locales_location_options_GY">Guyana</string>
+    <string name="locales_location_options_HK">Hong Kong SAR China</string>
+    <string name="locales_location_options_HM">Heard Island and McDonald Islands</string>
+    <string name="locales_location_options_HN">Honduras</string>
+    <string name="locales_location_options_HR">Croatia</string>
+    <string name="locales_location_options_YD">People\'s Democratic Republic of Yemen</string>
+    <string name="locales_location_options_HT">Haiti</string>
+    <string name="locales_location_options_YE">Yemen</string>
+    <string name="locales_location_options_HU">Hungary</string>
+    <string name="locales_location_options_ID">Indonesia</string>
+    <string name="locales_location_options_YT">Mayotte</string>
+    <string name="locales_location_options_IE">Ireland</string>
+    <string name="locales_location_options_IL">Israel</string>
+    <string name="locales_location_options_IM">Isle of Man</string>
+    <string name="locales_location_options_IN">India</string>
+    <string name="locales_location_options_IO">British Indian Ocean Territory</string>
+    <string name="locales_location_options_ZA">South Africa</string>
+    <string name="locales_location_options_IQ">Iraq</string>
+    <string name="locales_location_options_IR">Iran</string>
+    <string name="locales_location_options_IS">Iceland</string>
+    <string name="locales_location_options_IT">Italy</string>
+    <string name="locales_location_options_ZM">Zambia</string>
+    <string name="locales_location_options_JE">Jersey</string>
+    <string name="locales_location_options_ZW">Zimbabwe</string>
+    <string name="locales_location_options_ZZ">Unknown or Invalid Region</string>
+    <string name="locales_location_options_JM">Jamaica</string>
+    <string name="locales_location_options_JO">Jordan</string>
+    <string name="locales_location_options_JP">Japan</string>
+    <string name="locales_location_options_JT">Johnston Island</string>
+    <string name="locales_location_options_KE">Kenya</string>
+    <string name="locales_location_options_KG">Kyrgyzstan</string>
+    <string name="locales_location_options_KH">Cambodia</string>
+    <string name="locales_location_options_KI">Kiribati</string>
+    <string name="locales_location_options_KM">Comoros</string>
+    <string name="locales_location_options_KN">Saint Kitts and Nevis</string>
+    <string name="locales_location_options_KP">North Korea</string>
+    <string name="locales_location_options_KR">South Korea</string>
+    <string name="locales_location_options_KW">Kuwait</string>
+    <string name="locales_location_options_KY">Cayman Islands</string>
+    <string name="locales_location_options_KZ">Kazakhstan</string>
+    <string name="locales_location_options_LA">Laos</string>
+    <string name="locales_location_options_LB">Lebanon</string>
+    <string name="locales_location_options_LC">Saint Lucia</string>
+    <string name="locales_location_options_LI">Liechtenstein</string>
+    <string name="locales_location_options_LK">Sri Lanka</string>
+    <string name="locales_location_options_LR">Liberia</string>
+    <string name="locales_location_options_LS">Lesotho</string>
+    <string name="locales_location_options_LT">Lithuania</string>
+    <string name="locales_location_options_LU">Luxembourg</string>
+    <string name="locales_location_options_LV">Latvia</string>
+    <string name="locales_location_options_LY">Libya</string>
+    <string name="locales_location_options_MA">Morocco</string>
+    <string name="locales_location_options_MC">Monaco</string>
+    <string name="locales_location_options_MD">Moldova</string>
+    <string name="locales_location_options_ME">Montenegro</string>
+    <string name="locales_location_options_MF">Saint Martin</string>
+    <string name="locales_location_options_MG">Madagascar</string>
+    <string name="locales_location_options_MH">Marshall Islands</string>
+    <string name="locales_location_options_MI">Midway Islands</string>
+    <string name="locales_location_options_MK">Macedonia</string>
+    <string name="locales_location_options_ML">Mali</string>
+    <string name="locales_location_options_MM">Myanmar [Burma]</string>
+    <string name="locales_location_options_MN">Mongolia</string>
+    <string name="locales_location_options_MO">Macau SAR China</string>
+    <string name="locales_location_options_MP">Northern Mariana Islands</string>
+    <string name="locales_location_options_MQ">Martinique</string>
+    <string name="locales_location_options_MR">Mauritania</string>
+    <string name="locales_location_options_MS">Montserrat</string>
+    <string name="locales_location_options_MT">Malta</string>
+    <string name="locales_location_options_MU">Mauritius</string>
+    <string name="locales_location_options_MV">Maldives</string>
+    <string name="locales_location_options_MW">Malawi</string>
+    <string name="locales_location_options_MX">Mexico</string>
+    <string name="locales_location_options_MY">Malaysia</string>
+    <string name="locales_location_options_MZ">Mozambique</string>
+    <string name="locales_location_options_NA">Namibia</string>
+    <string name="locales_location_options_NC">New Caledonia</string>
+    <string name="locales_location_options_NE">Niger</string>
+    <string name="locales_location_options_NF">Norfolk Island</string>
+    <string name="locales_location_options_NG">Nigeria</string>
+    <string name="locales_location_options_NI">Nicaragua</string>
+    <string name="locales_location_options_NL">Netherlands</string>
+    <string name="locales_location_options_NP">Nepal</string>
+    <string name="locales_location_options_NQ">Dronning Maud Land</string>
+    <string name="locales_location_options_NR">Nauru</string>
+    <string name="locales_location_options_NT">Neutral Zone</string>
+    <string name="locales_location_options_NU">Niue</string>
+    <string name="locales_location_options_NZ">New Zealand</string>
+    <string name="locales_location_options_OM">Oman</string>
+    <string name="locales_location_options_PA">Panama</string>
+    <string name="locales_location_options_PC">Pacific Islands Trust Territory</string>
+    <string name="locales_location_options_PE">Peru</string>
+    <string name="locales_location_options_PF">French Polynesia</string>
+    <string name="locales_location_options_PG">Papua New Guinea</string>
+    <string name="locales_location_options_PH">Philippines</string>
+    <string name="locales_location_options_PK">Pakistan</string>
+    <string name="locales_location_options_PL">Poland</string>
+    <string name="locales_location_options_PM">Saint Pierre and Miquelon</string>
+    <string name="locales_location_options_PN">Pitcairn Islands</string>
+    <string name="locales_add_trackable_prompt">Add new {{kind}}</string>
+    <string name="locales_how_active_were_your_symptoms">How active were your symptoms today?</string>
+    <string name="locales_catalog_question_prompt">What is your current level of {{name}}</string>
+    <string name="locales_add_dose">Add dose</string>
+    <string name="locales_catalogs_hbi_general_wellbeing">General well-being</string>
+    <string name="locales_catalogs_hbi_complication_fistula">Fistula</string>
+    <string name="locales_catalogs_hbi_complications">Complications</string>
+    <string name="locales_catalogs_hbi_section_5_description">Do you have any associated complications?</string>
+    <string name="locales_catalogs_hbi_catalog_description">Harvey Bradshaw Index</string>
+    <string name="locales_catalogs_hbi_complication_erythema_nodosum">Eythema Nodosum</string>
+    <string name="locales_catalogs_hbi_complication_aphthous_ulcers">Apthous Ulcers</string>
+    <string name="locales_catalogs_hbi_complication_anal_fissure">Anal Fissure</string>
+    <string name="locales_catalogs_hbi_section_1_description">How would you rate your general well-being?</string>
+    <string name="locales_catalogs_hbi_section_3_prompt">How many soft/liquid stools did you pass today?</string>
+    <string name="locales_catalogs_hbi_complication_uveitis">Uveitis</string>
+    <string name="locales_catalogs_hbi_section_2_prompt">What is your level of abdominal pain?</string>
+    <string name="locales_catalogs_hbi_ab_pain">Abdominal pain</string>
+    <string name="locales_catalogs_hbi_section_1_prompt">How would you rate your general well-being?</string>
+    <string name="locales_catalogs_hbi_complication_arthralgia">Arthalgia</string>
+    <string name="locales_catalogs_hbi_section_4_prompt">Do you have an abdominal mass?</string>
+    <string name="locales_catalogs_hbi_section_5_prompt">Check any complications that apply</string>
+    <string name="locales_catalogs_hbi_ab_mass">Abdominal mass</string>
+    <string name="locales_catalogs_hbi_section_4_description">Do you have an abdominal mass?</string>
+    <string name="locales_catalogs_hbi_stools">Stools</string>
+    <string name="locales_catalogs_hbi_section_2_description">What is your level of abdominal pain?</string>
+    <string name="locales_catalogs_hbi_section_3_description">How many soft/liquid stools did you pass today?</string>
+    <string name="locales_catalogs_hbi_complication_abscess">Abscess</string>
+    <string name="locales_see_your_graph">See your graph at</string>
+    <string name="locales_menu_item_stats">stats</string>
+    <string name="locales_edit_treatment_dose_placeholder">Daily dose (i.e. 30)</string>
+    <string name="locales_research_questions_caps">RESEARCH QUESTIONS</string>
+    <string name="locales_note">Note</string>
+    <string name="locales_menu_item_account">Account</string>
+    <string name="locales_which_treatments_taken_today">Which treatments did you take today?</string>
+    <string name="locales_menu_item_print_report">Print report</string>
+    <string name="locales_your_registration_information">Create your account</string>
+    <string name="locales_yesterday">Yesterday</string>
+    <string name="locales_invite_registration_title">This is the invite registration page</string>
+    <string name="locales_use_different_dose">Use a different dose...</string>
+    <string name="locales_today">Today</string>
+    <string name="locales_menu_item_investigations">investigations</string>
+    <string name="locales_terms_of_service">&amp;lt;h2&amp;gt;Flaredown &amp;lt;/h2&amp;gt;
+&amp;lt;h4&amp;gt;Terms of Service&amp;lt;/h4&amp;gt;
+&amp;lt;h5&amp;gt;Updated 5/16/2015&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;These Terms of Service ("&amp;lt;b&amp;gt;Agreement&amp;lt;/b&amp;gt;") govern your access to and use of the services, including our various websites ("&amp;lt;b&amp;gt;Websites&amp;lt;/b&amp;gt;"), SMS, APIs, mobile applications ("&amp;lt;b&amp;gt;Applications&amp;lt;/b&amp;gt;") email notifications, applications, and certain other services that Flaredown LLC ("&amp;lt;b&amp;gt;Flaredown&amp;lt;/b&amp;gt;", "&amp;lt;b&amp;gt;we&amp;lt;/b&amp;gt;," "&amp;lt;b&amp;gt;us&amp;lt;/b&amp;gt;" and "&amp;lt;b&amp;gt;our&amp;lt;/b&amp;gt;") may provide from time to time (collectively, the "&amp;lt;b&amp;gt;Services&amp;lt;/b&amp;gt;"), and any information, text, graphics, photos or other materials uploaded, downloaded or appearing on the Services (collectively referred to as "&amp;lt;b&amp;gt;Content&amp;lt;/b&amp;gt;"). Your access to and use of the Services are conditioned on your acceptance of and compliance with this Agreement. By accessing or using the Services you agree to be bound by the Agreement.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;By accessing or using the Services, you agree to be bound by the terms of this Agreement. To the extent you register on the Services as a member, then in addition to the terms that are applicable to all users of the Services, the terms that apply only to members shall apply to you too.  &amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Additional Terms&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;From time to time, in our sole discretion, change, modify, supplement or remove portions of this Agreement ("&amp;lt;b&amp;gt;Additional Terms&amp;lt;/b&amp;gt;").  Such Additional Terms may be given by the posting of a new version and/or placed on the Applications or Websites.  You will be deemed to have agreed to such Additional Terms by your decision to continue using the Services following the date in which such Additional Terms are posted.  &amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Membership Eligibility; Parental or Guardian Permission &amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;To become a member and access the area on the Services reserved for members (the "&amp;lt;b&amp;gt;Member Area&amp;lt;/b&amp;gt;"), Flaredown requires that you are either a (a) diagnosed patient of the particular community you are joining or a parent or legal guardian acting for such a patient who is under 18 years of age or incapacitated, (b) caregiver for a patient eligible to join such community, (c) health care professional (e.g. doctor, nurse, health researcher, etc.), (d) guest with legitimate, non-commercial reasons to participate in the community and who agrees to respect the privacy and preserve the dignity of all community participants or (e) guest as authorized by a Flaredown member or employee.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Children under the age of 13 are prohibited from registering as members. By registering as a member you represent that you are age 13 or older.  We strongly recommend that children between the ages of 13 and 18 ask for their parent\'s or guardian\'s permission before using our Services.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Limited License.&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Subject to your continued compliance with this Agreement, Flaredown grants you a non-exclusive, non-transferable, non-sublicensable, revocable, limited right to access, use, display, publish and process information and content that you provide through the Services for your personal, noncommercial use only.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;The Services Do Not Provide Medical Advice&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;All of the material provided on the Services, such as text, treatments, dosages, statistics, charts, patient profiles, graphics, photographs, images, advice, messages, forum postings, and any other material provided on the Services are for informational purposes only and are not a substitute for professional medical advice or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding your health. Never disregard professional medical advice or delay in seeking it because of something you have read on this Services.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;If you think you may have a medical emergency, call your doctor or 911 immediately. Flaredown does not recommend or endorse any specific tests, physicians, products, procedures, opinions, or other information that may be mentioned on the Services. Reliance on any information provided by Flaredown, by persons appearing on the Services at the invitation of Flaredown, or by other members is solely at your own risk.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;You represent to us (which representation shall be deemed to be made each time you use the Services), that you are not using the Services for purpose of seeking medical attention and/or you have received consent from your physician to participate in any of the activities in the App or use our Services. &amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Acceptable and Lawful Use of Services by Members&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Members shall not post or upload any information or other content on the Services that (a) is false, inaccurate or misleading; (b) is obscene or indecent; (c) infringes any copyright, patent, trademark, trade secret or other proprietary rights or rights of publicity or privacy of any party; or (d) is defamatory, libelous, threatening, abusive, hateful, or contains pornography. Members shall not interfere with other members’ use and enjoyment of the Services (for example, by harassing, threatening, soliciting, overly promoting personal interests, or stalking another participant of a chat room, forum, seminar, or threaded message, including the use of expressions of bigotry, racism, hatred, or profanity). Members may not use the Services to conduct any activity that is illegal or violates the rights of others, provide instructional information about illegal activities, or promote physical harm or injury against any group or individual.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;All members represent and warrant that the information they provided when registering as a member, and all information that they subsequently provide regarding themselves and their membership, is true and accurate and not misleading.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;No Interference with Operation of Services&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;You may not use any robot, spider, scraper, or other automated means to access the Services or content or services provided on the Websites and/or Applications for any purposes. You may not post content on the Websites and/or Applications that contains any viruses, Trojan horses, worms, time bombs, spiders, or other computer programming routines that are intended to damage, detrimentally interfere with, surreptitiously intercept or expropriate any system, data or personal information.  You shall not attempt to make the Websites and/or Applications unavailable through denial-of-service attacks or similar means.  You shall not use contact information provided by members, or collect information about our members, to facilitate the sending of unsolicited bulk communications such as SPAM or SPIM or allow others use of your membership account to take such actions.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Services for Non-Commercial Use Only&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;The content available through the Services, including the Member Area and the content and information contained in the Member Area, is for the personal use of individual members only and may not be used in connection with any commercial endeavors.  Organizations, companies, and/or businesses may not become members and should not use the Services without express consent from Flaredown.  Members of Flaredown with individual commercial interests may not solicit or overtly promote their products or services within the Member Area.  You acknowledge that our Services contain Content that are protected by copyrights, patents, trademarks, trade secrets and/or other proprietary rights, and that these rights are valid and protected in all forms, media and technologies existing now or hereafter developed.  All Content is copyrighted under the United States copyright laws (and, if applicable, similar foreign laws), and we own a copyright in the selection, coordination, arrangement and enhancement of such Content.  All content shared within the site is not for external use.  To garner permission and access to members, please direct all media and analyst inquiries and research requests to contact@flaredown.com. Representatives from life sciences and insurance companies are prohibited from creating profiles in our communities. Please direct inquiries to contact@flaredown.com.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;We may at any time suspend your use of the Services and/or remove or disable any Contents as to which we reasonably and in good faith believe is in violation of any of the terms and conditions of this Agreement.  We will provide you with notice of any such suspension or disablement before its implementation unless such suspension or disablement is necessary to comply with legal process, regulation, order or prevent imminent harm to the Services or any third party, in which case we will notify you to the extent allowed by applicable law of such suspension or disablement as soon as reasonably practicable thereafter.  The Services, or any portion thereof, may not be reproduced, duplicated, copied, modified, sold, resold, distributed, visited, or otherwise exploited for any commercial purpose without the express written consent of Flaredown. &amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Privacy&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;You agree that you have read, understood and accept Flaredown\'s &amp;lt;a href="privacy-policy"&amp;gt;Privacy Policy&amp;lt;/a&amp;gt;, which is incorporated into this Agreement by this reference.  This policy explains Flaredown\'s collection of personal and non-personal information from you when using the Services and its use of and sharing of such personal and non-personal information.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Posting and Use of Content in the Member Area&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;The Member Area includes community areas, such as forums and member areas, where members may post messages, images, and other content ("&amp;lt;b&amp;gt;User Submissions&amp;lt;/b&amp;gt;"). If you are a member, you (or the author) owns the copyright in the messages, images, and other content you post in the Member Area, but by posting such content within User Submissions to the Member Area you represent that you own all rights, title and interest in and to User Submissions or are otherwise authorized to use User Submissions.  You further represent that you are authorized to grant Flaredown and its affiliates, and you hereby grant Flaredown and its affiliates, the right to use, copy, display, perform, distribute, translate, edit, and create derivative works of your User Submissions, subject to the terms of the Privacy Policy.  You represent and warrant that, when using the Services, you will obey the law and respect the intellectual property rights of others.  Your use of the Services is at all times governed by and subject to laws regarding copyright ownership and use of intellectual property generally.  You agree not to upload, post, transmit, display, perform or distribute any content, information or other materials in violation of any third party’s copyrights, trademarks, or other intellectual property or proprietary rights.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown has no obligation to prescreen postings and is not responsible for their content. We encourage you to notify us of inappropriate or illegal content and we reserve the right to remove postings for any reason.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;You agree not to disclose to any person or entity personally identifiable information about other members that you encounter while using this Services (whether posted in the Member Area by a member or emailed to you by a member) without the express consent of such member. You may disclose information of a general nature (that could not identify the member who provided such information or whom such information is about) to third parties outside the Services, subject to the above restriction on non-commercial use.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown reserves the right to (i) remove, suspend, edit or modify any User Submission in its sole discretion at any time, without notice to you and for any reason (including, but not limited to, upon receipt of claims or allegations from third parties or authorities relating to such User Submission or if Flaredown is concerned that you may have violated any terms and conditions of this Agreement), or for no reason at all and (ii) to remove, suspend or block any User Submission.  Flaredown also reserves the right to access, read, preserve, and disclose any information as Flaredown reasonably believes is necessary to (i) satisfy any applicable law, regulation, legal process or governmental request, (ii) enforce this Agreement, including investigation of potential violations hereof, (iii) detect, prevent, or otherwise address fraud, security or technical issues, (iv) respond to user support requests, or (v) protect the rights, property or safety of Flaredown, its users and the public.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Intellectual Property&amp;lt;/h5&amp;gt;
+&amp;lt;h6&amp;gt;a.      Software&amp;lt;/h6&amp;gt;
+&amp;lt;p&amp;gt;You acknowledge and agree that the Services and all intellectual property rights associated therewith are, and shall remain, the property of Flaredown. Furthermore, you acknowledge and agree that the source and object code of the Website and/or Applications and the format, directories, queries, algorithms, structure and organization of the Website and/or Applications are the intellectual property and proprietary and confidential information of Flaredown and its affiliates, licensors and suppliers.  Except as expressly stated in this Agreement, you are not granted any intellectual property rights in or to the Services by implication, estoppel or other legal theory, and all rights in and to the Services not expressly granted in these Terms &amp; Conditions are hereby reserved and retained by Flaredown.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;The Services may utilize or include third party software that is subject to third party license terms ("&amp;lt;b&amp;gt;Third Party Software&amp;lt;/b&amp;gt;"). You acknowledge and agree that your right to use such Third Party Software as part of the Services is subject to and governed by the terms and conditions of the third party license applicable to such Third Party Software.  In the event of a conflict between the terms of these Terms &amp; Conditions and the terms of such third party licenses, the terms of the third party licenses shall control with regard to your use of the relevant Third Party Software.&amp;lt;/p&amp;gt;
+&amp;lt;h6&amp;gt;b.      Trademarks&amp;lt;/h6&amp;gt;
+&amp;lt;p&amp;gt;Flaredown™ and the Flaredown logo (collectively, the "&amp;lt;b&amp;gt;Flaredown Marks&amp;lt;/b&amp;gt;") are trademarks of Flaredown. Other trademarks, service marks, graphics, logos and domain names appearing on the Website and/or Applications may be the trademarks of third-parties.  Neither your use of the Services, nor this Agreement, grant you any right, title or interest in or to, or any license to reproduce or otherwise use, the Flaredown Marks or any third-party trademarks, service marks, graphics, logos or domain names.  You agree that any goodwill in the Flaredown Marks generated as a result of your use of the Services will inure to the benefit of Flaredown, LLC, and you agree to assign, and hereby do assign, all such goodwill to Flaredown. You shall not at any time, nor shall you assist others to, challenge Flaredown’s right, title, or interest in or to, or the validity of, the Flaredown Marks.&amp;lt;/p&amp;gt;
+&amp;lt;h6&amp;gt;c.       Copyrighted Materials; Copyright Notice&amp;lt;/h6&amp;gt;
+&amp;lt;p&amp;gt;All content and other materials available through the Services, including without limitation the Flaredown logo, design, text, graphics, and other files, and the selection, arrangement and organization thereof, are either owned by Flaredown or are the property of Flaredown’s licensors and suppliers.  Except as explicitly provided, neither your use of the Services nor this Agreement grant you any right, title or interest in or to any such content or materials.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Digital Millennium Copyright Act&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;If you are a copyright owner or an agent thereof and believe that any User Submission or other content at the Websites and/or Applications infringes upon your copyright, you may submit a written notification pursuant to the Digital Millennium Copyright Act (&amp;lt;b&amp;gt;"DMCA"&amp;lt;/b&amp;gt;) (see 17 U.S.C. 512(c)(3) for further information) by providing our Copyright Agent (listed below) with the following information: (i) an electronic or physical signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed; (ii) a description of the copyrighted work claimed to have been infringed or if multiple copyrighted works are covered by a notification, a representative list of such works at our Services; (iii) a description of the location on the Websites and/or Applications of the allegedly infringing material(s); (iv) your address, telephone number, and email address; (v) a written statement that you have a good faith belief that use of the material(s) in the manner complained of is not authorized by the copyright owner, its agent, or the law; and (vi) a written statement that the information in the notification is accurate, and under penalty of perjury, that you are authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;If you believe in good faith that a notice of copyright infringement has been wrongly filed against you, the DMCA permits you to send us a counter-notice. Notices and counter-notices with respect to the Services should be sent to our designated agent for notice of claims of copyright infringement: Attention:  Copyright Agent, Flaredown, LLC, 75 E 4th St #4157, New York, NY 10003. contact@flaredown.com.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Member Password and Login Identity&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;You are responsible for maintaining the confidentiality of your member password and login, and are fully responsible for all activities that occur under your password or account with or without your knowledge. If you knowingly provide your login and password information to another person, your membership privileges may be suspended temporarily or terminated.  You may not use the account, user name or password of any other member at any time.  You agree to immediately notify Flaredown of any unauthorized use of your membership password or login or any other breach of security.  You may also be held liable for any losses incurred by Flaredown , its affiliates, officers, directors, employees, consultants, agents and representatives due to someone else’s use of your account or password.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Links to Other Websites&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Flaredown may contain links to other websites that are not under the control of Flaredown. The inclusion of any link does not imply endorsement by Flaredown of such site and Flaredown is not responsible for the content of such linked sites.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Membership Termination&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;You agree that Flaredown may, with or without cause, immediately terminate your Flaredown membership or limit or terminate your access to the Member Area or the Services without prior notice.  Without limiting the foregoing, the following may lead to a termination by Flaredown of a member\'s membership and use of the Services: (a) breaches or violations of this Agreement or other incorporated agreements or guidelines, (b) requests by law enforcement or other government agencies, (c) a request by you (self-initiated membership cancellation), (d) unexpected technical issues or problems, and (e) extended periods of inactivity. Flaredown has no obligation to maintain, store, or transfer to you information or data that you have posted on or uploaded to the Websites and/or Applications.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Modifications to this Agreement&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;We reserve the right to modify this Agreement at any time, and without prior notice, by posting amended terms on the Services. We encourage you to review this Agreement periodically for any updates or changes, which will have an update effective date.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Fees&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Membership with Flaredown is currently free. Flaredown Llc reserves the right to from time to time change the terms of this Agreement and charge for membership and/or to provide additional optional services for a fee.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Disclaimer of Warranties&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;The Services and the content and services made available on the Services are provided on an "as is" and "as available" basis. Flaredown does not make and disclaims all express and implied warranties and representations, including, but not limited to, any implied warranty of fitness for a particular purpose, with regard to the Services, the Services content, or any advice or services provided through the Services to the extent permitted by law. Flaredown does not warrant that access to the Services or its content or services will be uninterrupted or error-free or that defects in the Services will be corrected.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;The advice, recommendations, information, and conclusions posted or emailed by other members of the Services are not in any way vetted, approved or endorsed by Flaredown, and you use such information at your own risk.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;ANY PRODUCT, OFFERING, CONTENT AND MATERIAL DOWNLOADED OR OTHERWISE OBTAINED THROUGH THE USE OF THE SERVICES IS DONE AT YOUR SOLE RISK AND YOU WILL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR LOSS OF DATA THAT RESULTS FROM THE DOWNLOAD OF ANY SUCH PRODUCT, OFFERING, CONTENT OR MATERIAL.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;YOU, ON BEHALF OF YOURSELF, YOUR PERSONAL REPRESENTATIVES AND YOUR HEIRS, HEREBY VOLUNTARILY AGREE TO RELEASE, WAIVE, DISCHARGE, HOLD HARMLESS, DEFNED AND INDEMNIFY FLAREDOWN, ITS AFFILIATES AND ANY OF FLAREDOWN’S AND ITS AFFILIATES’ OFFICERS, DIRECTORS, SHAREHOLDERS, EMPLOYEES, AGENTS, AFFILIATES, REPRESENTATIVES, SUBLICENSEES, SUCCESSORS AND ASSIGNS FROM ANY AND ALL CLAIMS, ACTIONS OR LOSSES FOR BODILY INJURY, PROPERTY DAMAGE, WRONGFUL DEATH, EMOTIONAL DISTRESS, LOSS OF SERVICES OR OTHER DAMAGES OR HARM, WHETHER TO YOU OR TO THIRD PARTIES, WHICH MAY RESULT FROM YOUR USE OF THE SERVICES. &amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;IF YOU ARE DISSATISFIED WITH ANY PORTION OF OUR SERVICES, OR WITH ANY OF THESE TERMS &amp; CONDITIONS, YOUR SOLE AND EXCLUSIVE REMEDY IS THE DISCONTINUATION OF YOUR USE OF THE SERVICES.  IF ANY PORTION OF THIS LIMITATION OF LIABILITY IS FOUND TO BE INVALID, LIABILITY IS LIMITED TO THE FULLEST EXTENT PERMITTED BY LAW. YOU AGREE THAT THIS LIMITATION OF LIABILITY REPRESENTS A REASONABLE ALLOCATION OF RISK AND IS A FUNDAMENTAL ELEMENT OF THE BASIS OF THE BARGAIN BETWEEN FLAREDOWN AND YOU.  THE SERVICES WOULD NOT BE PROVIDED WITHOUT SUCH LIMITATIONS.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;ANY CAUSE OF ACTION BY YOU ARISING OUT OF OR RELATING TO THE SERVICES, OR THIS AGREEMENT MUST BE INSTITUTED WITHIN ONE (1) YEAR AFTER THE CAUSE OF ACTION AROSE OR BE FOREVER WAIVED AND BARRED.  ALL ACTIONS SHALL BE SUBJECT TO THE LIMITATIONS SET FORTH IN THESE TERMS &amp; CONDITIONS.&amp;lt;/p&amp;gt;&amp;lt;b&amp;gt;RISK ASSUMPTION; YOUR INTERACTIONS WITH OTHERS ON THE APPLICATIONS&amp;lt;/b&amp;gt;
+&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;FLAREDOWN EXPRESSLY DISCLAIMS ANY AND ALL LIABILITY THAT MAY ARISE FROM OR IN CONNECTION WITH YOUR USE OF THE SERVICES AND PARTICIPATION IN ANY OTHER ACTIVITIES OFFERED IN THE SERVICES, INCLUDING, WITHOUT LIMITATION, YOUR PARTICIPATIONS IN ANY MEMBER AREA.  YOU KNOWINGLY AND FREELY ASSUME ALL RISK WHEN USING THE SERVICES. &amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;YOU ARE SOLELY RESPONSIBLE FOR YOUR INTERACTIONS WITH OTHER MEMBERS.  YOU ACKNOWLEDGE AND UNDERSTAND THAT FLAREDOWN HAS NOT, AND DOES NOT, IN ANY WAY (A) SCREEN ITS MEMBERS, (B) INQUIRE INTO THE BACKGROUNDS OF ITS MEMBERS, OR (C) REVIEW OR VERIFY THE STATEMENTS OF ITS MEMBERS, INCLUDING WITHOUT LIMITATION INFORMATION OR REPRESENTATIONS CONTAINED IN PUBLIC PROFILES.  YOU HEREBY AGREE TO EXERCISE REASONABLE PRECAUTION IN ALL INTERACTIONS WITH OTHER MEMBERS, PARTICULARLY IF YOU DECIDE TO MEET ANOTHER MEMBER IN PERSON.  FLAREDOWN DOES NOT REPRESENT, WARRANT, ENDORSE OR GUARANTEE THE CONDUCT OF ITS MEMBERS OR THEIR COMPATIBILITY WITH YOU.  &amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;&amp;lt;b&amp;gt;NEITHER FLAREDOWN NOR ANY OF ITS DIRECTORS, OFFICERS, EMPLOYEES, AGENTS, AFFILIATES, REPRESENTATIVES, SERVICE PROVIDERS, PARTNERS, SUBLICENSEES, SUCCESSORS AND ASSIGNS SHALL BE RESPONSIBLE FOR ANY HEALTH PROBLEMS THAT MAY RESULT FROM PROGRAMS, PRODUCTS, OR EVENTS YOU LEARN ABOUT THROUGH OUR SERVICES. YOU AGREE THAT YOU ARE USING OUR SERVICES SO AT YOUR OWN RISK AND ARE VOLUNTARILY PARTICIPATING IN THESE ACTIVITIES.&amp;lt;/b&amp;gt;&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Limitation of Liability&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Under no circumstances shall Flaredown, its partners, officers, contributors, agents, employees, directors, representatives or affiliates be liable for any indirect, incidental, special, or consequential damages (even if it has been advised of the possibility of such damages) due to your use of the Services or due to your reliance on any of the content contained or the services provided on the Services.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Indemnification&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;You agree to indemnify and hold harmless Flaredown, its officers, directors, employees, agents, subsidiaries, affiliates, representatives, and other partners, from and against any claims, actions or demands, liabilities and settlements including without limitation, reasonable legal and accounting fees, resulting from, or alleged to result from, your violation of this Agreement.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;International Users&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Flaredown makes no claims that information on the Services is appropriate or may be downloaded outside of the United States.  Personal information (&amp;lt;b&amp;gt;"Information"&amp;lt;/b&amp;gt;) that is submitted to this Services will be collected, processed, stored, disclosed and disposed of in accordance with applicable U.S. law and our Privacy Policy. If you are a non-U.S. user, you acknowledge and agree that Flaredown may collect and use your Information and disclose it to other entities outside your resident jurisdiction. In addition, such Information may be stored on servers located outside your resident jurisdiction. U.S. law may not provide the degree of protection for Information that is available in other countries. By providing us with your Information, you acknowledge that you consent to the transfer of such Information outside your resident jurisdiction as detailed in our Privacy Policy. If you do not consent to such transfer, you may not use the Services.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Member Notices&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;If you register as a member, you agree that Flaredown may send notices to you by email at the email address you provide when registering to become a member (or which you later update using the functionality of the Services).  In using the Services, you may receive periodic email communications regarding the Services, new product offers and/or information regarding the Services, which are part of the Services and which you cannot opt out of receiving.  You may also receive periodic promotions and other offers or materials Noom believes might be of interest to you.  You can opt-out of receiving these promotional messages at any time by (a) following the unsubscribe instructions contained in each newsletter; or (b) changing the email preferences in your account.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Governing Law and Venue&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;This agreement shall be governed by the laws of the State of New York and the applicable federal laws of the United States of America. All disputes arising under, or in any way connected with membership in or use of the Services, shall be litigated exclusively in the state and federal courts residing in the Commonwealth of Massachusetts, and in no other court or jurisdiction. You hereby submit to the jurisdiction of the state and federal courts sitting in the New York County, the State of New York.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Miscellaneous Terms&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Flaredown may assign this agreement at any time to a subsidiary or parent company or to a successor to its business as part of a merger or sale of substantially all of its assets. You may not assign or transfer this agreement.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;If any provision of this Agreement is held to be unenforceable for any reason, the remaining provisions will be unaffected and remain in full force and effect.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;For any questions or comments, or to report violations of this agreement, email us at contact@flaredown.com, or contact us at:&amp;lt;/p&amp;gt;&amp;lt;span&amp;gt;Flaredown, LLC&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;75 E 4th St #4157&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;New York, NY 10003&amp;lt;/span&amp;gt;</string>
+    <string name="locales_what_else_happened_today">What else happened today?</string>
+    <string name="locales_tag_your_day">Tag your day</string>
+    <string name="locales_menu_item_talk">discussion</string>
+    <string name="locales_unit_placeholder">mg</string>
+    <string name="locales_graph_remission">Remission</string>
+    <string name="locales_use_prior_settings_label">Use {{dosages}}</string>
+    <string name="locales_confirm_short_remove">Are you sure you want to remove "{{item}}"?</string>
+    <string name="locales_confirm_symptom_remove">Are you sure you want to remove the symptom "{{symptom}}" for this Checkin?</string>
+    <string name="locales_graph_all_time_average_score">all-time average score</string>
+    <string name="locales_unauthenticated_password_confirmation">Confirm your password</string>
+    <string name="locales_unauthenticated_back_to_login">Back to login</string>
+    <string name="locales_unauthenticated_you_are_already_logged_in">You are already logged in!</string>
+    <string name="locales_unauthenticated_password_placeholder"></string>
+    <string name="locales_unauthenticated_login_button">Login</string>
+    <string name="locales_unauthenticated_password_reset">Forgot password</string>
+    <string name="locales_unauthenticated_email_placeholder">name@domain.com</string>
+    <string name="locales_unauthenticated_get_account">Get an account</string>
+    <string name="locales_unauthenticated_login">Log in</string>
+    <string name="locales_unauthenticated_password">Password</string>
+    <string name="locales_unauthenticated_password_confirmation_placeholder"></string>
+    <string name="locales_unauthenticated_new_password_confirmation_placeholder">Confirm new password</string>
+    <string name="locales_unauthenticated_legal">agreement</string>
+    <string name="locales_unauthenticated_login_register_now">Register now</string>
+    <string name="locales_unauthenticated_new_password_placeholder">New password</string>
+    <string name="locales_unauthenticated_reset_instructions_sent">Reset request received, please check your email.</string>
+    <string name="locales_unauthenticated_being_redirected">Just a moment, you\'re being redirected...</string>
+    <string name="locales_unauthenticated_logging_you_in">Logging in</string>
+    <string name="locales_unauthenticated_email">Email</string>
+    <string name="locales_unauthenticated_enable_early_access">Unlock early access</string>
+    <string name="locales_unauthenticated_register">Register</string>
+    <string name="locales_unauthenticated_request_password_reset">Reset your password</string>
+    <string name="locales_checkin_complete">Checkin complete!</string>
+    <string name="locales_privacy_policy">&amp;lt;h2&amp;gt;Flaredown&amp;lt;/h2&amp;gt;
+&amp;lt;h4&amp;gt;Privacy Policy&amp;lt;/h4&amp;gt;
+&amp;lt;h5&amp;gt;Updated 5/25/2015&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Flaredown LLC ("&amp;lt;b&amp;gt;Flaredown&amp;lt;/b&amp;gt;", "&amp;lt;b&amp;gt;we&amp;lt;/b&amp;gt;," "&amp;lt;b&amp;gt;us&amp;lt;/b&amp;gt;" and "&amp;lt;b&amp;gt;our&amp;lt;/b&amp;gt;") is committed to respecting the privacy rights of users of our flaredown.com website ("&amp;lt;b&amp;gt;Website&amp;lt;/b&amp;gt;"), our mobile phone applications (the "&amp;lt;b&amp;gt;Applications&amp;lt;/b&amp;gt;"), platforms, or any Content or information provided as part of these services (collectively, the "&amp;lt;b&amp;gt;Services&amp;lt;/b&amp;gt;").  Flaredown created this Privacy Policy (the "&amp;lt;b&amp;gt;Privacy Policy&amp;lt;/b&amp;gt;") to explain its information collection and use practices and the protection of your information when you visit and use the Website, Applications or any of our Services.  Any terms capitalized but not otherwise defined herein shall have the respective meanings set forth in the Terms &amp; Conditions.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Being open about one’s health is not for everyone, and we strive, with full transparency, to outline the benefits and risks of being part of this sharing site, including those related to privacy. This Privacy Policy outlines the type of information Flaredown collects from individuals who have registered to join Flaredown ("&amp;lt;b&amp;gt;Members&amp;lt;/b&amp;gt;") and how it is shared with other third parties, including, but not limited to medical device companies, non-profits, and research institutions ("&amp;lt;b&amp;gt;Partners&amp;lt;/b&amp;gt;").&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;We reserve the right to modify this policy at any time, and without prior notice, by posting an amended Privacy Policy and terms on this website. We encourage Members to review this policy periodically for any updates.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;What kind of information we collect&amp;lt;/h5&amp;gt;
+&amp;lt;b&amp;gt;Shared Data&amp;lt;/b&amp;gt;
+&amp;lt;ul&amp;gt;
+  &amp;lt;li&amp;gt;Some of the information that Members provide about themselves may be shared with the Flaredown community, Partners, and others in an anonymous aggregate format ("&amp;lt;b&amp;gt;Shared Data&amp;lt;/b&amp;gt;"). Examples of Shared Data that Members may submit at the Services may include:&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Biographical information, e.g., sex, age, location (country), ethnicity;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;General health information, e.g., level of activity, occupation;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Treatment information, e.g., treatment start dates, stop dates, dosages;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Symptom information, e.g., severity, duration;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Primary and secondary outcome scores over time, e.g. Harvey-Bradshaw Index, PH-9; and&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Information shared via free text fields, e.g. the forum or public comments.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;In the course of using the Services, Members may share information that could be used to reasonably identify them ("&amp;lt;b&amp;gt;Personal Information&amp;lt;/b&amp;gt;"), including name, photograph, and email address. When a Member chooses to share Personal Information via a free text field (e.g. forum posts or comments) and photos or images, the information shall be treated as Shared Data.&amp;lt;/p&amp;gt;&amp;lt;b&amp;gt;Restricted Data&amp;lt;/b&amp;gt;
+&amp;lt;p&amp;gt;Some of the information that Members enter into certain fields when registering to use or using the Services will not be shared ("&amp;lt;b&amp;gt;Restricted Data&amp;lt;/b&amp;gt;"). The type of Restricted Data that Members may submit at the Services may include:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+  &amp;lt;li&amp;gt;Email address, as collected and verified as part of registration or in a Member’s Account Information;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Password, as collected as part of registration or in a Member’s Account Information;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Date of birth, as collected during account registration; and&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;When a Member enters Personal Information, including date of birth and email address, as part of registering to use Flaredown, that Personal Information is treated as Restricted Data.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;h5&amp;gt;Cookies&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;A cookie is a small data file that often includes an anonymous, unique token, which is sent to your browser from a website’s computers and may be stored on your computer’s hard drive. Two types of cookies are required to use the Services:&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Session Cookies are temporary cookies that remain only until you log out of the website or exit your web browser. Session Cookies do not store any Personal Information, only a unique visitor ID number that may be used to ensure Members are properly authenticated and can view site information.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Persistent Cookies remain in the cookie file of your browser for much longer, even after you leave the Services. Persistent Cookies also do not store any Personal Information. Persistent Cookies store preferences that should persist from visit to visit, like "Remember Me," and a unique token to enable us to understand how Members use the Services ("&amp;lt;b&amp;gt;Services Usage&amp;lt;/b&amp;gt;").&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;How your data is used&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Members should expect that every piece of information they submit (even if it is not currently displayed), except for Restricted Data, may be shared with the community, other patients, and Partners. Members are encouraged to share health information but should consider that the more information that is entered, the more likely it is that a Member could be located or identified.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;There are instances where both Shared Data and Restricted Data, including Personal Information, may be used and disclosed including, but not limited to, the following:&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown uses Shared Data, Restricted Data, and Services Usage internally, as needed, for research, for maintenance and operation of the Services, and to create the best possible tools and functionality for patients.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown may use a Member’s data in the case of an emergency or other circumstance that we determine requires a member of the management team to directly contact the Member.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown may share or disclose a Member’s data where required by law or to comply with legal process.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;In the event Flaredown goes through a business transition, such as a merger, acquisition by another organization, or sale of all or a portion of its assets, the Shared Data and Restricted Data, including Personal Information, might be among the assets transferred. Members will be notified via this Services of any such change in ownership or control of Personal Information.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;How Shared Data is Used&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Shared Data is viewable through aggregated reports that are made available to other Flaredown Members. In some instances, this Shared Data is also viewable to those not registered to join Flaredown ("&amp;lt;b&amp;gt;Non-members&amp;lt;/b&amp;gt;"). We report Shared Data in aggregate, such as the number of patients on a particular treatment or the number of patients experiencing a particular symptom (e.g. public treatment, condition, and symptom reports).&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;In addition to serving the individual needs of our Members, Flaredown and its Partners are interested in better understanding the patient experience and improving treatment options and health outcomes for everyone. For example, we may look at questions such as, "Do certain treatments work better for some types of people versus others?" Flaredown provides Shared Data, in aggregate format, to Partners and other third parties for use in scientific research. When sharing this information, Flaredown removes Members’ Restricted Data to reduce the likelihood of re-identification prior to sharing information with Partners.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown may also report individual adverse event and drug safety information to the FDA, CDC, and/or other regulatory bodies (U.S. and international) as well as directly to pharmaceutical and biotechnology companies. Flaredown does not provide Restricted Data to such regulatory bodies, although we reserve the right to contact Members for follow-up at the request of agencies or Partners. The information Flaredown reports includes, but is not limited to, all of the information about the Member and/or free text or images on the forums or evaluations, which may include Shared Data.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Flaredown, like most Internet communities, is a public forum, and Members acknowledge and accept that any information shared through free text or images might be connected to Members’ Shared Data (which may be shared with or displayed for others). For example, if a Member puts his or her name (or other Personal Information) into a free text field like the forum or comments, the Member should know this information may be included in what is shared with or displayed for Partners.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;How Restricted Data is Used&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Restricted Data is not automatically shared with, sold to, or displayed for other Members or Partners. Specific instances where Restricted Data may be used include, but are not limited to, the following:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+  &amp;lt;li&amp;gt;If a Member provides a date of birth, the Member’s current age will be viewable via My Profile;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;If a Member chooses the Public privacy setting (see below), Flaredown and others may use public profiles in reports, conference presentations, media mentions, etc.;&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;If a Member explicitly opts in to have their Restricted Data shared with a Partner, Flaredown will share the information as instructed by the Member (e.g. co-registration with a non-profit);&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;If a Member makes a request, Flaredown may use Restricted Data, including sharing the Member’s Restricted Data with software/service vendors, for the purpose of fulfilling the request. Examples include requesting to receive the company newsletter via email or requesting an email response from the Flaredown support team.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;h5&amp;gt;Other security issues&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;Flaredown cannot guarantee the identity of any other Members with whom a Member may interact in the course of using the Services or who may have access to a Member’s Shared Data. Additionally, we cannot guarantee the authenticity of any data that Members may provide about themselves.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Finally, Members should know that Flaredown takes commercially reasonable technical precautions to help keep Member data secure.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Risks and benefits&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;While our goal is to help patients improve health outcomes, there are no certain benefits to using this website. However, keeping track of personal well-being, treatments, and symptoms has been shown to be helpful in improving overall health.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;There are also no known risks to using this website, but there is a possibility that users may feel uncomfortable sharing information online. It is possible that a Member could be identified using information shared on Flaredown (and/or in conjunction with other data sources). A Member could be discriminated against or experience repercussions as a result of the information shared. For example, it is possible that employers, insurance companies, or others may discriminate based on health information.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Members should understand that anyone can register at Flaredown and view the Shared Data in the system. If you are reading this Privacy Policy because you have access to the Personal Information of a Services participant, we urge you to recognize and fulfill your responsibility to protect the privacy of that person.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;In using the Services, Members are free to skip any non-required questions or data fields that make them feel uncomfortable. Members are also free to stop using this service at any time. If a Member chooses to deactivate his/her account, Flaredown will not display or share the data in that account with Partners as of the date of deactivation. However, the Member’s data will remain in the system for auditing purposes, and research conducted prior to the deactivation of a Member’s account will still include the Member’s data.&amp;lt;/p&amp;gt;
+&amp;lt;h5&amp;gt;Questions about the Privacy Policy&amp;lt;/h5&amp;gt;
+&amp;lt;p&amp;gt;If you have questions or comments about our Privacy Policy, email us at contact@flaredown.com, or contact us at:&amp;lt;/p&amp;gt;&amp;lt;span&amp;gt;Flaredown, LLC&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;75 E 4th St #4157&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;New York, NY 10003&amp;lt;/span&amp;gt;
+</string>
+</resources>

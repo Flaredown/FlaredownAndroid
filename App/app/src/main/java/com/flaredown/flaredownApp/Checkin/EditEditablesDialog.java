@@ -19,11 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.DefaultErrors;
-import com.flaredown.flaredownApp.FlareDown.Locales;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.CatalogDefinition;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.Input;
+import com.flaredown.flaredownApp.Helpers.API.EntryParser.InputKind;
+import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONObject;
@@ -114,23 +118,8 @@ public class EditEditablesDialog extends DialogFragment {
                             //editable.progress(true);
                             final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
 
-                            checkinActivity.flareDownAPI.delete_trackableByName(editable.catalog, editable.name, new API.OnApiResponse<String>() {
-                                @Override
-                                public void onFailure(API_Error error) {
-                                    progressDialog.hide();
-                                    new DefaultErrors(checkinActivity, error);
-                                }
-
-                                @Override
-                                public void onSuccess(String result) {
-                                    progressDialog.hide();
-                                    if(updateFragment != null) {
-                                        updateFragment.removeQuestion(editable.name);
-                                    }
-                                    ll_root.removeView(editable);
-                                    items.remove(editable.name);
-                                }
-                            });
+                            // TODO implement api
+                            Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
                         }
                     });
                     builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
@@ -189,40 +178,8 @@ public class EditEditablesDialog extends DialogFragment {
                             if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
                                 final String name = data.getStringExtra(AddEditableActivity.RESULT);
                                 final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
-                                checkinActivity.flareDownAPI.create_trackable(catalog, name, new API.OnApiResponse<JSONObject>() {
-                                    @Override
-                                    public void onFailure(API_Error error) {
-                                        progressDialog.hide();
-                                        new DefaultErrors(getActivity(), error);
-                                    }
-
-                                    @Override
-                                    public void onSuccess(JSONObject result) {
-                                        progressDialog.hide();
-                                        // Create item in dialog
-                                        Editable newEditable = new Editable(getActivity());
-                                        items.add(name);
-                                        newEditable.setCatalog(catalog);
-                                        newEditable.setName(name);
-                                        newEditable.setOnDeleteClickListener(deleteButtonClick);
-                                        ll_root.addView(newEditable, ll_root.getChildCount() - 1);
-
-                                        //Alter the checkin pages.
-
-                                        //CheckinCatalogQFragment catalogueFragment = (CheckinCatalogQFragment) checkinActivity.getFragmentQuestions().get(ViewPagerFragmentBase.indexesOfCatalog(catalog, checkinActivity.getFragmentQuestions()).get(0)); //TODO make safer
-
-                                        if(updateFragment != null)
-                                            updateFragment.appendQuesiton(EntryParsers.createCatalogDefinition(catalog, name, EntryParsers.CatalogInputType.SELECT, EntryParsers.getDefaultInputSmilies()));
-
-
-                                        //JSONObject question = CheckinCatalogQFragment.getDefaultQuestionJson(name);
-                                        //try {
-                                            //catalogueFragment.appendQuestion(question);
-                                        //} catch (JSONException e) {
-                                        //    e.printStackTrace();
-                                        //}
-                                    }
-                                });
+                                // TODO create new trackable.
+                                Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
                             }
                         }
                     });

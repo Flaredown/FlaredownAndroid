@@ -18,12 +18,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
-import com.flaredown.flaredownApp.FlareDown.API;
-import com.flaredown.flaredownApp.FlareDown.API_Error;
-import com.flaredown.flaredownApp.FlareDown.Locales;
-import com.flaredown.flaredownApp.MainToolbarView;
+import com.flaredown.flaredownApp.Helpers.API.API;
+import com.flaredown.flaredownApp.Helpers.API.API_Error;
+import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Styling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +73,7 @@ public class AddEditableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        setContentView(R.layout.activity_add_a_dialog);
+        setContentView(R.layout.checkin_activity_add_dialog);
         fdAPI = new API(this);
 
 
@@ -228,7 +228,7 @@ public class AddEditableActivity extends AppCompatActivity {
         private boolean readOnly = false;
         public Item(Context mContext, String value) {
             super(mContext);
-            item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.activity_add_a_dialog_result_item, null);
+            item = (LinearLayout) ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.checkin_activity_add_a_dialog_result_item, null);
             this.addView(item);
 
             tv_name = (TextView) item.findViewById(R.id.tv_name);
