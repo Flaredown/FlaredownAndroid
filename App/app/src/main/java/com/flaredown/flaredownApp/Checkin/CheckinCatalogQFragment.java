@@ -87,6 +87,8 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
         ArrayList<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
         for (Trackable trackable : trackables) {
             SmileyRating smileyRating = new SmileyRating(getContext());
+            if(trackable.getValue() != null)
+                smileyRating.setValue(trackable.getValue());
             try {
                 InputContainerView inputContainerView = new InputContainerView(getContext(), trackable)
                         .setQuestionTitle(trackable.getMetaTrackable().getName()) // TODO safe
