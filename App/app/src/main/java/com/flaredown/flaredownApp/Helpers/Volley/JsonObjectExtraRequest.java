@@ -121,19 +121,17 @@ public class JsonObjectExtraRequest extends StringRequest {
         if(superParams != null)
             getParames.putAll(superParams);
         getParames.putAll(params);
-        if(getParames.size() > 0)
-            return getParames;
-        return null;
+        return getParames;
     }
 
     @Override
     public byte[] getBody() throws AuthFailureError {
         try {
-            return requestBody == null ? null : requestBody.getBytes(PROTOCOL_CHARSET);
+            return requestBody == null ? super.getBody() : requestBody.getBytes(PROTOCOL_CHARSET);
         } catch (UnsupportedEncodingException uee) {
             VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
                     requestBody, PROTOCOL_CHARSET);
-            return null;
+            return super.getBody();
         }
     }
 }
