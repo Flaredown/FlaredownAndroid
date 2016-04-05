@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -24,24 +25,20 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.EditAccount.FragmentEditAccount;
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Login.ForceLogin;
-import com.flaredown.flaredownApp.Login.LoginActivity;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
-
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -182,20 +179,14 @@ public class SettingsActivity extends AppCompatActivity {
         tv_SettingsLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                API flareDownAPI = new API(mContext);
-                flareDownAPI.users_sign_out(new API.OnApiResponse<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        Intent intent = new Intent(mContext, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(API_Error error) {
-                        Toast.makeText(mContext, R.string.locales_nice_errors_logout_failed, Toast.LENGTH_LONG).show();
-                    }
-                });
+                SharedPreferences sp = PreferenceKeys.getSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor spe = sp.edit();
+                spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, null);
+                spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, null);
+                spe.putString(PreferenceKeys.SP_Av2_USER_ID, null);
+                spe.commit();
+                new ForceLogin(SettingsActivity.this);
+                finish();
             }
         });
 
