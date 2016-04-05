@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -24,26 +25,23 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.EditAccount.FragmentEditAccount;
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
+import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
-import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Login.ForceLogin;
-import com.flaredown.flaredownApp.Login.LoginActivity;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.AlarmReceiver;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -61,6 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_checkinRemindTitle;
     TextView tv_checkinRemindTime;
     TextView tv_treatmentRemindTitle;
+    TextView tv_help;
     Switch sw_checkinReminder;
     LinearLayout ll_treatmentReminder;
     LinearLayout llSettingsProgress;
@@ -69,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
     TextView tv_policy;
     Intent alarmIntent;
     AlarmManager manager;
-    API flareDownAPI;
+    Communicate flareDownAPI;
     Realm mRealm;
     Alarm mAlarm;
     Alarm mProxyAlarm;
@@ -83,8 +82,8 @@ public class SettingsActivity extends AppCompatActivity {
         Styling.setFont();
         mRealm = Realm.getInstance(mContext);
 
-        flareDownAPI = new API(mContext);
-        if(!flareDownAPI.isLoggedIn()) {  // Prevent other code running if not logged in.
+        flareDownAPI = new Communicate(mContext);
+        if(!flareDownAPI.isCredentialsSaved()) {  // Prevent other code running if not logged in.
             new ForceLogin(this);
             return;
         }
@@ -101,7 +100,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_policy = (TextView)findViewById(R.id.privacy_policy);
         llSettingsProgress = (LinearLayout) findViewById(R.id.llSettingsProgress);
         rlSettings = (RelativeLayout) findViewById(R.id.rlSettings);
-        TextView tvHelp = (TextView) findViewById(R.id.tv_help);
+        tv_help = (TextView) findViewById(R.id.tv_help);
 
         llSettingsProgress.setVisibility(View.VISIBLE);
         rlSettings.setVisibility(View.GONE);
@@ -131,37 +130,39 @@ public class SettingsActivity extends AppCompatActivity {
             tv_checkinRemindTime.setText(time);
         }
 
-        //Get API information for treatments and display
-        if (flareDownAPI.apiFromCacheIsDirty(FlaredownConstants.API_CACHE_ENTRIES)){
-            flareDownAPI.entry(Calendar.getInstance().getTime(), new API.OnApiResponse<Entry>() {
-
-                @Override
-                public void onFailure(API_Error error) {
-                    new DefaultErrors(mContext, error);
-                    llSettingsProgress.setVisibility(View.GONE);
-                    rlSettings.setVisibility(View.VISIBLE);
+        flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+            @Override
+            public void onSuccess(Trackings trackings) {
+                List<Integer> ids = new ArrayList<Integer>();
+                for (int i = 0; i < trackings.size(); i++) {
+                    ids.add(trackings.get(i).getTrackable_id());
                 }
+                flareDownAPI.getTreatments(ids, new APIResponse<List<Treatment>, Error>() {
+                    @Override
+                    public void onSuccess(List<Treatment> treatments) {
+                        if (mTreatments != null){
+                            mTreatments.clear();
+                        }
+                        mTreatments = treatments;
+                        showTreatments();
+                        llSettingsProgress.setVisibility(View.GONE);
+                        rlSettings.setVisibility(View.VISIBLE);
+                    }
 
-                @Override
-                public void onSuccess(Entry entry){
-                    mTreatments = entry.getTreatments();
-                    llSettingsProgress.setVisibility(View.GONE);
-                    rlSettings.setVisibility(View.VISIBLE);
-                    showTreatments();
-                }
-            });
-        }
-        else{
-            try {
-                Entry entry = new Entry(new JSONObject(flareDownAPI.getAPIFromCache(FlaredownConstants.API_CACHE_ENTRIES)));
-                mTreatments = entry.getTreatments();
+                    @Override
+                    public void onFailure(Error result) {
+                        llSettingsProgress.setVisibility(View.GONE);
+                        rlSettings.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Error result) {
                 llSettingsProgress.setVisibility(View.GONE);
                 rlSettings.setVisibility(View.VISIBLE);
-                showTreatments();
-            } catch (JSONException e) {
-            } catch (ParseException e) {
             }
-        }
+        });
 
         //Listeners
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
@@ -178,20 +179,14 @@ public class SettingsActivity extends AppCompatActivity {
         tv_SettingsLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                API flareDownAPI = new API(mContext);
-                flareDownAPI.users_sign_out(new API.OnApiResponse<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        Intent intent = new Intent(mContext, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(API_Error error) {
-                        Toast.makeText(mContext, "Failed to logout", Toast.LENGTH_LONG).show();
-                    }
-                });
+                SharedPreferences sp = PreferenceKeys.getSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor spe = sp.edit();
+                spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, null);
+                spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, null);
+                spe.putString(PreferenceKeys.SP_Av2_USER_ID, null);
+                spe.commit();
+                new ForceLogin(SettingsActivity.this);
+                finish();
             }
         });
 
@@ -229,7 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
                 picker.setCurrentMinute(Calendar.getInstance().get(Calendar.MINUTE));
                 alertDialog.setView(picker);
 
-                alertDialog.setPositiveButton(Locales.read(mContext, "nav.done").create(), new DialogInterface.OnClickListener() {
+                alertDialog.setPositiveButton(R.string.locales_nav_done, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
@@ -243,7 +238,7 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                 });
 
-                alertDialog.setNegativeButton(Locales.read(mContext, "nav.cancel").create(), new DialogInterface.OnClickListener() {
+                alertDialog.setNegativeButton(R.string.locales_nav_back, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
@@ -271,7 +266,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        tvHelp.setOnClickListener(new View.OnClickListener() {
+        tv_help.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intercom.client().displayConversationsList();
@@ -283,6 +278,12 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void showTreatments(){
+
+        if (ll_treatmentReminder != null){
+            ll_treatmentReminder.removeAllViews();
+        }
+
+        ll_treatmentReminder.addView(tv_treatmentRemindTitle);
 
         for(Treatment treatment : mTreatments){
             LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -312,6 +313,8 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }.init(bundle));
         }
+        llSettingsProgress.setVisibility(View.GONE);
+        rlSettings.setVisibility(View.VISIBLE);
     }
 
     private void addUpdateAlarm(){
@@ -327,12 +330,12 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void updateLocales() {
-        tv_AccountTitle.setText(Locales.read(mContext, "menu_item_account").createAT());
-        tv_EditAccount.setText(Locales.read(mContext, "account.edit").createAT());
-        tv_SettingsLogout.setText(Locales.read(mContext, "menu_item_logout").createAT());
-        tv_checkinRemindTitle.setText(Locales.read(mContext,"forms.checkin_remind_title").create());
-        tv_treatmentRemindTitle.setText(Locales.read(mContext,"forms.treatment_remind_title").create());
-
+        tv_AccountTitle.setText(R.string.locales_menu_item_account);
+        tv_EditAccount.setText(R.string.locales_edit_account_info);
+        tv_SettingsLogout.setText(R.string.locales_menu_item_logout);
+        tv_checkinRemindTitle.setText(R.string.locales_checkin_alarm_title);
+        tv_treatmentRemindTitle.setText(R.string.locales_treatment_reminder_title);
+        tv_help.setText(R.string.locales_intercom_help_text);
         //If reminder is already set, get it from realm and populate
         if (sw_checkinReminder.isChecked()) { //reminder set
             SimpleDateFormat sdf = new SimpleDateFormat(FlaredownConstants.SIMPLE_DATE_FORMAT_HOUR_MINUTE);
@@ -372,7 +375,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (id == R.id.action_save){
             save();
-            Toast.makeText(this, Locales.read(mContext,"confirmation_messages.settings_saved").create(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.locales_settings_saved, Toast.LENGTH_LONG).show();
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
