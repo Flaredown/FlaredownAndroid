@@ -550,8 +550,6 @@ public class CheckinActivity extends AppCompatActivity {
 //                Intercom.client().logEvent("android_checkin", eventData);
 //            }
 //        });
-        // TODO implement submission
-        Toast.makeText(getApplicationContext(), "Still need to implement", Toast.LENGTH_LONG).show();
     }
 
     private void displaySummary() {
