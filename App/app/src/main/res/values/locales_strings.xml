@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="locales_saving_changes">Saving Changes&#8230;</string>
+    <string name="locales_summary_page_title">Summary</string>
     <!-- Java locales converter available at https://github.com/thunter1000/FlaredownAndroidLocalesConverter it takes the old locales endpoint and converts it into a string.xml -->
     <!-- Imported from locales -->
     <string name="locales_percentage_of_time_in_remission">percentage of time in remission</string>

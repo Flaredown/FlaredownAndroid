@@ -21,10 +21,12 @@ import java.util.Map;
  * Injects authentication information into a Volley Request.
  */
 public class JsonObjectExtraRequest extends StringRequest {
+    /** Default charset for JSON request. */
     protected static final String PROTOCOL_CHARSET = "utf-8";
 
     private Context mContext;
     private WebAttributes headers = new WebAttributes();
+    private WebAttributes authHeaders = new WebAttributes();
     private WebAttributes params = new WebAttributes();
     private String requestBody;
 
@@ -57,7 +59,7 @@ public class JsonObjectExtraRequest extends StringRequest {
             SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
             WebAttributes headers = new WebAttributes();
             headers.put("Authorization", "Token token=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, "") + "\", email=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, "") + "\"");
-            output.setHeaders(headers);
+            output.setAuthHeaders(headers);
         }
 
         return output;
@@ -66,6 +68,10 @@ public class JsonObjectExtraRequest extends StringRequest {
     private JsonObjectExtraRequest(Context context, int method, String url, final Response.Listener<String> listener, final Response.ErrorListener errorListener) {
         super(method, url, listener, errorListener);
         this.mContext = context;
+    }
+
+    private void setAuthHeaders(WebAttributes authHeaders) {
+        this.authHeaders = authHeaders;
     }
 
     /**
@@ -86,14 +92,26 @@ public class JsonObjectExtraRequest extends StringRequest {
         return this;
     }
 
+    /**
+     * Set the request body, used for PUT requests.
+     * @param requestBody The request body.
+     * @return itself.
+     */
+    public JsonObjectExtraRequest setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+        return this;
+    }
+
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         WebAttributes output = new WebAttributes();
         Map<String, String> superHeaders = super.getHeaders();
         if(superHeaders != null)
             output.putAll(this.headers);
-        if(this.headers.size() > 0)
+        if(this.headers.size() > 0) {
             output.putAll(this.headers);
+        }
+        output.putAll(this.authHeaders);
         return output;
     }
 
@@ -150,15 +168,5 @@ public class JsonObjectExtraRequest extends StringRequest {
                     requestBody, PROTOCOL_CHARSET);
             return super.getBody();
         }
-    }
-
-    /**
-     * Set the request body, used for PUT requests.
-     * @param requestBody The request body.
-     * @return itself.
-     */
-    public JsonObjectExtraRequest setRequestBody(String requestBody) {
-        this.requestBody = requestBody;
-        return this;
     }
 }

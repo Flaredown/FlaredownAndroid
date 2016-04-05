@@ -5,14 +5,16 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import io.intercom.com.google.gson.JsonObject;
 
 /**
  * An element of the JSON returned from the check in endpoint.
  */
-public class CheckIn {
+public class CheckIn implements Serializable{
     private String id;
     private Calendar createdAt;
     private Calendar updatedAt;
@@ -21,13 +23,18 @@ public class CheckIn {
     private ArrayList<Trackable> conditions = new ArrayList<>();
     private ArrayList<Trackable> symptoms = new ArrayList<>();
     private ArrayList<Trackable> treatments = new ArrayList<>();
+    private ArrayList<Integer> tagIds = new ArrayList<>();
 
     public CheckIn(String id, Calendar date) {
         this.id = id;
         this.date = date;
     }
 
-    public CheckIn(JSONObject jsonObject) throws JSONException {
+    public CheckIn(JSONObject inputJsonObject) throws JSONException {
+        JSONObject jsonObject = inputJsonObject;
+        if(inputJsonObject.has("checkin")) {
+            jsonObject = inputJsonObject.getJSONObject("checkin");
+        }
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
@@ -56,6 +63,11 @@ public class CheckIn {
         output.put("symptoms", createTrackableJArray(this.symptoms));
         output.put("treatments", createTrackableJArray(this.treatments));
 
+        JSONArray tagIdsJArray = new JSONArray();
+        for (Integer tagId : tagIds) {
+            tagIdsJArray.put(tagId);
+        }
+        output.put("tag_ids", tagIdsJArray);
         return output;
     }
 
@@ -73,6 +85,26 @@ public class CheckIn {
             output.put(trackable.toJson());
         }
         return output;
+    }
+
+    /**
+     * Has the user previously submitted a response for this check in.
+     * @return True if the user has previously submitted a response for this check in.
+     */
+    public boolean hasResponse() {
+        for (Trackable condition : conditions) {
+            if(condition.getValue() != null)
+                return true;
+        }
+        for (Trackable symptom : symptoms) {
+            if(symptom.getValue() != null)
+                return true;
+        }
+        for (Trackable treatment : treatments) {
+            if(treatment.getValue() != null)
+                return true;
+        }
+        return false;
     }
 
     //============ Getter's and Setters ===========
@@ -115,5 +147,103 @@ public class CheckIn {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public ArrayList<Trackable> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(ArrayList<Trackable> conditions) {
+        this.conditions = conditions;
+    }
+
+    public ArrayList<Trackable> getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(ArrayList<Trackable> symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public ArrayList<Trackable> getTreatments() {
+        return treatments;
+    }
+
+    public void setTreatments(ArrayList<Trackable> treatments) {
+        this.treatments = treatments;
+    }
+
+    /**
+     * Returns an ArrayList of trackables for the specific trackable type.
+     * @param trackableType The trackable type for the array returned.
+     * @return ArrayLost of trackables for the specific trackable type.
+     */
+    public ArrayList<Trackable> getTrackables(TrackableType trackableType) {
+       switch (trackableType) {
+           case CONDITION:
+               return getConditions();
+           case SYMPTOM:
+               return getSymptoms();
+           case TREATMENT:
+               return getTreatments();
+       }
+        return null;
+    }
+
+    /**
+     * Get the trackable ids for a specific trackable type.
+     * @param trackableType The trackable type.
+     * @return The ids inside the trackable type.
+     */
+    public ArrayList<Integer> getTrackableIds(TrackableType trackableType) {
+        ArrayList<Integer> result = new ArrayList<>();
+        ArrayList<Trackable> trackables = getTrackables(trackableType);
+        for (Trackable trackable : trackables) {
+            result.add(trackable.getTrackableId());
+        }
+        return result;
+    }
+
+    public void attachMetaTrackables(TrackableType trackableType, MetaTrackable metaTrackable) {
+        ArrayList<Trackable> trackables = getTrackables(trackableType);
+        for (Trackable trackable : trackables) {
+            if(metaTrackable.getId() == trackable.getTrackableId()) {
+                trackable.setMetaTrackable(metaTrackable);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Get the response json for the entire check in.
+     * @return The response json for the entire check in.
+     * @throws JSONException
+     */
+    public JSONObject getResponseJson() throws JSONException {
+        JSONObject rootJObject = new JSONObject();
+        JSONObject checkinJObject = new JSONObject();
+        rootJObject.put("checkin", checkinJObject);
+
+        checkinJObject.put("date", Date.calendarToString(date));
+        checkinJObject.put("note", note);
+
+        for (TrackableType trackableType : TrackableType.values()) {
+            String name = trackableType.name().toLowerCase() + "s_attributes";
+            JSONArray trackablesJArray = new JSONArray();
+            ArrayList<Trackable> trackables = getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                trackablesJArray.put(trackable.getResponseJson());
+            }
+
+            checkinJObject.put(name, trackablesJArray);
+        }
+
+        JSONArray tagIdsJArray = new JSONArray();
+        for (Integer tagId : tagIds) {
+            tagIdsJArray.put(tagId);
+        }
+        checkinJObject.put("tag_ids", tagIdsJArray);
+
+        return rootJObject;
     }
 }

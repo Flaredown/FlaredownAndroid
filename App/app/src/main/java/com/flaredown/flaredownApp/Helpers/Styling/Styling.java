@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.Helpers;
+package com.flaredown.flaredownApp.Helpers.Styling;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -63,16 +63,13 @@ public class Styling {
         return string;
     }
 
-    public static String displayDateLong(Date date) {
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-
+    public static String displayDateLong(Calendar date) {
         SimpleDateFormat sdf;
-        if(c.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR))
+        if(date.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) // If current year don't display the year.
             sdf = new SimpleDateFormat("MMMM d");
         else
             sdf = new SimpleDateFormat("MMMM d, yyyy");
-        return sdf.format(date);
+        return sdf.format(date.getTime());
     }
 
 

@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 
 /**
  * Contains methods used for communicating with the API.
@@ -92,7 +94,29 @@ public class Communicate {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    apiResponse.onSuccess(new CheckIn(response));
+                    final CheckIn checkIn = new CheckIn(response);
+                    final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
+
+                    for (final TrackableType trackableType : TrackableType.values()) {
+                        getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
+                            @Override
+                            public void onSuccess(ArrayList<MetaTrackable> result) {
+                                for (MetaTrackable metaTrackable : result) {
+                                    checkIn.attachMetaTrackables(trackableType, metaTrackable);
+                                }
+                                completeCount.add(result);
+
+                                if (completeCount.size() >= TrackableType.values().length) {
+                                    apiResponse.onSuccess(checkIn);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Error result) {
+                                apiResponse.onFailure(result);
+                            }
+                        });
+                    }
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.chackIn::ParseError"));
                 }
@@ -118,11 +142,33 @@ public class Communicate {
             public void onResponse(JSONObject response) {
                 try {
                     CheckIns checkIns = new CheckIns(response);
-                    if(checkIns.size() <= 0) {
+                    if (checkIns.size() <= 0) {
                         // No check ins found
                         apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
                     } else {
-                        apiResponse.onSuccess(checkIns.get(0));
+                        final CheckIn checkIn = checkIns.get(0);
+                        final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
+
+                        for (final TrackableType trackableType : TrackableType.values()) {
+                            getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
+                                @Override
+                                public void onSuccess(ArrayList<MetaTrackable> result) {
+                                    for (MetaTrackable metaTrackable : result) {
+                                        checkIn.attachMetaTrackables(trackableType, metaTrackable);
+                                    }
+                                    completeCount.add(result);
+
+                                    if (completeCount.size() >= TrackableType.values().length) {
+                                        apiResponse.onSuccess(checkIn);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Error result) {
+                                    apiResponse.onFailure(result);
+                                }
+                            });
+                        }
                     }
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.checkInDate::Exception"));
@@ -135,6 +181,33 @@ public class Communicate {
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void submitCheckin(CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
+        try {
+            JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("checkins/" + checkIn.getId()), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        apiResponse.onSuccess(new CheckIn(response));
+                    } catch (JSONException e) {
+                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException"));
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitCheckin::volley"));
+                }
+            });
+            jsonObjectExtraRequest.setRequestBody(checkIn.getResponseJson().toString());
+            WebAttributes headers = new WebAttributes();
+            headers.put("Content-Type", "application/json");
+            jsonObjectExtraRequest.setHeaders(headers);
+            QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+        } catch (JSONException e) {
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.submitCheckin::JSONException2"));
+        }
     }
 
     /**
@@ -163,7 +236,7 @@ public class Communicate {
                 try {
                     Trackings trackings = new Trackings(response);
                     if(trackings.size() <= 0) {
-                        // No getTrackings found
+                        // No Trackings found
                         apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings"));
                     } else {
                         apiResponse.onSuccess(trackings);
@@ -341,7 +414,7 @@ public class Communicate {
      * Get the list of available countries
      * @param apiResponse response or error callback
      */
-    public void getCountries(final APIResponse<List<>, Error> apiResponse){
+    public void getCountries(final APIResponse<List<Country>, Error> apiResponse){
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("countries"), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -353,13 +426,41 @@ public class Communicate {
                     }
                     apiResponse.onSuccess(countries);
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getCountries::Exception"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getCountries:JSONException"));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError"));
+            }
+        });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+
+    public void getTrackable(final TrackableType type, List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+        String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
+        url += "?";
+        for (Integer id : ids) {
+            url += "ids[]=" + id + "&";
+        }
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    ArrayList<MetaTrackable> result = new ArrayList<>();
+                    JSONArray jArray = response.getJSONArray(type.name().toLowerCase() + "s");
+                    for (int i = 0; i < jArray.length(); i++) {
+                        result.add(new MetaTrackable(jArray.getJSONObject(i)));
+                    }
+                    apiResponse.onSuccess(result);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackable:JSONException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
