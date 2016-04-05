@@ -11,25 +11,29 @@ import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
 import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
+import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
-public class AlarmIntentService extends IntentService implements API.OnApiResponse{
+public class AlarmIntentService extends IntentService{
     public AlarmIntentService() {
         super("AlarmIntentService");
     }
@@ -97,7 +101,7 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
     private void setNewAlarm(int id, Long alarmTime) {
         AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
         Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        alarmIntent.putExtra("id", id);
+        alarmIntent.putExtra(FlaredownConstants.KEY_ALARM_ID, id);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             manager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
@@ -113,6 +117,8 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
         firingCal.add(Calendar.DATE, 1);
         cancelAlarm(recreatePendingIntent(alarm));
         setNewAlarm(alarm.getId(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
+        //update alarm in realm
+        updateAlarmInRealm(alarm, firingCal.getTimeInMillis());
     }
 
     private void rescheduleTreatmentAlarm(Alarm alarm) {
@@ -122,28 +128,25 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
         firingCal.add(Calendar.DATE, 7);
         cancelAlarm(recreatePendingIntent(alarm));
         setNewAlarm(alarm.getId(), firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance()));
+        //update alarm in realm
+        updateAlarmInRealm(alarm, firingCal.getTimeInMillis());
     }
 
     private boolean checkTreatmentExists(Alarm alarm){
-        API api = new API(getApplicationContext());
-        JSONArray treatments;
+        Communicate flaredownApi = new Communicate(getApplicationContext());
         boolean treatmentExists = false;
 
         try {
-            if (api.apiFromCacheIsDirty("entries")) {
-                JSONObject json = api.entryBlocking(Calendar.getInstance().getTime());
-                JSONObject entry = json.getJSONObject("entry");
-                treatments = entry.getJSONArray("treatments");
-            } else {
-                String json = api.getAPIFromCache("entries");
-                JSONObject entries = new JSONObject(json);
-                JSONObject entry = entries.getJSONObject("entry");
-                treatments = entry.getJSONArray("treatments");
+            Trackings trackings = flaredownApi.getTrackingsBlocking(TrackableType.TREATMENT,Calendar.getInstance());
+            List<Integer> ids = new ArrayList<>();
+            for (Tracking tracking : trackings){
+                ids.add(tracking.getTrackable_id());
             }
-            if (treatments != null && treatments.length() > 0) {
-                for (int i = 0; i < treatments.length(); i++) {
-                    JSONObject treatment = treatments.getJSONObject(i);
-                    if (alarm.getTitle().equals("treatment_reminder_" + treatment.get("name").toString().toLowerCase())){
+            List<Treatment> treatments = flaredownApi.getTreatmentsBlocking(ids);
+            if (treatments != null && treatments.size() > 0) {
+                for (int i = 0; i < treatments.size(); i++) {
+                    Treatment treatment = treatments.get(i);
+                    if (alarm.getTitle().equals("treatment_reminder_" + treatment.getName().toLowerCase())){
                         //treatment still exists
                         treatmentExists = true;
                     }
@@ -175,8 +178,8 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
             Notification myNotification;
             int MY_NOTIFICATION_ID = new Random().nextInt();
             myNotification = new NotificationCompat.Builder(getApplicationContext())
-                    .setContentTitle(Locales.read(getApplicationContext(), "treatment_reminder_title").create())
-                    .setContentText(Locales.read(getApplicationContext(), "treatment_reminder_text").create() + alarm.getTitle().substring(alarm.getTitle().lastIndexOf("_") + 1))
+                    .setContentTitle(getResources().getString(R.string.locales_treatment_reminder_title))
+                    .setContentText(getResources().getString(R.string.locales_treatment_reminder_text) + " " + alarm.getTitle().substring(alarm.getTitle().lastIndexOf("_") + 1))
                     .setContentIntent(pi)
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setAutoCancel(true)
@@ -187,14 +190,9 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
 
             //Reset alarm
             rescheduleTreatmentAlarm(alarm);
-
-            //save alarm in realm
-            updateAlarmInRealm(alarm, firingCal.getTimeInMillis());
         } else if (diff < -60000) { //alarm already fired, reschedule
             //Reset alarm
             rescheduleTreatmentAlarm(alarm);
-            //update alarm in realm
-            updateAlarmInRealm(alarm, firingCal.getTimeInMillis());
         }
     }
 
@@ -215,8 +213,8 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
             Notification myNotification;
             int MY_NOTIFICATION_ID = new Random().nextInt();
             myNotification = new NotificationCompat.Builder(getApplicationContext())
-                    .setContentTitle(Locales.read(getApplicationContext(), "alarm_reminder_title").create())
-                    .setContentText(Locales.read(getApplicationContext(), "alarm_reminder_text").create())
+                    .setContentTitle(getResources().getString(R.string.locales_alarm_reminder_title))
+                    .setContentText(getResources().getString(R.string.locales_alarm_reminder_text))
                     .setContentIntent(pi)
                     .setDefaults(Notification.DEFAULT_ALL)
                     .setAutoCancel(true)
@@ -227,9 +225,6 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
 
             //Reset alarm
             rescheduleCheckinAlarm(alarm);
-
-            //update alarm in realm
-            updateAlarmInRealm(alarm, firingCal.getTimeInMillis());
         } else if (diff < -60000) { //alarm in past, reschedule
             rescheduleCheckinAlarm(alarm);
         }
@@ -256,11 +251,7 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
             if (entry.getEntryDate().before(today)){
                 checkedIn = false;
             } else {
-                if (entry.isComplete()){
-                    checkedIn = true;
-                } else {
-                    checkedIn = false;
-                }
+                checkedIn = entry.isComplete();
             }
 
         } catch (Exception e){
@@ -282,15 +273,5 @@ public class AlarmIntentService extends IntentService implements API.OnApiRespon
         realm.beginTransaction();
         realm.where(Alarm.class).equalTo("id",alarm.getId()).findAll().clear();
         realm.commitTransaction();
-    }
-
-    @Override
-    public void onFailure(API_Error error) {
-
-    }
-
-    @Override
-    public void onSuccess(Object result) {
-
     }
 }

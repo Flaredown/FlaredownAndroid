@@ -13,4 +13,8 @@ public class FlaredownConstants {
     public static final String BUNDLE_IDENTIFIER_VALUE_POLICY = "policy";
     public static final String BUNDLE_IDENTIFIER_VALUE_TERMS = "terms";
     public static final String BUNDLE_TREATMENT_TITLE_KEY = "treatment_title";
+    public static final String PROFILE_SEX_ID_MALE = "male";
+    public static final String PROFILE_SEX_ID_FEMALE = "female";
+    public static final String PROFILE_SEX_ID_OTHER = "other";
+    public static final String PROFILE_SEX_ID_DOESNT_SAY = "doesnt_say";
 }

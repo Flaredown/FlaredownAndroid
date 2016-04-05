@@ -4,32 +4,62 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Treatment {
-    private String id;
+    private int id;
+    private String created_at;
+    private String updated_at;
+    private String type;
+    private int color_id;
     private String name;
-    private int quantity;
-    private String unit;
+
+    public Treatment(){}
 
     public Treatment(JSONObject treatment) throws JSONException{
-        this.id = treatment.getString("id");
+        this.id = treatment.getInt("id");
+        this.created_at = treatment.getString("created_at");
+        this.updated_at = treatment.getString("updated_at");
+        this.type = treatment.getString("type");
+        this.color_id = treatment.getInt("color_id");
         this.name = treatment.getString("name");
-        if (treatment.get("quantity").toString().contains("null")){
-            this.quantity = 0;
-        } else {
-            this.quantity = treatment.getInt("quantity");
-        }
-        if (treatment.get("unit").toString().contains("null")){
-            this.unit = "";
-        } else {
-            this.unit = treatment.getString("unit");
-        }
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getColor_id() {
+        return color_id;
+    }
+
+    public void setColor_id(int color_id) {
+        this.color_id = color_id;
     }
 
     public String getName() {
@@ -38,21 +68,5 @@ public class Treatment {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 }
