@@ -81,6 +81,9 @@
     <string name="locales_nav_back_caps">BACK</string>
     <string name="locales_nav_ok_caps">OK</string>
     <string name="locales_nav_ok">Ok</string>
+    <string name="locales_nav_save_caps">SAVE</string>
+    <string name="locales_nav_save">Save</string>
+    <string name="locales_nav_saving">Saving...</string>
     <string name="locales_past_add_treatment">Add treatment</string>
     <string name="locales_past_remove_dose">Remove dose</string>
     <string name="locales_past_which_treatments_taken_today">Which treatments did you take today?</string>

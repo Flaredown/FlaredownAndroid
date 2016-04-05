@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
-import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
-import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
@@ -23,9 +21,13 @@ import java.util.Map;
  * Injects authentication information into a Volley Request.
  */
 public class JsonObjectExtraRequest extends StringRequest {
+    protected static final String PROTOCOL_CHARSET = "utf-8";
+
     private Context mContext;
     private WebAttributes headers = new WebAttributes();
     private WebAttributes params = new WebAttributes();
+    private String requestBody;
+
     /**
      * Creates a new request.
      * @param method the HTTP method to use.
@@ -95,7 +97,7 @@ public class JsonObjectExtraRequest extends StringRequest {
         return output;
     }
 
-    @Override
+    /*@Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {
         try {
             Cache.Entry cacheEntry = HttpHeaderParser.parseCacheHeaders(response);
@@ -127,7 +129,7 @@ public class JsonObjectExtraRequest extends StringRequest {
         catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         }
-    }
+    }*/
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
@@ -137,5 +139,26 @@ public class JsonObjectExtraRequest extends StringRequest {
             getParames.putAll(superParams);
         getParames.putAll(params);
         return getParames;
+    }
+
+    @Override
+    public byte[] getBody() throws AuthFailureError {
+        try {
+            return requestBody == null ? super.getBody() : requestBody.getBytes(PROTOCOL_CHARSET);
+        } catch (UnsupportedEncodingException uee) {
+            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
+                    requestBody, PROTOCOL_CHARSET);
+            return super.getBody();
+        }
+    }
+
+    /**
+     * Set the request body, used for PUT requests.
+     * @param requestBody The request body.
+     * @return itself.
+     */
+    public JsonObjectExtraRequest setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+        return this;
     }
 }
