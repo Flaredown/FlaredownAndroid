@@ -46,4 +46,12 @@ public enum TrackableType {
             return TrackableType.valueOf(name.toUpperCase().substring(0, name.length() - 1));
         }
     }
+
+    /**
+     * Formats the type with a capital letter like the /trackings endpoint wants
+     * @return String
+     */
+    public String getTrackingsFormattedType(){
+        return Character.toUpperCase(this.name().charAt(0)) + this.name().substring(1).toLowerCase();
+    }
 }

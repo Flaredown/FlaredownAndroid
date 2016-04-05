@@ -3,9 +3,10 @@ package com.flaredown.flaredownApp.EditAccount;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,32 +16,31 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Helpers.Locales;
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
+import com.flaredown.flaredownApp.Login.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.R;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Iterator;
+import java.util.List;
 
 public class FragmentEditAccount extends DialogFragment implements View.OnClickListener,Spinner.OnItemSelectedListener,DatePicker.OnDateChangedListener{
-    private TextView mtvCountry;
-    private TextView mtvBirthdate;
-    private TextView mtvSex;
     private CheckBox mchkMale;
     private CheckBox mchkFemale;
     private CheckBox mchkOther;
     private CheckBox mchkNotSay;
     private Spinner mCountriesSpinner;
     private Button mbtnSave;
-    private API mFlaredownAPI;
+    private Communicate mFlaredownAPI;
     private Context mContext;
     private String mGender;
     private String mDobDay;
@@ -48,7 +48,9 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
     private String mDobYear;
     private String mLocation;
     private DatePicker mBirthDatePicker;
-    private JSONObject mCurrentUser = new JSONObject();
+    private Profile mCurrentUser;
+    private String userID;
+    private List<Country> mCountries;
 
     @NonNull
     @Override
@@ -68,9 +70,6 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
         mbtnSave = (Button)view.findViewById(R.id.editAccountSave);
         final LinearLayout llProgress = (LinearLayout) view.findViewById(R.id.llEditAccountProgress);
         final LinearLayout llEditAccount = (LinearLayout) view.findViewById(R.id.llEditAccount);
-        mtvCountry = (TextView) view.findViewById(R.id.tvCountry);
-        mtvBirthdate = (TextView) view.findViewById(R.id.tvBirthdate);
-        mtvSex = (TextView) view.findViewById(R.id.tvSex);
 
         llEditAccount.setVisibility(View.GONE);
         llProgress.setVisibility(View.VISIBLE);
@@ -85,10 +84,30 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
         mCountriesSpinner.setOnItemSelectedListener(this);
         mbtnSave.setOnClickListener(this);
 
+        if(!new Communicate(getActivity()).isCredentialsSaved()) { // Ensure the user is signed in.
+            new ForceLogin(getActivity());
+        } else {
+            SharedPreferences sp = PreferenceKeys.getSharedPreferences(getActivity());
+            userID = sp.getString(PreferenceKeys.SP_Av2_USER_ID, null);
+            mFlaredownAPI = new Communicate(mContext);
+            //Get current_user information
+            mFlaredownAPI.getProfile(userID, new APIResponse<Profile, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+                @Override
+                public void onSuccess(Profile result) {
+                    mCurrentUser = result;
+                    updateViews();
+                    llProgress.setVisibility(View.GONE);
+                    llEditAccount.setVisibility(View.VISIBLE);                }
 
-        mFlaredownAPI = new API(mContext);
-        //Get current_user information
-        if (mFlaredownAPI.apiFromCacheIsDirty("me")){
+                @Override
+                public void onFailure(Error result) {
+                    Toast.makeText(getActivity(),getResources().getString(R.string.locales_nice_errors_general_error),Toast.LENGTH_SHORT).show();
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            });
+        }
+
+        /*if (mFlaredownAPI.apiFromCacheIsDirty("me")){
             //Get new api info
             mFlaredownAPI.current_user(new API.OnApiResponse<JSONObject>() {
                 @Override
@@ -135,9 +154,7 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-
-        applyLocales();
+        }*/
 
         return builder.create();
     }
@@ -148,78 +165,46 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
             case R.id.chkMale:
                 uncheckBoxes();
                 mchkMale.setChecked(true);
-                mGender = "Male";
+                mCurrentUser.setSex_id(FlaredownConstants.PROFILE_SEX_ID_MALE);
                 break;
             case R.id.chkFemale:
                 uncheckBoxes();
                 mchkFemale.setChecked(true);
-                mGender = "Female";
+                mCurrentUser.setSex_id(FlaredownConstants.PROFILE_SEX_ID_FEMALE);
                 break;
             case R.id.chkOther:
                 uncheckBoxes();
                 mchkOther.setChecked(true);
-                mGender = "Other";
+                mCurrentUser.setSex_id(FlaredownConstants.PROFILE_SEX_ID_OTHER);
                 break;
             case R.id.chkPreferNotToStay:
                 uncheckBoxes();
                 mchkNotSay.setChecked(true);
-                mGender = "Prefer not to say";
+                mCurrentUser.setSex_id(FlaredownConstants.PROFILE_SEX_ID_DOESNT_SAY);
                 break;
             case R.id.editAccountSave:
                 //show saving spinner
                 final ProgressDialog progress = new ProgressDialog(mContext);
-                progress.setMessage(Locales.read(mContext,"forms.saving").createAT());
-                        progress.setCancelable(false);
+                progress.setMessage(getResources().getString(R.string.locales_nav_saving));
+                progress.setCancelable(false);
                 progress.show();
-                //add values to json
-                updateJSON();
+
                 //update via api
-                mFlaredownAPI.updateUser(mCurrentUser, new API.OnApiResponse<JSONObject>() {
+                mFlaredownAPI.putProfile(mCurrentUser, new APIResponse<JSONObject, Error>() {
                     @Override
-                    public void onFailure(API_Error error) {
-                        Toast.makeText(mContext, Locales.read(mContext,"nice_errors.general_error_description").create(), Toast.LENGTH_LONG).show();
-                        API_Error api_error = new API_Error();
+                    public void onSuccess(JSONObject result) {
+                        Toast.makeText(mContext, getResources().getString(R.string.locales_settings_saved), Toast.LENGTH_LONG).show();
                         progress.dismiss();
                     }
 
                     @Override
-                    public void onSuccess(JSONObject result) {
-                        //Clear API cache so changes will be retrieved fresh
-                        mFlaredownAPI.cacheAPI("me","");
+                    public void onFailure(Error result) {
+                        Toast.makeText(mContext, getResources().getString(R.string.locales_nice_errors_general_error_description), Toast.LENGTH_LONG).show();
                         progress.dismiss();
-                        dismiss();
-                        Toast.makeText(mContext, Locales.read(mContext,"confirmation_messages.settings_saved").create(), Toast.LENGTH_LONG).show();
                     }
                 });
                 break;
         }
-    }
-
-    private void applyLocales(){
-        mtvCountry.setText(Locales.read(mContext,"onboarding.location").createAT());
-        mtvBirthdate.setText(Locales.read(mContext,"onboarding.dob").createAT());
-        mtvSex.setText(Locales.read(mContext,"onboarding.sex").createAT());
-        mchkMale.setText(Locales.read(mContext,"onboarding.sex_options.male").createAT());
-        mchkFemale.setText(Locales.read(mContext,"onboarding.sex_options.female").createAT());
-        mchkOther.setText(Locales.read(mContext,"onboarding.sex_options.other").createAT());
-        mchkNotSay.setText(Locales.read(mContext,"onboarding.sex_options.unspecified").createAT());
-        mbtnSave.setText(Locales.read(mContext,"forms.save").createAT());
-
-    }
-    private void updateJSON(){
-        try {
-            JSONObject settings = mCurrentUser.getJSONObject("settings");
-            settings.put("sex",mGender);
-            settings.put("dobDay",mDobDay);
-            settings.put("dobMonth",mDobMonth);
-            settings.put("dobYear",mDobYear);
-            settings.put("location",mLocation);
-            mCurrentUser.put("settings",settings);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
     }
 
     private void uncheckBoxes(){
@@ -231,67 +216,71 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
 
     private void updateViews(){
         //Set Gender Checks
-        switch(mGender){
-            case "male":
+        switch(mCurrentUser.getSex_id()){
+            case FlaredownConstants.PROFILE_SEX_ID_MALE:
                 mchkMale.setChecked(true);
                 break;
-            case "female":
+            case FlaredownConstants.PROFILE_SEX_ID_FEMALE:
                 mchkFemale.setChecked(true);
                 break;
-            case "other":
+            case FlaredownConstants.PROFILE_SEX_ID_OTHER:
                 mchkOther.setChecked(true);
                 break;
-            case "prefer not to say":
+            case FlaredownConstants.PROFILE_SEX_ID_DOESNT_SAY:
                 mchkNotSay.setChecked(true);
                 break;
         }
 
         //set birth date
-        int year = Integer.parseInt(mDobYear);
-        int month = Integer.parseInt(mDobMonth);
-        int day = Integer.parseInt(mDobDay);
-        mBirthDatePicker.updateDate(year, month - 1, day);
+        int year = mCurrentUser.getBirth_date().get(Calendar.YEAR);
+        int month = mCurrentUser.getBirth_date().get(Calendar.MONTH);
+        int day = mCurrentUser.getBirth_date().get(Calendar.DAY_OF_MONTH);
+        mBirthDatePicker.updateDate(year, month, day);
 
-        //set Country
-        try {
-            ArrayAdapter<String> countries = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item);
-            String json = Locales.read(mContext,"location_options").create();
-            JSONObject locations = new JSONObject(json);
-            Iterator<String> iter = locations.keys();
-            int x = 0;
-            int y = 0;
-            while (iter.hasNext()){
-                String key = iter.next();
-                countries.add(locations.getString(key));
-                if (locations.getString(key).toLowerCase().equals(mLocation.toLowerCase())){
-                     y = x;
+        //set Countries
+
+        mFlaredownAPI.getCountries(new APIResponse<List<Country>, Error>() {
+            @Override
+            public void onSuccess(List<Country> result) {
+                mCountries = result;
+                ArrayAdapter<String> countriesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_item);
+                int userCountryID = 0;
+                for (int i = 0; i < result.size(); i++) {
+                    countriesAdapter.add(result.get(i).getName());
+                    if (result.get(i).getId().toUpperCase().equals(mCurrentUser.getCountry_id().toUpperCase())){
+                        userCountryID = i;
+                    }
                 }
-                x++;
+                mCountriesSpinner.setAdapter(countriesAdapter);
+                mCountriesSpinner.setSelection(userCountryID);
             }
-            mCountriesSpinner.setAdapter(countries);
-            mCountriesSpinner.setSelection(y);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Error result) {
 
+            }
+        });
     }
 
     @Override
     public void onDateChanged(DatePicker datePicker, int year, int month, int day) {
-        mDobYear = String.valueOf(year);
+/*        mDobYear = String.valueOf(year);
         mDobDay = String.valueOf(day);
         if (month < 9){
             mDobMonth = String.valueOf("0" + (month + 1)); //Add 0 to single digits b/c API doesn't like just single digits
         }
         else {
             mDobMonth = String.valueOf(month + 1);
-        }
+        }*/
+
+        Calendar dob = Calendar.getInstance();
+        dob.set(year,month,day);
+        mCurrentUser.setBirth_date(dob);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        mLocation = adapterView.getItemAtPosition(i).toString();
+        mCurrentUser.setCountry_id(mCountries.get(i).getId());
     }
 
     @Override

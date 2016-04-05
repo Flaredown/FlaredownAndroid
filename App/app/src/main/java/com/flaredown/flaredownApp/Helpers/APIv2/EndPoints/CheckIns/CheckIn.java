@@ -5,7 +5,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,7 +37,7 @@ public class CheckIn implements Serializable{
         }
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
-        this.createdAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
+        this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.date = Date.stringToCalendar(jsonObject.optString("date", null));
         this.note = jsonObject.optString("note", null);
         this.conditions = createTrackableList(TrackableType.CONDITION, jsonObject.getJSONArray("conditions"));

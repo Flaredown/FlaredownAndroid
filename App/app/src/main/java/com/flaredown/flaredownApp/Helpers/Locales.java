@@ -10,9 +10,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
-/**
- * Created by thunter on 03/09/15.
- */
+@Deprecated
 public class Locales {
     private static final String DEBUG_TAG = "FlareDownLocales";
     private static final String SHARED_PREFERENCES_KEY = "com.flaredown.flaredownApp.locales";

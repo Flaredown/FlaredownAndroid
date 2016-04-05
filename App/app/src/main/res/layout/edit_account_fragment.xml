@@ -31,7 +31,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvCountry"
                 android:padding="@dimen/sep_margin_small"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/locales_onboarding_location"/>
 
             <Spinner
                 android:layout_width="match_parent"
@@ -46,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvBirthdate"
                 android:padding="@dimen/sep_margin_small"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/locales_onboarding_dob"/>
             <DatePicker
                 android:id="@+id/birthday"
                 android:layout_width="match_parent"
@@ -63,7 +65,8 @@
                 android:paddingLeft="@dimen/sep_margin_small"
                 android:paddingTop="@dimen/sep_margin_small"
                 android:paddingBottom="@dimen/sep_margin_small"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/locales_onboarding_sex"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,30 +75,35 @@
                 android:paddingRight="@dimen/sep_margin_small"
                 android:paddingBottom="@dimen/sep_margin_small">
                 <CheckBox
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/chkMale"
-                android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chkMale"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/locales_onboarding_sex_options_male"/>
                 <CheckBox
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/chkFemale"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/locales_onboarding_sex_options_female"/>
                 <CheckBox
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/chkOther"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/locales_onboarding_sex_options_other"/>
                 <CheckBox
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/chkPreferNotToStay"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/locales_onboarding_sex_options_unspecified"/>
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/editAccountSave"
-                    android:layout_gravity="right" />
+                    android:layout_gravity="right"
+                    android:text="@string/locales_nav_save"/>
             </LinearLayout>
         </LinearLayout>
 </LinearLayout>
