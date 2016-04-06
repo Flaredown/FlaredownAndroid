@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +43,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -572,22 +574,30 @@ public class CheckinActivity extends AppCompatActivity {
         }*/
     }
 
+    Calendar lastUpdate = null;
+
     /**
      * Call when the check in has been changed, this will notify and update the API.
      */
     public void checkInUpdate() {
-        final Snackbar snackbar = SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_saving_changes, Snackbar.LENGTH_INDEFINITE));
-        snackbar.show();
+        final Calendar updateTime = lastUpdate = Calendar.getInstance();
         API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
-                snackbar.dismiss();
-                SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
+                            if(updateTime.equals(lastUpdate))
+                                SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                        } catch (InterruptedException e) {}
+                    }
+                }).start();
             }
 
             @Override
             public void onFailure(Error result) {
-                snackbar.dismiss();
                 new ErrorDialog(CheckinActivity.this, result);
             }
         });
