@@ -184,6 +184,13 @@ public class Communicate {
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
+    /**
+     * Tell the API to create a check in for a specific date, note if a check in already exists an
+     * error is returned. (Check in object is returned via the api response listener).
+     * @param date The date for the check in to be created on.
+     * @param apiResponse Getting the response from the api, including the check in object for the
+     *                    date.
+     */
     public void createCheckIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("checkins"), new Response.Listener<JSONObject>() {
             @Override
@@ -210,7 +217,7 @@ public class Communicate {
             WebAttributes headers = new WebAttributes();
             headers.put("Content-Type", "application/json");
             jsonObjectExtraRequest.setHeaders(headers);
-            
+
             QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
 
         } catch (JSONException e) {
