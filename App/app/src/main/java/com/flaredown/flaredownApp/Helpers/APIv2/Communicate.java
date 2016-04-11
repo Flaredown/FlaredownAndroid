@@ -218,6 +218,31 @@ public class Communicate {
         }
     }
 
+    public CheckIn checkInBlocking(final Calendar date) {
+        WebAttributes getParams = new WebAttributes();
+        getParams.put("date", Date.calendarToString(date));
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins", getParams), future, future);
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+
+        try {
+            JSONObject response =  future.get(15, TimeUnit.SECONDS);
+            CheckIns checkIns = new CheckIns(response);
+            if (checkIns.size() > 0){
+                return checkIns.get(0);
+            }
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            return null;
+        } catch (TimeoutException e) {
+            return null;
+        } catch (JSONException e) {
+            return null;
+        }
+        return null;
+    }
+
     public void submitCheckin(CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
         try {
             JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("checkins/" + checkIn.getId()), new Response.Listener<JSONObject>() {
