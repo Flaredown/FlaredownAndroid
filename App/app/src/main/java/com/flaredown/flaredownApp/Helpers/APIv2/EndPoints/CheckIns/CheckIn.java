@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import io.intercom.com.google.gson.JsonObject;
 
 /**
  * An element of the JSON returned from the check in endpoint.
@@ -74,7 +73,13 @@ public class CheckIn implements Serializable{
     private ArrayList<Trackable> createTrackableList(TrackableType type, JSONArray trackableJArray) throws JSONException {
         ArrayList<Trackable> output = new ArrayList<>();
         for (int i = 0; i < trackableJArray.length(); i++) {
-            output.add(new Trackable(type, trackableJArray.getJSONObject(i)));
+            Trackable trackable;
+            JSONObject trackableJObject = trackableJArray.getJSONObject(i);
+            if(TrackableType.TREATMENT.equals(type))
+                trackable = new TreatmentTrackable(trackableJObject);
+            else
+                trackable = new Trackable(type, trackableJObject);
+            output.add(trackable);
         }
         return output;
     }
@@ -101,7 +106,10 @@ public class CheckIn implements Serializable{
                 return true;
         }
         for (Trackable treatment : treatments) {
-            if(treatment.getValue() != null)
+            if(treatment instanceof TreatmentTrackable) {
+                if (((TreatmentTrackable) treatment).getIsTaken())
+                    return true;
+            } else if(treatment.getValue() != null)
                 return true;
         }
         return false;

@@ -143,9 +143,19 @@ public class Communicate {
                 try {
                     CheckIns checkIns = new CheckIns(response);
                     if (checkIns.size() <= 0) {
-                        // No check ins found
-//                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
-                        createCheckIn(date, apiResponse);
+                        // No check in found, so create one, then download information
+//                        createCheckIn(date, apiResponse);
+                        createCheckIn(date, new APIResponse<CheckIn, Error>() {
+                            @Override
+                            public void onSuccess(CheckIn result) {
+                                checkIn(result.getId(), apiResponse);
+                            }
+
+                            @Override
+                            public void onFailure(Error result) {
+                                apiResponse.onFailure(result);
+                            }
+                        });
                     } else {
                         final CheckIn checkIn = checkIns.get(0);
                         final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
@@ -184,6 +194,13 @@ public class Communicate {
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
+    /**
+     * Tell the API to create a check in for a specific date, note if a check in already exists an
+     * error is returned. (Check in object is returned via the api response listener).
+     * @param date The date for the check in to be created on.
+     * @param apiResponse Getting the response from the api, including the check in object for the
+     *                    date.
+     */
     public void createCheckIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("checkins"), new Response.Listener<JSONObject>() {
             @Override
@@ -210,7 +227,7 @@ public class Communicate {
             WebAttributes headers = new WebAttributes();
             headers.put("Content-Type", "application/json");
             jsonObjectExtraRequest.setHeaders(headers);
-            
+
             QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
 
         } catch (JSONException e) {
