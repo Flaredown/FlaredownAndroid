@@ -143,9 +143,19 @@ public class Communicate {
                 try {
                     CheckIns checkIns = new CheckIns(response);
                     if (checkIns.size() <= 0) {
-                        // No check ins found
-//                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
-                        createCheckIn(date, apiResponse);
+                        // No check in found, so create one, then download information
+//                        createCheckIn(date, apiResponse);
+                        createCheckIn(date, new APIResponse<CheckIn, Error>() {
+                            @Override
+                            public void onSuccess(CheckIn result) {
+                                checkIn(result.getId(), apiResponse);
+                            }
+
+                            @Override
+                            public void onFailure(Error result) {
+                                apiResponse.onFailure(result);
+                            }
+                        });
                     } else {
                         final CheckIn checkIn = checkIns.get(0);
                         final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
