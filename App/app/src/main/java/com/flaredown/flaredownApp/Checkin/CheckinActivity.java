@@ -13,7 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +23,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
@@ -43,7 +42,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -89,7 +87,7 @@ public class CheckinActivity extends AppCompatActivity {
     /*
         Instance constant arguments.
      */
-    private static final String SI_ENTRIES_JSON = "entries endpoint";
+    private static final String SI_CHECKIN = "entries endpoint";
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
     private static final String SI_CHECKIN_PAGE_NUMBER = "checkin page number";
@@ -314,8 +312,8 @@ public class CheckinActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.checkin_activity);
         API = new Communicate(this);
         if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
@@ -326,23 +324,14 @@ public class CheckinActivity extends AppCompatActivity {
         assignViews();
         initialise();
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE) && savedInstanceState.containsKey(SI_CHECKIN)) {
+            // Restore previous view.
             Views savedViewState = (Views) savedInstanceState.getSerializable(SI_CURRENT_VIEW);
             Calendar savedCheckinDate = Calendar.getInstance();
             savedCheckinDate.setTime(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
+            CheckIn savedCheckIn = (CheckIn) savedInstanceState.getSerializable(SI_CHECKIN);
+            displayCheckin(savedCheckinDate, savedCheckIn);
             setView(savedViewState, false);
-            if(savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER) && savedInstanceState.containsKey(SI_ENTRIES_JSON)) {
-                try {
-                    JSONObject entriesJObject = new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON));
-                    CheckIn entry = new CheckIn(entriesJObject);
-                    displayCheckin(savedCheckinDate, entry);
-                    if(savedViewState == Views.SUMMARY) {
-                        //displaySummary(checkIn, savedCheckinDate );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         } else {
             setView(Views.SPLASH_SCREEN, false);
             displayCheckin(Calendar.getInstance());
@@ -395,14 +384,11 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d("H", "WJU;ksdl;");
         if(checkIn != null) {
-            try {
-                outState.putString(SI_ENTRIES_JSON, checkIn.toJson().toString());
-                outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
-                outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
+            outState.putSerializable(SI_CHECKIN, checkIn);
+            outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
+            outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
         }
         outState.putSerializable(SI_CURRENT_VIEW, currentView);
     }
