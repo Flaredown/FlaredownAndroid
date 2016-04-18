@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,11 +24,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.*;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
@@ -47,8 +50,10 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
     Communicate API;
+    private static String DEBUG_KEY = "CHECKIN";
     private Calendar checkinDate = null;
     private boolean isLoadingCheckin = false;
+    private boolean activityPaused = false;
 
     /**
      * Get the current check in for the activity.
@@ -83,6 +88,7 @@ public class CheckinActivity extends AppCompatActivity {
     private ViewPagerAdapter vpa_questions;
 
     private OnActivityResultListener onActivityResultListener;
+    private ArrayList<ActivityPauseEventListener> activityPauseEventListeners = new ArrayList<>();
 
     /*
         Instance constant arguments.
@@ -384,7 +390,6 @@ public class CheckinActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("H", "WJU;ksdl;");
         if(checkIn != null) {
             outState.putSerializable(SI_CHECKIN, checkIn);
             outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
@@ -542,7 +547,7 @@ public class CheckinActivity extends AppCompatActivity {
 
     private void displaySummary() {
         try {
-            f_checkin_sumary = CheckInSummaryFragment.newInstance(); // TODO implement summary page
+            f_checkin_sumary = CheckInSummaryFragment.newInstance();
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 
             trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
@@ -570,16 +575,23 @@ public class CheckinActivity extends AppCompatActivity {
         API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
-                            if(updateTime.equals(lastUpdate))
-                                SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
-                        } catch (InterruptedException e) {}
-                    }
-                }).start();
+                PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "Check in saved successfully");
+                if(isActivityPaused()) {
+                    // Display toast if the application is not visible.
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
+                                if (updateTime.equals(lastUpdate))
+                                    SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                    }).start();
+                }
             }
 
             @Override
@@ -799,4 +811,44 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
+
+    // On activity Pause listener
+
+    /**
+     * Add an activity paused listener, which is called when the application is paused.
+     * @param activityPauseEventListener The interface object which is called when the program is paused.
+     */
+    public void addActivityPauseListener(ActivityPauseEventListener activityPauseEventListener) {
+        activityPauseEventListeners.add(activityPauseEventListener);
+    }
+
+    /**
+     * Trigger all attached activty pause listeners.
+     */
+    private void triggerActivityPauseListener() {
+        for (ActivityPauseEventListener activityPauseEventListener : activityPauseEventListeners) {
+            activityPauseEventListener.onPause();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        triggerActivityPauseListener();
+        activityPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityPaused = false;
+    }
+
+    /**
+     * Returns true if the activity is paused.
+     * @return True if the activity is paused.
+     */
+    public boolean isActivityPaused() {
+        return activityPaused;
+    }
 }
