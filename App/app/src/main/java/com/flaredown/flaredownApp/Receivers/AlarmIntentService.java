@@ -10,9 +10,8 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
@@ -21,8 +20,6 @@ import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -225,39 +222,24 @@ public class AlarmIntentService extends IntentService{
 
             //Reset alarm
             rescheduleCheckinAlarm(alarm);
-        } else if (diff < -60000) { //alarm in past, reschedule
+        } else if (diff < - 60000) { //alarm in past, reschedule
             rescheduleCheckinAlarm(alarm);
         }
     }
 
     private boolean userAlreadyCheckedIn(){
-        API api = new API(getApplicationContext());
-        boolean checkedIn;
-        JSONObject entryJson;
-
+        Communicate api = new Communicate(getApplicationContext());
+        CheckIn checkin = api.checkInBlocking(Calendar.getInstance());
         try{
-            if (api.apiFromCacheIsDirty("entries")){
-                entryJson = api.entryBlocking(Calendar.getInstance().getTime());
-            } else {
-                entryJson = new JSONObject(api.getAPIFromCache("entries"));
+            if (checkin != null && checkin.hasResponse()){
+                return true;
             }
-
-            Entry entry = new Entry(entryJson);
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND,0);
-            today.set(Calendar.MILLISECOND, 0);
-            if (entry.getEntryDate().before(today)){
-                checkedIn = false;
-            } else {
-                checkedIn = entry.isComplete();
+            else {
+                return false;
             }
-
-        } catch (Exception e){
-            checkedIn = false;
+        } catch (Exception e) {
+            return false;
         }
-        return checkedIn;
     }
 
     private void updateAlarmInRealm(Alarm alarm, Long newTime){
