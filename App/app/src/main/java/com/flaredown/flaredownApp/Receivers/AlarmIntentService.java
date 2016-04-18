@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
@@ -238,7 +239,7 @@ public class AlarmIntentService extends IntentService{
                 return false;
             }
         } catch (Exception e) {
-            return false;
+            return true;
         }
     }
 

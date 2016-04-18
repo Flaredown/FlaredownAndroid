@@ -134,7 +134,7 @@ public class Communicate {
      * Get the check in object for a specific date. // TODO needs testing.
      * @param date The date for the check in.
      */
-    public void checkIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+    public void checkIn(final Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
         WebAttributes getParams = new WebAttributes();
         getParams.put("date", Date.calendarToString(date));
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins", getParams), new Response.Listener<JSONObject>() {
@@ -143,8 +143,19 @@ public class Communicate {
                 try {
                     CheckIns checkIns = new CheckIns(response);
                     if (checkIns.size() <= 0) {
-                        // No check ins found
-                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoCheckIns"));
+                        // No check in found, so create one, then download information
+//                        createCheckIn(date, apiResponse);
+                        createCheckIn(date, new APIResponse<CheckIn, Error>() {
+                            @Override
+                            public void onSuccess(CheckIn result) {
+                                checkIn(result.getId(), apiResponse);
+                            }
+
+                            @Override
+                            public void onFailure(Error result) {
+                                apiResponse.onFailure(result);
+                            }
+                        });
                     } else {
                         final CheckIn checkIn = checkIns.get(0);
                         final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
@@ -183,6 +194,46 @@ public class Communicate {
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
+    /**
+     * Tell the API to create a check in for a specific date, note if a check in already exists an
+     * error is returned. (Check in object is returned via the api response listener).
+     * @param date The date for the check in to be created on.
+     * @param apiResponse Getting the response from the api, including the check in object for the
+     *                    date.
+     */
+    public void createCheckIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("checkins"), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    apiResponse.onSuccess(new CheckIn(response));
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.createCheckIn::Volley"));
+            }
+        });
+        try {
+            JSONObject rootJObject = new JSONObject();
+            JSONObject checkin = new JSONObject();
+            rootJObject.put("checkin", checkin);
+            checkin.put("date", Date.calendarToString(date));
+            jsonObjectExtraRequest.setRequestBody(rootJObject.toString());
+
+            WebAttributes headers = new WebAttributes();
+            headers.put("Content-Type", "application/json");
+            jsonObjectExtraRequest.setHeaders(headers);
+
+            QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+
+        } catch (JSONException e) {
+            apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException2"));
+        }
+    }
 
     public CheckIn checkInBlocking(final Calendar date) {
         WebAttributes getParams = new WebAttributes();
