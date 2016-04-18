@@ -2,6 +2,8 @@
 <resources>
     <string name="locales_saving_changes">Saving Changes&#8230;</string>
     <string name="locales_summary_page_title">Summary</string>
+    <string name="locales_journal">Journal</string>
+
     <!-- Java locales converter available at https://github.com/thunter1000/FlaredownAndroidLocalesConverter it takes the old locales endpoint and converts it into a string.xml -->
     <!-- Imported from locales -->
     <string name="locales_percentage_of_time_in_remission">percentage of time in remission</string>
@@ -102,7 +104,7 @@
     <string name="locales_past_what_else_happened_today">What else happened today?</string>
     <string name="locales_past_popular">Popular</string>
     <string name="locales_past_oops_no_conditions_being_tracked">You weren\'t tracking any conditions on this day.</string>
-    <string name="locales_past_leave_a_note">Leave a note</string>
+    <string name="locales_past_leave_a_note">Leave a note about your day</string>
     <string name="locales_past_tap_next_to_start">Tap &amp;lt;b&amp;gt;next&amp;lt;/b&amp;gt; to get started!</string>
     <string name="locales_past_tag_search_placeholder">Add tag</string>
     <string name="locales_past_tag_your_day">Tag this past day</string>
@@ -229,7 +231,7 @@
     <string name="locales_percentage_of_time_with_severe_disease">percentage of time with severe disease</string>
     <string name="locales_popular">Popular</string>
     <string name="locales_all_things">all {{things}}</string>
-    <string name="locales_leave_a_note">Leave a note</string>
+    <string name="locales_leave_a_note">Leave a note about your day</string>
     <string name="locales_treatment_unit_prompt">mg</string>
     <string name="locales_confirm_condition_remove">Are you sure you want to remove the conditions "{{condition}}" for this Checkin?</string>
     <string name="locales_nice_errors_logout_failed">Error logging out</string>

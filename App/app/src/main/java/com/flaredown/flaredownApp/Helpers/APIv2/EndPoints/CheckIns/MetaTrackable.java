@@ -5,12 +5,13 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Provides extra information about a trackable.
  */
-public class MetaTrackable {
+public class MetaTrackable implements Serializable {
     private int colorId;
     private int id;
     private String name;

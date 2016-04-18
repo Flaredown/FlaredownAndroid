@@ -44,7 +44,6 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
      * @throws JSONException
      */
     public static CheckinCatalogQFragment newInstance(TrackableType trackableType) {
-
         Bundle args = new Bundle();
         args.putSerializable(ARG_TRACKABLE_TYPE, trackableType);
         CheckinCatalogQFragment fragment = new CheckinCatalogQFragment();

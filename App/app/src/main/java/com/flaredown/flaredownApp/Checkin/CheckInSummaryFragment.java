@@ -79,6 +79,7 @@ public class CheckInSummaryFragment extends Fragment {
 
     private void assembleFragments() {
         fragments = CheckinActivity.createFragments(activity.getCheckIn());
+        fragments.add(0, NotesQFragment.newInstance());
         int i = 0;
         for (ViewPagerFragmentBase fragment : fragments) {
             getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag" + i).commit();

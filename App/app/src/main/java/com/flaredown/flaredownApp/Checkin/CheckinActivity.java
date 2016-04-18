@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.*;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
@@ -43,14 +45,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CheckinActivity extends AppCompatActivity {
     Communicate API;
+    private static String DEBUG_KEY = "CHECKIN";
     private Calendar checkinDate = null;
     private boolean isLoadingCheckin = false;
+    private boolean activityPaused = false;
 
     /**
      * Get the current check in for the activity.
@@ -85,11 +88,12 @@ public class CheckinActivity extends AppCompatActivity {
     private ViewPagerAdapter vpa_questions;
 
     private OnActivityResultListener onActivityResultListener;
+    private ArrayList<ActivityPauseEventListener> activityPauseEventListeners = new ArrayList<>();
 
     /*
         Instance constant arguments.
      */
-    private static final String SI_ENTRIES_JSON = "entries endpoint";
+    private static final String SI_CHECKIN = "entries endpoint";
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
     private static final String SI_CHECKIN_PAGE_NUMBER = "checkin page number";
@@ -314,8 +318,8 @@ public class CheckinActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         Styling.forcePortraitOnSmallDevices(this);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.checkin_activity);
         API = new Communicate(this);
         if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
@@ -326,23 +330,14 @@ public class CheckinActivity extends AppCompatActivity {
         assignViews();
         initialise();
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE)) { // Restore previous activity.
+        if(savedInstanceState != null && savedInstanceState.containsKey(SI_CURRENT_VIEW) && savedInstanceState.containsKey(SI_CHECKIN_DATE) && savedInstanceState.containsKey(SI_CHECKIN)) {
+            // Restore previous view.
             Views savedViewState = (Views) savedInstanceState.getSerializable(SI_CURRENT_VIEW);
             Calendar savedCheckinDate = Calendar.getInstance();
             savedCheckinDate.setTime(new Date(savedInstanceState.getLong(SI_CHECKIN_DATE)));
+            CheckIn savedCheckIn = (CheckIn) savedInstanceState.getSerializable(SI_CHECKIN);
+            displayCheckin(savedCheckinDate, savedCheckIn);
             setView(savedViewState, false);
-            if(savedInstanceState.containsKey(SI_CHECKIN_PAGE_NUMBER) && savedInstanceState.containsKey(SI_ENTRIES_JSON)) {
-                try {
-                    JSONObject entriesJObject = new JSONObject(savedInstanceState.getString(SI_ENTRIES_JSON));
-                    CheckIn entry = new CheckIn(entriesJObject);
-                    displayCheckin(savedCheckinDate, entry);
-                    if(savedViewState == Views.SUMMARY) {
-                        //displaySummary(checkIn, savedCheckinDate );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         } else {
             setView(Views.SPLASH_SCREEN, false);
             displayCheckin(Calendar.getInstance());
@@ -396,13 +391,9 @@ public class CheckinActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if(checkIn != null) {
-            try {
-                outState.putString(SI_ENTRIES_JSON, checkIn.toJson().toString());
-                outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
-                outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
-            } catch(JSONException e) {
-                e.printStackTrace();
-            }
+            outState.putSerializable(SI_CHECKIN, checkIn);
+            outState.putLong(SI_CHECKIN_DATE, checkinDate.getTime().getTime());
+            outState.putInt(SI_CHECKIN_PAGE_NUMBER, currentQuestionPage);
         }
         outState.putSerializable(SI_CURRENT_VIEW, currentView);
     }
@@ -556,7 +547,7 @@ public class CheckinActivity extends AppCompatActivity {
 
     private void displaySummary() {
         try {
-            f_checkin_sumary = CheckInSummaryFragment.newInstance(); // TODO implement summary page
+            f_checkin_sumary = CheckInSummaryFragment.newInstance();
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 
             trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
@@ -584,16 +575,23 @@ public class CheckinActivity extends AppCompatActivity {
         API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
-                            if(updateTime.equals(lastUpdate))
-                                SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
-                        } catch (InterruptedException e) {}
-                    }
-                }).start();
+                PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "Check in saved successfully");
+                if(isActivityPaused()) {
+                    // Display toast if the application is not visible.
+                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
+                                if (updateTime.equals(lastUpdate))
+                                    SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                    }).start();
+                }
             }
 
             @Override
@@ -813,4 +811,44 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
+
+    // On activity Pause listener
+
+    /**
+     * Add an activity paused listener, which is called when the application is paused.
+     * @param activityPauseEventListener The interface object which is called when the program is paused.
+     */
+    public void addActivityPauseListener(ActivityPauseEventListener activityPauseEventListener) {
+        activityPauseEventListeners.add(activityPauseEventListener);
+    }
+
+    /**
+     * Trigger all attached activty pause listeners.
+     */
+    private void triggerActivityPauseListener() {
+        for (ActivityPauseEventListener activityPauseEventListener : activityPauseEventListeners) {
+            activityPauseEventListener.onPause();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        triggerActivityPauseListener();
+        activityPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityPaused = false;
+    }
+
+    /**
+     * Returns true if the activity is paused.
+     * @return True if the activity is paused.
+     */
+    public boolean isActivityPaused() {
+        return activityPaused;
+    }
 }
