@@ -18,12 +18,14 @@ import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Allows users to write a note for the day in the check in summary view.
  */
 public class NotesQFragment extends ViewPagerFragmentBase {
     private static String DEBUG_KEY = "CI_NotesQFrag";
+    private final AtomicBoolean changesPending = new AtomicBoolean(false);
 
 
     private FrameLayout fl_root;
@@ -78,10 +80,12 @@ public class NotesQFragment extends ViewPagerFragmentBase {
         getCheckInActivity().addActivityPauseListener(new ActivityPauseEventListener() {
             @Override
             public void onPause() {
-                updateCheckIn();
-                if(NotesQFragment.this.textChangeWaitingThread != null) {
-                    NotesQFragment.this.textChangeWaitingThread.interrupt();
-                    NotesQFragment.this.textChangeWaitingThread = null;
+                if(changesPending.get()) {
+                    updateCheckIn();
+                    if (NotesQFragment.this.textChangeWaitingThread != null) {
+                        NotesQFragment.this.textChangeWaitingThread.interrupt();
+                        NotesQFragment.this.textChangeWaitingThread = null;
+                    }
                 }
 
             }
@@ -110,7 +114,9 @@ public class NotesQFragment extends ViewPagerFragmentBase {
         @Override
         public void run() {
             try {
+                changesPending.set(true);
                 TimeUnit.SECONDS.sleep(5);
+                changesPending.set(false);
                 updateCheckIn();
             } catch (InterruptedException e) {
                 PreferenceKeys.log(PreferenceKeys.LOG_D, "THREAD", "TextChangedWaiting interrupted");
