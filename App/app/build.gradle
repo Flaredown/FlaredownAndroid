@@ -23,7 +23,7 @@ android {
         productRelease {
             applicationId 'com.flaredown.flaredownApp'
             buildConfigField "String", "API_BASE_URI", "\"https://flaredown-webapp.herokuapp.com/api\""
-            resValue "string", "app_name", "@string/app_name_release"
+            resValue "string", "app_name", "Flaredown"
             targetSdkVersion 22
         }
         productDebug {
