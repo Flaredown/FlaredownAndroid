@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,16 +31,17 @@ public class InternetStatusBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        API flareDownAPI = new API(context);
-        if(flareDownAPI.checkInternet() && !isConnected)
-            for (Runnable runnable : onConnect) {
-                handler.post(runnable);
-            }
-        else if(!flareDownAPI.checkInternet() && isConnected)
-            for (Runnable runnable : onDisconnect) {
-                handler.post(runnable);
-            }
-        isConnected = flareDownAPI.checkInternet();
+        // TODO Upgrade to the new api
+//        API flareDownAPI = new API(context);
+//        if(flareDownAPI.checkInternet() && !isConnected)
+//            for (Runnable runnable : onConnect) {
+//                handler.post(runnable);
+//            }
+//        else if(!flareDownAPI.checkInternet() && isConnected)
+//            for (Runnable runnable : onDisconnect) {
+//                handler.post(runnable);
+//            }
+//        isConnected = flareDownAPI.checkInternet();
     }
 
     public static InternetStatusBroadcastReceiver setUp(Context mContext, Runnable doOnConnect, Runnable doOnDisconnect) {

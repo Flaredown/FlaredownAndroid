@@ -3,7 +3,6 @@ package com.flaredown.flaredownApp.Login;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
