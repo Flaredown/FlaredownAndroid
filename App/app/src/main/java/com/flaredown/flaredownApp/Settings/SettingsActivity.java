@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity {
         flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
             @Override
             public void onSuccess(Trackings trackings) {
-                List<Integer> ids = new ArrayList<Integer>();
+                List<String> ids = new ArrayList<>();
                 for (int i = 0; i < trackings.size(); i++) {
                     ids.add(trackings.get(i).getTrackable_id());
                 }

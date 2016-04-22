@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
@@ -136,7 +135,7 @@ public class AlarmIntentService extends IntentService{
 
         try {
             Trackings trackings = flaredownApi.getTrackingsBlocking(TrackableType.TREATMENT,Calendar.getInstance());
-            List<Integer> ids = new ArrayList<>();
+            List<String> ids = new ArrayList<>();
             for (Tracking tracking : trackings){
                 ids.add(tracking.getTrackable_id());
             }

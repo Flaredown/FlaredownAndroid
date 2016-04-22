@@ -26,7 +26,9 @@ public class InputContainerView extends LinearLayout{
         this.setOrientation(VERTICAL);
 
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.gravity = Gravity.START;
+
+
         this.setLayoutParams(lp);
 
         // Adding the question title

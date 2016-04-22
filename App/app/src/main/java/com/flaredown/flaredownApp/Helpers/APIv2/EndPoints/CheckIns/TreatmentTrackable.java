@@ -10,6 +10,7 @@ import org.json.JSONObject;
 public class TreatmentTrackable extends Trackable {
 
     private Boolean isTaken = false;
+    private String treatment_id;
 
     /**
      * Default constructor for the treatment trackable object.
@@ -25,10 +26,14 @@ public class TreatmentTrackable extends Trackable {
     public TreatmentTrackable(JSONObject jsonObject) {
         super(TrackableType.TREATMENT, jsonObject);
         this.isTaken = jsonObject.optBoolean("is_taken", false);
+        this.treatment_id = String.valueOf(jsonObject.optInt("treatment_id", 0));
     }
-
     public Boolean getIsTaken() {
         return isTaken;
+    }
+
+    public String getTreatment_id() {
+        return treatment_id;
     }
 
     public void setIsTaken(Boolean taken) {

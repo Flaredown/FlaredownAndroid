@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.StringRequest;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
@@ -72,7 +73,7 @@ public class Communicate {
                 spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, session.getEmail());
                 spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, session.getToken());
                 spe.putString(PreferenceKeys.SP_Av2_USER_ID, session.getUserId());
-                spe.commit();
+                spe.apply();
 
                 apiResponse.onSuccess(session);
             }
@@ -87,7 +88,7 @@ public class Communicate {
 
     /**
      * Get the check in object for a specific identification. // TODO needs testing.
-     * @param id
+     * @param id id of the checkin
      */
     public void checkIn(String id, final APIResponse<CheckIn, Error> apiResponse) {
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins/" + id), new Response.Listener<JSONObject>() {
@@ -314,7 +315,7 @@ public class Communicate {
                     Trackings trackings = new Trackings(response);
                     if(trackings.size() <= 0) {
                         // No Trackings found
-                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings"));
+                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.getTrackings::NoTrackings"));
                     } else {
                         apiResponse.onSuccess(trackings);
                     }
@@ -364,9 +365,9 @@ public class Communicate {
      * Get the treatment from a tracking
      * @param ids List of treatment ids
      */
-    public void getTreatments(List<Integer> ids, final APIResponse<List<Treatment>, Error> apiResponse){
+    public void getTreatments(List<String> ids, final APIResponse<List<Treatment>, Error> apiResponse){
         String params = "";
-        for (int id : ids){
+        for (String id : ids){
             params += "ids[]=" + id + "&";
         }
 
@@ -401,9 +402,9 @@ public class Communicate {
      * @param ids List of treatment ids
      * @return JSONObject of treatments
      */
-    public List<Treatment> getTreatmentsBlocking(List<Integer> ids){
+    public List<Treatment> getTreatmentsBlocking(List<String> ids){
         String params = "";
-        for (int id : ids){
+        for (String id : ids){
             params += "ids[]=" + id + "&";
         }
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
@@ -514,7 +515,12 @@ public class Communicate {
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
-
+    /**
+     *
+     * @param type Trackable type
+     * @param ids List of ids to retrieve
+     * @param apiResponse response or error callback
+     */
     public void getTrackable(final TrackableType type, List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
         String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
         url += "?";
@@ -541,5 +547,42 @@ public class Communicate {
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     *
+     * @param id id of Tracking to remove
+     * @param apiResponse response or error callback
+     */
+    public void removeTrackings(String id, final APIResponse<String, Error> apiResponse ){
+        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, EndPointUrl.getAPIUrl("trackings") + "/" + id, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    apiResponse.onSuccess("");
+                } catch (Exception e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.deleteTrackings:JSONException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.deleteTrackings:JSONException"));
+            }
+        }
+        ){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                // Pass authentication parameters if available.
+                if(new Communicate(context).isCredentialsSaved()) {
+                    SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
+                    WebAttributes headers = new WebAttributes();
+                    headers.put("Authorization", "Token token=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, "") + "\", email=\"" + sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, "") + "\"");
+                    return headers;
+                }
+                return super.getHeaders();
+            }
+        };
+        QueueProvider.getQueue(context).add(stringRequest);
     }
 }

@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,13 +22,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
-import com.flaredown.flaredownApp.Helpers.Styling.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
+import com.flaredown.flaredownApp.Helpers.Styling.SnackbarStyling;
+import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Settings.SettingsActivity;
@@ -43,7 +44,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -667,10 +667,8 @@ public class CheckinActivity extends AppCompatActivity {
     public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
         for (TrackableType trackableType : TrackableType.values()) {
-            if(!TrackableType.TREATMENT.equals(trackableType)) { // TODO enable treatments.
-                CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
-                fragments.add(checkinCatalogQFragment);
-            }
+            CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
+            fragments.add(checkinCatalogQFragment);
         }
         return fragments;
     }

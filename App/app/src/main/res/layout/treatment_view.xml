@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/treatmentSwitch"
+        android:checked="false"
+        android:padding="6dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/treatmentName"
+        android:layout_toEndOf="@+id/treatmentSwitch"
+        android:layout_toRightOf="@+id/treatmentSwitch"
+        tools:text="Test Treatment"
+        android:padding="6dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/treatmentName"
+        android:id="@+id/treatmentRemove"
+        android:text="X"
+        android:padding="6dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:gravity="end"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/treatmentDose"
+        android:background="@drawable/dosestroke"
+        android:layout_alignStart="@+id/treatmentName"
+        android:layout_alignLeft="@+id/treatmentName"
+        android:layout_below="@+id/treatmentName"
+        android:textColor="@color/accent"
+        tools:text="600 mg"
+        android:padding="6dp"
+        android:visibility="gone"
+        />
+</RelativeLayout>

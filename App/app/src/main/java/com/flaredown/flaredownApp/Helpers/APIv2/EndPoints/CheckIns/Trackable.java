@@ -16,12 +16,14 @@ public class Trackable {
     private Calendar createdAt;
     private Calendar updatedAt;
     private String checkInId;
-    private Integer value;
+    private String value;
     private Integer trackableId;
     private String colourId;
     private MetaTrackable metaTrackable = null;
+    private String destroy;
 
     /**
+
      * Default constructor for the trackable object.
      * @param type The type of trackable (condition, symptom, treatment).
      */
@@ -40,9 +42,10 @@ public class Trackable {
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optInt("value") : null;
+        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null;
         this.colourId = jsonObject.optString("color_id", null);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
+        this.destroy = (jsonObject.has("_destroy")) ? jsonObject.optString("_destroy") : null;
     }
 
     public JSONObject toJson() throws JSONException{
@@ -66,7 +69,7 @@ public class Trackable {
      */
     public JSONObject getResponseJson() throws JSONException {
         JSONObject rootJObject = new JSONObject();
-        rootJObject.put("_destroy", null);
+        rootJObject.put("_destroy", destroy);
         rootJObject.put("checkin_id", checkInId);
         rootJObject.put("color_id", colourId);
         rootJObject.put(this.type.getTrackableIdKey(), trackableId);
@@ -117,12 +120,20 @@ public class Trackable {
         this.checkInId = checkInId;
     }
 
-    public Integer getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getDestroy() {
+        return destroy;
+    }
+
+    public void setDestroy(String destroy) {
+        this.destroy = destroy;
     }
 
     public Integer getTrackableId() {

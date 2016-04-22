@@ -7,31 +7,31 @@ import org.json.JSONObject;
  * An element of the JSON returned from the trackings endpoint.
  */
 public class Tracking {
-    private int id;
+    private String id;
     private String created_at;
     private String updated_at;
     private int user_id;
-    private int trackable_id;
+    private String trackable_id;
     private String trackable_type;
     private String start_at;
     private String end_at;
 
     public Tracking(JSONObject jsonObject) throws JSONException{
-        this.id = jsonObject.getInt("id");
+        this.id = String.valueOf(jsonObject.getInt("id"));
         this.created_at = jsonObject.getString("created_at");
         this.updated_at = jsonObject.getString("updated_at");
         this.user_id = jsonObject.getInt("user_id");
-        this.trackable_id = jsonObject.getInt("trackable_id");
+        this.trackable_id = String.valueOf(jsonObject.getInt("trackable_id"));
         this.trackable_type = jsonObject.getString("trackable_type");
         this.start_at = jsonObject.getString("start_at");
         this.end_at = jsonObject.getString("end_at");
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -59,11 +59,11 @@ public class Tracking {
         this.user_id = user_id;
     }
 
-    public int getTrackable_id() {
+    public String getTrackable_id() {
         return trackable_id;
     }
 
-    public void setTrackable_id(int trackable_id) {
+    public void setTrackable_id(String trackable_id) {
         this.trackable_id = trackable_id;
     }
 
