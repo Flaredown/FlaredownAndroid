@@ -4,10 +4,12 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Used as a base to represent a treatment trackable
  */
-public class TreatmentTrackable extends Trackable {
+public class TreatmentTrackable extends Trackable implements Serializable{
 
     private Boolean isTaken = false;
     private String treatment_id;

@@ -9,18 +9,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -79,6 +71,7 @@ public class CheckInSummaryFragment extends Fragment {
 
     private void assembleFragments() {
         fragments = CheckinActivity.createFragments(activity.getCheckIn());
+        fragments.add(0, NotesQFragment.newInstance());
         int i = 0;
         for (ViewPagerFragmentBase fragment : fragments) {
             getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag" + i).commit();

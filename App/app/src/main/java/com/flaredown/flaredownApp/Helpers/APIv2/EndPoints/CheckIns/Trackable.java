@@ -5,12 +5,13 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
  * Used as a base to represent the trackables (Symptoms, Conditions & Treatments).
  */
-public class Trackable {
+public class Trackable implements Serializable {
     private TrackableType type;
     private String id;
     private Calendar createdAt;

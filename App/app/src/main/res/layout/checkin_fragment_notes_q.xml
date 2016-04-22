@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -17,23 +18,24 @@
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             style="@style/AppTheme.Box">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Catalog Name"
-                android:id="@+id/tv_catalog"
-                android:textColor="@color/accent"/>
 
             <TextView
                 android:id="@+id/tv_question"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sample Question"
+                android:text="@string/locales_journal"
                 android:textSize="25dp"
                 android:layout_marginBottom="@dimen/sep_margin_small"
                 android:layout_marginTop="@dimen/sep_margin_small" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:ems="10"
+                android:id="@+id/et_note_text"
+                android:hint="@string/locales_leave_a_note" />
         </LinearLayout>
     </ScrollView>
 

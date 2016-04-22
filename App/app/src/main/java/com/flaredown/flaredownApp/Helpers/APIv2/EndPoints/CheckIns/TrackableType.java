@@ -2,6 +2,8 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.R;
 
+import java.io.Serializable;
+
 /**
  * The type of trackable.
  */

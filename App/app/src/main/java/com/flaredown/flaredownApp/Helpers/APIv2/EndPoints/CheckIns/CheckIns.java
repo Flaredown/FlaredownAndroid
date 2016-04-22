@@ -4,12 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Represents the json returned from the check in endpoint.
  */
-public class CheckIns extends ArrayList<CheckIn> {
+public class CheckIns extends ArrayList<CheckIn> implements Serializable {
     public CheckIns() {
 
     }
