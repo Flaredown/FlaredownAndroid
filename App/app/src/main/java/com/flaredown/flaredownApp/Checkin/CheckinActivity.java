@@ -528,21 +528,7 @@ public class CheckinActivity extends AppCompatActivity {
      * Submits the checkin to flaredown and displays the summary page.
      */
     private void submitCheckin() {
-//        flareDownAPI.submitEntry(checkinDate, entry.getResponses(), new API.OnApiResponse<JSONObject>() {
-//            @Override
-//            public void onFailure(API_Error error) {
-//                new DefaultErrors(CheckinActivity.this, error);
-//            }
-//
-//            @Override
-//            public void onSuccess(JSONObject result) {
-//                Toast.makeText(CheckinActivity.this, "Submission was a success", Toast.LENGTH_LONG).show(); //TODO show summary instead.
-//                //Record checkin in Intercom
-//                Map eventData = new HashMap();
-//                eventData.put("checkin_date", Calendar.getInstance().getTimeInMillis());
-//                Intercom.client().logEvent("android_checkin", eventData);
-//            }
-//        });
+        // Auto saves so no need to submit data to the api.
     }
 
     private void displaySummary() {

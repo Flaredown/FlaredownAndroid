@@ -18,9 +18,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
@@ -36,7 +33,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AddEditableActivity extends AppCompatActivity {
-    API fdAPI;
     Activity context;
 
     public static final String TITLE = "title";
@@ -74,7 +70,7 @@ public class AddEditableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.checkin_activity_add_dialog);
-        fdAPI = new API(this);
+//        fdAPI = new API(this); // TODO Upgrade to the new api
 
 
         //tv_cancelButton = (TextView) findViewById(R.id.tv_cancel_button);
@@ -130,88 +126,89 @@ public class AddEditableActivity extends AppCompatActivity {
     private int autoCompleteRequestToken = 0;
     private int shownAutoCompleteRequestToken = 0;
     private void getAutocomplete(final String text) {
-        if(autocompleteRequestQueue != null) autocompleteRequestQueue.stop();
-        final int requestToken = ++autoCompleteRequestToken;
-        pb_loading.setVisibility(View.VISIBLE);
-        Item it = new Item(context, text).setName("\"" + text + "\"").setQuantity(
-                Locales.read(context, "onboarding.add_new_condition").capitalize1Char().create()
-        );
-        if(selectedTrackables.indexOf(text) == -1)
-            it.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    returnResult(text);
-                }
-            });
-        else
-            it.setReadOnly(true);
-
-        if (ll_results.getChildCount() > 0)
-            ll_results.removeViewAt(0);
-        ll_results.addView(it, 0);
-
-
-        if(text.equals("")) {
-            shownAutoCompleteRequestToken = requestToken;
-            ll_results.removeAllViews();
-            pb_loading.setVisibility(View.INVISIBLE);
-            return;
-        }
-        sv_results.scrollTo(0,0);
-
-        try {
-            autocompleteRequestQueue = fdAPI.get_json_array(endpoint + "/" + URLEncoder.encode(text, API.CHAR_SET), new API.OnApiResponse<JSONArray>() {
-                @Override
-                public void onSuccess(JSONArray jsonArray) {
-                    pb_loading.setVisibility(View.INVISIBLE);
-                    if (requestToken >= shownAutoCompleteRequestToken) {
-                        shownAutoCompleteRequestToken = requestToken;
-                        try {
-                            if (ll_results.getChildCount() > 0) {
-                                View tmp = ll_results.getChildAt(0);
-                                ll_results.removeAllViews();
-                                ll_results.addView(tmp, 0);
-                                if (jsonArray.length() > 0 && jsonArray.getJSONObject(0).getString("name").toLowerCase().equals(text.toLowerCase())) {
-                                    tmp.setVisibility(View.GONE);
-                                } else {
-                                    tmp.setVisibility(View.VISIBLE);
-                                }
-                            }
-
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject item = jsonArray.getJSONObject(i);
-                                String name = item.getString("name");
-                                Item tv = new Item(context, item.getString("name"));
-                                if(selectedTrackables.indexOf(name) != -1) {
-                                    tv.setReadOnly(true);
-                                } else {
-                                    tv.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            if(v instanceof Item) {
-                                                Item tv = (Item) v;
-                                                returnResult(tv.getValue());
-                                            }
-                                        }
-                                    });
-                                }
-                                tv.setName(item.getString("name"));
-                                tv.setQuantity(item.getInt("count"));
-
-                                ll_results.addView(tv);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(API_Error error) {
-                    // new DefaultErrors(context, error);
-                }
-            });
-        } catch(UnsupportedEncodingException e) { e.printStackTrace(); }
+        // TODO Upgrade to the new api
+//        if(autocompleteRequestQueue != null) autocompleteRequestQueue.stop();
+//        final int requestToken = ++autoCompleteRequestToken;
+//        pb_loading.setVisibility(View.VISIBLE);
+////        Item it = new Item(context, text).setName("\"" + text + "\"").setQuantity(
+////                Locales.read(context, "onboarding.add_new_condition").capitalize1Char().create()
+////        );
+//        if(selectedTrackables.indexOf(text) == -1)
+//            it.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    returnResult(text);
+//                }
+//            });
+//        else
+//            it.setReadOnly(true);
+//
+//        if (ll_results.getChildCount() > 0)
+//            ll_results.removeViewAt(0);
+//        ll_results.addView(it, 0);
+//
+//
+//        if(text.equals("")) {
+//            shownAutoCompleteRequestToken = requestToken;
+//            ll_results.removeAllViews();
+//            pb_loading.setVisibility(View.INVISIBLE);
+//            return;
+//        }
+//        sv_results.scrollTo(0,0);
+//
+//        try {
+//            autocompleteRequestQueue = fdAPI.get_json_array(endpoint + "/" + URLEncoder.encode(text, API.CHAR_SET), new API.OnApiResponse<JSONArray>() {
+//                @Override
+//                public void onSuccess(JSONArray jsonArray) {
+//                    pb_loading.setVisibility(View.INVISIBLE);
+//                    if (requestToken >= shownAutoCompleteRequestToken) {
+//                        shownAutoCompleteRequestToken = requestToken;
+//                        try {
+//                            if (ll_results.getChildCount() > 0) {
+//                                View tmp = ll_results.getChildAt(0);
+//                                ll_results.removeAllViews();
+//                                ll_results.addView(tmp, 0);
+//                                if (jsonArray.length() > 0 && jsonArray.getJSONObject(0).getString("name").toLowerCase().equals(text.toLowerCase())) {
+//                                    tmp.setVisibility(View.GONE);
+//                                } else {
+//                                    tmp.setVisibility(View.VISIBLE);
+//                                }
+//                            }
+//
+//                            for (int i = 0; i < jsonArray.length(); i++) {
+//                                JSONObject item = jsonArray.getJSONObject(i);
+//                                String name = item.getString("name");
+//                                Item tv = new Item(context, item.getString("name"));
+//                                if(selectedTrackables.indexOf(name) != -1) {
+//                                    tv.setReadOnly(true);
+//                                } else {
+//                                    tv.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            if(v instanceof Item) {
+//                                                Item tv = (Item) v;
+//                                                returnResult(tv.getValue());
+//                                            }
+//                                        }
+//                                    });
+//                                }
+//                                tv.setName(item.getString("name"));
+//                                tv.setQuantity(item.getInt("count"));
+//
+//                                ll_results.addView(tv);
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(API_Error error) {
+//                    // new DefaultErrors(context, error);
+//                }
+//            });
+//        } catch(UnsupportedEncodingException e) { e.printStackTrace(); }
     }
     private void returnResult(String name) {
         Intent intent = context.getIntent();

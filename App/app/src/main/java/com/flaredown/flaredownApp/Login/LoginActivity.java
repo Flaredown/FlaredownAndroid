@@ -26,7 +26,6 @@ import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
@@ -168,21 +167,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            //mPasswordView.setError(getString(R.string.error_invalid_password));
-            mPasswordView.setError(Locales.read(mContext, "nice_errors.field_invalid").replace("field", "Password").createAT());
+            mPasswordView.setError(getResources().getString(R.string.locales_nice_errors_field_invalid));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            //mEmailView.setError(getString(R.string.error_field_required));
-            mEmailView.setError(Locales.read(mContext, "nice_errors.field_required").replace("field", "Email").createAT());
+            mEmailView.setError(getResources().getString(R.string.locales_nice_errors_field_required));
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            //mEmailView.setError(getString(R.string.error_invalid_email));
-            mEmailView.setError(Locales.read(mContext, "nice_errors.field_invalid").replace("field", "Email").createAT());
+            mEmailView.setError(getString(R.string.locales_nice_errors_field_invalid));
             focusView = mEmailView;
             cancel = true;
         }

@@ -9,18 +9,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.*;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.List;
 
 /**

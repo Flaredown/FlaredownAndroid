@@ -1,15 +1,11 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -19,18 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.API_Error;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.CatalogDefinition;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.Input;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.InputKind;
-import com.flaredown.flaredownApp.Helpers.DefaultErrors;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
-
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -108,26 +94,26 @@ public class EditEditablesDialog extends DialogFragment {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
                     String itemName = editable.name;
-                    String dialogTitle = Locales.read(getActivity(), "confirm_short_remove").replace("item", itemName).create();
+//                    String dialogTitle = Locales.read(getActivity(), "confirm_short_remove").replace("item", itemName).create();// TODO Upgrade to the new api
 
-                    builder.setTitle(dialogTitle);
-                    builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-                            //editable.progress(true);
-                            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
-
-                            // TODO implement api
-                            Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
+//                    builder.setTitle(dialogTitle);
+//                    builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+//                            //editable.progress(true);
+//                            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
+//
+//                            // TODO implement api
+//                            Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                    builder.setNegativeButton(Locales.read(getActivity(), "nav.cancel").create(), new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//                        }
+//                    });
 
                     Dialog dialog = builder.create();
                     //Styling.styleDialog(dialog);
@@ -161,31 +147,31 @@ public class EditEditablesDialog extends DialogFragment {
                 localKey += "add_condition";
         }
 
-        final String addATrackableTitle = Locales.read(getActivity(), localKey).create();
-        addATrackable.setText("+ " + addATrackableTitle);
-        addATrackable.setGravity(Gravity.CENTER_HORIZONTAL);
-        addATrackable.setTextColor(getResources().getColor(R.color.accent));
-        addATrackable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int requestCode = 9987;
-                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
-                if (getActivity() instanceof CheckinActivity) {
-                    final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-                    checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
-                        @Override
-                        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-                            if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
-                                final String name = data.getStringExtra(AddEditableActivity.RESULT);
-                                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
-                                // TODO create new trackable.
-                                Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                }
-            }
-        });
+//        final String addATrackableTitle = Locales.read(getActivity(), localKey).create(); // TODO Upgrade to the new api
+//        addATrackable.setText("+ " + addATrackableTitle);
+//        addATrackable.setGravity(Gravity.CENTER_HORIZONTAL);
+//        addATrackable.setTextColor(getResources().getColor(R.color.accent));
+//        addATrackable.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int requestCode = 9987;
+//                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
+//                if (getActivity() instanceof CheckinActivity) {
+//                    final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+//                    checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
+//                        @Override
+//                        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//                            if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {
+//                                final String name = data.getStringExtra(AddEditableActivity.RESULT);
+//                                final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
+//                                // TODO create new trackable.
+//                                Toast.makeText(getActivity(), "Coming soon", Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        });
         ll_root.addView(addATrackable);
         sv_root.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
     }

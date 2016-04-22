@@ -11,7 +11,6 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
-import com.flaredown.flaredownApp.Helpers.Locales;
 import com.flaredown.flaredownApp.R;
 
 public class PolicyWebView extends AppCompatActivity {
@@ -38,13 +37,13 @@ public class PolicyWebView extends AppCompatActivity {
             identifier = bundle.getString(FlaredownConstants.BUNDLE_IDENTIFIER_KEY);
             if (identifier.equals(FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_TERMS)) {
                 title.setText(R.string.title_terms_of_service);
-                String html = Locales.read(context, "terms_of_service").create();
+                String html = getResources().getString(R.string.locales_terms_of_service);
                 String mime = "text/html";
                 String encoding = "utf-8";
                 webview.loadDataWithBaseURL(null, html, mime, encoding, null);
             } else if (identifier.equals(FlaredownConstants.BUNDLE_IDENTIFIER_VALUE_POLICY)) {
                 title.setText(R.string.title_privacy_policy);
-                String html = Locales.read(context, "privacy_policy").create();
+                String html = getResources().getString(R.string.locales_privacy_policy);
                 String mime = "text/html";
                 String encoding = "utf-8";
                 webview.loadDataWithBaseURL(null, html, mime, encoding, null);

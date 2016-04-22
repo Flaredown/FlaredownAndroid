@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
-import com.flaredown.flaredownApp.Helpers.API.API;
-import com.flaredown.flaredownApp.Helpers.API.EntryParser.Entry;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
@@ -231,33 +229,35 @@ public class AlarmIntentService extends IntentService{
     }
 
     private boolean userAlreadyCheckedIn(){
-        API api = new API(getApplicationContext());
-        boolean checkedIn;
-        JSONObject entryJson;
-
-        try{
-            if (api.apiFromCacheIsDirty("entries")){
-                entryJson = api.entryBlocking(Calendar.getInstance().getTime());
-            } else {
-                entryJson = new JSONObject(api.getAPIFromCache("entries"));
-            }
-
-            Entry entry = new Entry(entryJson);
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
-            today.set(Calendar.MINUTE, 0);
-            today.set(Calendar.SECOND,0);
-            today.set(Calendar.MILLISECOND, 0);
-            if (entry.getEntryDate().before(today)){
-                checkedIn = false;
-            } else {
-                checkedIn = entry.isComplete();
-            }
-
-        } catch (Exception e){
-            checkedIn = false;
-        }
-        return checkedIn;
+        // TODO Upgrade to the new api
+//        API api = new API(getApplicationContext());
+//        boolean checkedIn;
+//        JSONObject entryJson;
+//
+//        try{
+//            if (api.apiFromCacheIsDirty("entries")){
+//                entryJson = api.entryBlocking(Calendar.getInstance().getTime());
+//            } else {
+//                entryJson = new JSONObject(api.getAPIFromCache("entries"));
+//            }
+//
+//            Entry entry = new Entry(entryJson);
+//            Calendar today = Calendar.getInstance();
+//            today.set(Calendar.HOUR_OF_DAY, 0);
+//            today.set(Calendar.MINUTE, 0);
+//            today.set(Calendar.SECOND,0);
+//            today.set(Calendar.MILLISECOND, 0);
+//            if (entry.getEntryDate().before(today)){
+//                checkedIn = false;
+//            } else {
+//                checkedIn = entry.isComplete();
+//            }
+//
+//        } catch (Exception e){
+//            checkedIn = false;
+//        }
+//        return checkedIn;
+        return false; // Just put in to prevent exception TODO remove
     }
 
     private void updateAlarmInRealm(Alarm alarm, Long newTime){
