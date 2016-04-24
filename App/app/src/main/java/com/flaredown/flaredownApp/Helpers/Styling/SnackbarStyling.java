@@ -1,6 +1,10 @@
 package com.flaredown.flaredownApp.Helpers.Styling;
 
+import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.view.View;
+
+import com.flaredown.flaredownApp.BuildConfig;
 
 /**
  * Created by thunter on 03/04/16.
@@ -14,10 +18,14 @@ public class SnackbarStyling {
         return null;
     }
 
-    public static android.support.design.widget.Snackbar colorSnackBar(android.support.design.widget.Snackbar snackbar, int colorId) {
+    public static Snackbar colorSnackBar(Snackbar snackbar, int colorId) {
         View snackbarView = getSnackBarLayout(snackbar);
-        if(snackbarView != null)
+        if(snackbarView != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                snackbarView.setZ(30f);
+            }
             snackbarView.setBackgroundColor(colorId);
+        }
         return snackbar;
     }
 

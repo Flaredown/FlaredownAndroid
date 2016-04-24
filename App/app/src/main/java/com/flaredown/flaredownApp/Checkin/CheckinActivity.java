@@ -5,20 +5,27 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -54,6 +61,7 @@ public class CheckinActivity extends AppCompatActivity {
     private Calendar checkinDate = null;
     private boolean isLoadingCheckin = false;
     private boolean activityPaused = false;
+    private GestureDetectorCompat gestureDetector;
 
     /**
      * Get the current check in for the activity.
@@ -320,6 +328,7 @@ public class CheckinActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Styling.forcePortraitOnSmallDevices(this);
         super.onCreate(savedInstanceState);
+        gestureDetector = new GestureDetectorCompat(this, new GestureListener());
         setContentView(R.layout.checkin_activity);
         API = new Communicate(this);
         if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
@@ -572,7 +581,7 @@ public class CheckinActivity extends AppCompatActivity {
                             try {
                                 Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
                                 if (updateTime.equals(lastUpdate))
-                                    SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                                    SnackbarStyling.colorSnackBar(Snackbar.make(findViewById(R.id.cl_root_view), R.string.locales_summary_title, Snackbar.LENGTH_SHORT), getResources().getColor(R.color.background)).show();
                             } catch (InterruptedException e) {
                             }
                         }
@@ -836,5 +845,34 @@ public class CheckinActivity extends AppCompatActivity {
      */
     public boolean isActivityPaused() {
         return activityPaused;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        // Patching in the gesture detector.
+        this.gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent ev) {
+            View v = getCurrentFocus();
+            if(v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if(!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+                    EditText et = (EditText) v;
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    et.clearFocus();
+                    et.setFocusable(false);
+                    et.setFocusableInTouchMode(false);
+                    et.setFocusable(true);
+                    et.setFocusableInTouchMode(true);
+                }
+            }
+            return super.onSingleTapConfirmed(ev);
+        }
     }
 }
