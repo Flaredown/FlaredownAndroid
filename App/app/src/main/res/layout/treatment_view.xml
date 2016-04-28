@@ -44,4 +44,31 @@
         android:padding="6dp"
         android:visibility="gone"
         />
+    <AutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/treatmentDoseAutoComplete"
+        android:background="@drawable/textview_stroke"
+        android:layout_alignStart="@+id/treatmentName"
+        android:layout_alignLeft="@+id/treatmentName"
+        android:layout_below="@+id/treatmentName"
+        android:textColor="@color/accent"
+        tools:text="600 mg"
+        android:padding="6dp"
+        android:visibility="gone"
+        android:minWidth="@dimen/abc_search_view_text_min_width"
+        android:maxWidth="@dimen/abc_search_view_preferred_width"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/doseDone"
+        android:layout_toRightOf="@id/treatmentDoseAutoComplete"
+        android:layout_toEndOf="@id/treatmentDoseAutoComplete"
+        android:layout_below="@id/treatmentName"
+        android:layout_alignBaseline="@id/treatmentDoseAutoComplete"
+        android:paddingLeft="8dp"
+        android:layout_marginBottom="50dp"
+        android:text="@string/locales_nav_done_caps"
+        style="@style/AppTheme.TextView.Link"
+        android:visibility="gone"/>
 </RelativeLayout>

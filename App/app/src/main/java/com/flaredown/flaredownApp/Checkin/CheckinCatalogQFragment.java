@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Checkin.InputViews.InputContainerView;
 import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRating;
@@ -133,7 +132,8 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase {
                         }
                         @Override
                         public void onUpdateDose(String dose) {
-                            Toast.makeText(getContext(),"Dose Clicked",Toast.LENGTH_SHORT).show();
+                            trackable.setValue(dose);
+                            getCheckInActivity().checkInUpdate();
                         }
                     });
                     inputContainerViews.add(inputContainerView);

@@ -13,6 +13,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
@@ -510,6 +511,7 @@ public class Communicate {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.getCountries:VolleyError"));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
@@ -567,7 +569,7 @@ public class Communicate {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.deleteTrackings:JSONException"));
+                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.deleteTrackings:VolleyError"));
             }
         }
         ){
@@ -584,5 +586,28 @@ public class Communicate {
             }
         };
         QueueProvider.getQueue(context).add(stringRequest);
+    }
+
+    public void getSuggestedDoses(String id, final APIResponse<Search, Error> apiResponse){
+        WebAttributes params = new WebAttributes();
+        params.put("query[treatment_id]",id);
+        params.put("resource","dose");
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("searches",params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Search search = new Search(response);
+                    apiResponse.onSuccess(search);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getSuggestedDoses:JSONException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.getSuggestedDoses:VolleyError"));
+            }
+        });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 }
