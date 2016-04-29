@@ -29,7 +29,8 @@
         android:name=".FlaredownApp">
         <activity
             android:name=".Checkin.CheckinActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,6 +87,9 @@
         </activity>
 
         <service android:enabled="true" android:name=".Receivers.AlarmIntentService" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="9522fa7c1d5d853973761aff000f4ec81d864f46" />
     </application>
 
 </manifest>

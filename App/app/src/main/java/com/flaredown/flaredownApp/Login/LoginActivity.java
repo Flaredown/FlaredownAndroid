@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LoginEvent;
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
@@ -197,6 +199,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
                 @Override
                 public void onSuccess(Session result) {
+                    // Tell Fabric.
+                    Answers.getInstance().logLogin(new LoginEvent()
+                        .putMethod("default")
+                        .putSuccess(true));
+
                     Intent intent = new Intent(mContext, CheckinActivity.class);
                     // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

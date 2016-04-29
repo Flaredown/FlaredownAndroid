@@ -6,11 +6,15 @@ import android.support.annotation.UiThread;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
@@ -75,7 +79,6 @@ public class NotesQFragment extends ViewPagerFragmentBase {
                 textChangeWaitingThread.start();
             }
         });
-
         // Save if the application is paused.
         getCheckInActivity().addActivityPauseListener(new ActivityPauseEventListener() {
             @Override
