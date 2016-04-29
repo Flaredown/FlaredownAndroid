@@ -33,6 +33,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
@@ -437,6 +439,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 setView(Views.CHECKIN);
+                Answers.getInstance().logCustom(new CustomEvent("New Check In"));
             }
         });
 

@@ -87,6 +87,9 @@
         </activity>
 
         <service android:enabled="true" android:name=".Receivers.AlarmIntentService" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="9522fa7c1d5d853973761aff000f4ec81d864f46" />
     </application>
 
 </manifest>
