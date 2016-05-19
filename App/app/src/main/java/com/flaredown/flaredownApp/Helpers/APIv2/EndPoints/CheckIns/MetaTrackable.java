@@ -8,40 +8,70 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import io.intercom.com.google.gson.annotations.SerializedName;
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+
 /**
  * Provides extra information about a trackable.
  */
-public class MetaTrackable implements Serializable {
-    private int colorId;
-    private int id;
+public class MetaTrackable extends RealmObject implements Serializable {
+    private Integer colorId;
+    private Integer id;
     private String name;
-    private TrackableType type;
-    private Calendar createdAt;
-    private Calendar updatedAt;
+
+    @Ignore
+    private transient TrackableType type; // Work around for Realm not being able to store the Calendar object.
+
+    @SerializedName("type")
+    private String typeRaw;
+
+    @Ignore
+    private transient Calendar createdAt; // Work around for Realm not being able to store the Calendar object.
+
+    @SerializedName("createdAt")
+    private Long createdAtRaw;
+
+    @Ignore
+    private transient Calendar updatedAt; // Work around for Realm not being able to store the Calendar object.
+
+    @SerializedName("updatedAt")
+    private Long updatedAtRaw;
+
+    @Ignore
+    private transient Calendar cachedAt; // Work around for Realm not being able to store the Calendar object.
+
+    @SerializedName("cachedAt")
+    private Long cachedAtRaw;
+
+    public MetaTrackable() {
+        this.colorId = 1;
+        this.id = 0;
+    }
 
 
     public MetaTrackable(JSONObject jObject) throws JSONException{
         this.colorId = jObject.optInt("color_id", 1);
         this.id = jObject.getInt("id");
         this.name = jObject.getString("name");
-        this.type = TrackableType.valueOfs(jObject.getString("type"));
-        this.createdAt = Date.stringToCalendar(jObject.optString("created_at", null));
-        this.updatedAt = Date.stringToCalendar(jObject.optString("updated_at", null));
+        setType(TrackableType.valueOfs(jObject.getString("type")));
+        this.createdAtRaw = Date.stringToMillis(jObject.optString("created_at", null));
+        this.updatedAtRaw = Date.stringToMillis(jObject.optString("updated_at", null));
     }
 
-    public int getColorId() {
+    public Integer getColorId() {
         return colorId;
     }
 
-    public void setColorId(int colorId) {
+    public void setColorId(Integer colorId) {
         this.colorId = colorId;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -54,26 +84,74 @@ public class MetaTrackable implements Serializable {
     }
 
     public TrackableType getType() {
-        return type;
+        return TrackableType.valueOf(getTypeRaw());
     }
 
     public void setType(TrackableType type) {
-        this.type = type;
+        setTypeRaw(type.name());
+    }
+
+    public String getTypeRaw() {
+        return typeRaw;
+    }
+
+    public void setTypeRaw(String type) {
+        typeRaw = type;
     }
 
     public Calendar getCreatedAt() {
-        return createdAt;
+        return Date.millisToCalendar(getCreatedAtRaw());
     }
 
     public void setCreatedAt(Calendar createdAt) {
-        this.createdAt = createdAt;
+        setCreatedAtRaw(createdAt.getTimeInMillis());
+    }
+
+    public Long getCreatedAtRaw() {
+        return createdAtRaw;
+    }
+
+    public void setCreatedAtRaw(Long createdAtRaw) {
+        this.createdAtRaw = createdAtRaw;
     }
 
     public Calendar getUpdatedAt() {
-        return updatedAt;
+        return Date.millisToCalendar(getUpdatedAtRaw());
     }
 
     public void setUpdatedAt(Calendar updatedAt) {
-        this.updatedAt = updatedAt;
+        setUpdatedAtRaw(updatedAt.getTimeInMillis());
+    }
+
+    public Long getUpdatedAtRaw() {
+        return updatedAtRaw;
+    }
+
+    public void setUpdatedAtRaw(Long updatedAtRaw) {
+        this.updatedAtRaw = updatedAtRaw;
+    }
+
+    /**
+     * Get the time when object stored in DB for caching.
+     * @return The time when the object was stored in the DB for caching.
+     */
+    public Calendar getCachedAt() {
+        return Date.millisToCalendar(getCachedAtRaw());
+    }
+
+    /**
+     * Set the time when the object is stored in the DB for caching.
+     * @param cachedAt The time when the object
+     */
+    public void setCachedAt(Calendar cachedAt) {
+        setCachedAtRaw(cachedAt.getTimeInMillis());
+    }
+
+    public Long getCachedAtRaw() {
+        return cachedAtRaw;
+    }
+
+    public void setCachedAtRaw(Long cachedAtRaw) {
+        this.cachedAtRaw = cachedAtRaw;
     }
 }

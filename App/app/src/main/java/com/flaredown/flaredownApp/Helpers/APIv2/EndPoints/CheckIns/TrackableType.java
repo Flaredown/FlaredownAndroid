@@ -4,6 +4,8 @@ import com.flaredown.flaredownApp.R;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+
 /**
  * The type of trackable.
  */
