@@ -5,19 +5,28 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 
 import io.intercom.com.google.gson.annotations.SerializedName;
+import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Provides extra information about a trackable.
  */
-public class MetaTrackable extends RealmObject implements Serializable {
+public class MetaTrackable extends RealmObject {
     private Integer colorId;
-    private Integer id;
+
+    @PrimaryKey
+    private Integer id; // Unique to the trackable, used to prevent duplicates.
+
     private String name;
 
     @Ignore
@@ -153,5 +162,17 @@ public class MetaTrackable extends RealmObject implements Serializable {
 
     public void setCachedAtRaw(Long cachedAtRaw) {
         this.cachedAtRaw = cachedAtRaw;
+    }
+
+    /**
+     * Removes all elements cached in realm which have passed the maxAge given.
+     * @param realmInstance The realmInstance to alter.
+     * @param maxAge The max age of the elements.
+     */
+    public static void clearExpiredItems(Realm realmInstance, long maxAge) {
+        realmInstance.beginTransaction();
+        RealmQuery<MetaTrackable> query = realmInstance.where(MetaTrackable.class).lessThanOrEqualTo("cachedAtRaw", Calendar.getInstance().getTimeInMillis() - maxAge).isNotNull("cachedAtRaw");
+        query.findAll().clear();
+        realmInstance.commitTransaction();
     }
 }
