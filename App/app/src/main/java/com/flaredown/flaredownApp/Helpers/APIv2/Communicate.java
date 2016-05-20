@@ -35,14 +35,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
+
 
 /**
  * Contains methods used for communicating with the API.
  */
 public class Communicate {
-
+    private static final String DEBUG_KEY = "Communi";
+    private static final long DEFAULT_DB_CACHE_EXPIRE_TIME = 1209600000;    // 14 days.. If items are
+                                                                            // older than this they will be
+                                                                            // removed from the db and
+                                                                            // refreshed from the api.
 
     private Context context;
+    private Realm mRealm;
 
     /**
      * Create a communication's class.
@@ -50,6 +59,7 @@ public class Communicate {
      */
     public Communicate(Context context) {
         this.context = context;
+        this.mRealm = Realm.getInstance(context);
     }
 
     /**
@@ -514,32 +524,66 @@ public class Communicate {
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
-
+    /**
+     * Get a collection of MetaTrackables from the collection of id's provided. MetaTrackables are
+     * cached and if ALL ids are stored in the DB then the cache will be used, otherwise a new query
+     * will be made.
+     * @param type The trackable types for all ID's given.
+     * @param ids The ids for the MetaTrackables.
+     * @param apiResponse Response or error callback.
+     */
     public void getTrackable(final TrackableType type, List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
-        String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
-        url += "?";
-        for (Integer id : ids) {
-            url += "ids[]=" + id + "&";
+        MetaTrackable.clearExpiredItems(mRealm, DEFAULT_DB_CACHE_EXPIRE_TIME);
+
+        RealmQuery<MetaTrackable> inDBQuery = mRealm.where(MetaTrackable.class);
+        boolean first = true;
+        for(Integer id : ids) {
+            if(!first)
+                inDBQuery.or();
+            else first = false;
+
+            inDBQuery.equalTo("id", id);
         }
-        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, url, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    ArrayList<MetaTrackable> result = new ArrayList<>();
-                    JSONArray jArray = response.getJSONArray(type.name().toLowerCase() + "s");
-                    for (int i = 0; i < jArray.length(); i++) {
-                        result.add(new MetaTrackable(jArray.getJSONObject(i)));
+
+        inDBQuery = inDBQuery.findAll().where().equalTo("typeRaw", type.name());
+
+        if(inDBQuery.count() == ids.size()) { // No need to do query.
+            PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_KEY, "Fetching Cached Meta Trackables");
+            RealmResults<MetaTrackable> inDBResults = inDBQuery.findAll();
+            apiResponse.onSuccess(new ArrayList<>(inDBResults.subList(0, inDBResults.size())));
+        } else {
+
+            String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
+            url += "?";
+            for (Integer id : ids) {
+                url += "ids[]=" + id + "&";
+            }
+            JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, url, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    PreferenceKeys.log(PreferenceKeys.LOG_I, DEBUG_KEY, "Fetching Meta Trackables");
+                    try {
+                        ArrayList<MetaTrackable> result = new ArrayList<>();
+                        JSONArray jArray = response.getJSONArray(type.name().toLowerCase() + "s");
+                        for (int i = 0; i < jArray.length(); i++) {
+                            MetaTrackable mt = new MetaTrackable(jArray.getJSONObject(i));
+                            mt.setCachedAt(Calendar.getInstance()); // Set the cached time, enabling the db to stay fresh.
+                            result.add(mt);
+                        }
+                        mRealm.beginTransaction();
+                        mRealm.copyToRealmOrUpdate(result);
+                        mRealm.commitTransaction();
+                        apiResponse.onSuccess(result);
+                    } catch (JSONException e) {
+                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackable:JSONException"));
                     }
-                    apiResponse.onSuccess(result);
-                } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackable:JSONException"));
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        });
-        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                }
+            });
+            QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+        }
     }
 }

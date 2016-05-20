@@ -5,8 +5,13 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Used as a base to represent the trackables (Symptoms, Conditions & Treatments).
@@ -20,7 +25,7 @@ public class Trackable implements Serializable {
     private Integer value;
     private Integer trackableId;
     private String colourId;
-    private MetaTrackable metaTrackable = null;
+    private transient MetaTrackable metaTrackable = null;
 
     /**
      * Default constructor for the trackable object.
@@ -148,5 +153,42 @@ public class Trackable implements Serializable {
 
     public void setMetaTrackable(MetaTrackable metaTrackable) {
         this.metaTrackable = metaTrackable;
+    }
+
+    private final static String MT_ID = "mt_id";
+    private final static String MT_NAME = "mt_name";
+    private final static String MT_TYPE = "mt_type";
+    private final static String MT_CREATED_AT = "mt_createdAt";
+    private final static String MT_UPDATED_AT = "mt_updatedAt";
+    private final static String MT_CACHED_AT = "mt_cachedAt";
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        // Default serialzation.
+        oos.defaultWriteObject();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put(MT_ID, metaTrackable.getId());
+        data.put(MT_NAME, metaTrackable.getName());
+        data.put(MT_TYPE, metaTrackable.getTypeRaw());
+        data.put(MT_CREATED_AT, metaTrackable.getCreatedAtRaw());
+        data.put(MT_UPDATED_AT, metaTrackable.getUpdatedAtRaw());
+        data.put(MT_CACHED_AT, metaTrackable.getCachedAtRaw());
+        oos.writeObject(data);
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        // Default deserializarion.
+        ois.defaultReadObject();
+
+        Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
+        if(data.containsKey(MT_ID)) {
+            if(metaTrackable == null) metaTrackable = new MetaTrackable();
+            metaTrackable.setId((Integer) data.get(MT_ID));
+            metaTrackable.setName((String) data.get(MT_NAME));
+            metaTrackable.setTypeRaw((String) data.get(MT_TYPE));
+            metaTrackable.setCreatedAtRaw((Long) data.get(MT_CREATED_AT));
+            metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
+            metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
+        }
     }
 }
