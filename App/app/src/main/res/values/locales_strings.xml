@@ -4,6 +4,8 @@
     <string name="locales_summary_page_title">Summary</string>
     <string name="locales_journal">Journal</string>
     <string name="locales_nav_retry">Retry</string>
+    <string name="locales_nice_errors_no_response">Unable to connect.</string>
+    <string name="locales_nice_errors_no_internet">No internet connection, please connect and retry.</string>
 
     <!-- Java locales converter available at https://github.com/thunter1000/FlaredownAndroidLocalesConverter it takes the old locales endpoint and converts it into a string.xml -->
     <!-- Imported from locales -->
