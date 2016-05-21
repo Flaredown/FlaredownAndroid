@@ -104,7 +104,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginFormView = findViewById(R.id.ll_email_login_form);
 
         // Listen out for internet connectivity
-        InternetStatusBroadcastReceiver.setUp(mContext, new Runnable() {
+        InternetStatusBroadcastReceiver.initiate(mContext, new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = true;
