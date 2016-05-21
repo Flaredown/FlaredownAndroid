@@ -17,10 +17,12 @@ public class ErrorDialog {
     private static final String DEBUG_KEY = "ErrorDialog";
     Error apiError;
     Context context;
+    boolean cancelable;
 
-    public ErrorDialog(Context context, Error apiError) {
+    public ErrorDialog(Context context, Error apiError, boolean cancelable) {
         this.apiError = apiError;
         this.context = context;
+        this.cancelable = cancelable;
         constructDialog();
     }
 
@@ -45,17 +47,28 @@ public class ErrorDialog {
 
             builder.setTitle(title);
             builder.setMessage(Html.fromHtml(description));
+            builder.setCancelable(cancelable);
 
-            // TODO offer retry option.
+            if(cancelable) {
+                builder.setPositiveButton(context.getString(R.string.locales_nav_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-            builder.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+            }
 
-                }
-            });
+            if(apiError.getRetryRunnable() != null) {
+                builder.setNegativeButton(context.getString(R.string.locales_nav_retry), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        apiError.getRetryRunnable().run();
+                    }
+                });
+            }
+
             Dialog dialog = builder.create();
-            Styling.styleDialog(dialog);
+//            Styling.styleDialog(dialog);
             dialog.show();
         }
     }

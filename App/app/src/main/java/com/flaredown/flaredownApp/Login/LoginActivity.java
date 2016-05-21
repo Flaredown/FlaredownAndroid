@@ -224,7 +224,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
                     } else
-                        new ErrorDialog(mContext, result);
+                        new ErrorDialog(mContext, result, false);
                 }
             });
         }

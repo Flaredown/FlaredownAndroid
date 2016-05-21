@@ -151,7 +151,8 @@ public class Error {
      * Set the retry runnable, the runnable which can be run to retry the api request.
      * @param retryRunnable A runnable which can be run to retry the api request.
      */
-    public void setRetryRunnable(Runnable retryRunnable) {
+    public Error setRetryRunnable(Runnable retryRunnable) {
         this.retryRunnable = retryRunnable;
+        return this;
     }
 }

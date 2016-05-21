@@ -550,7 +550,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
         } catch (Exception e) { // was jsonException
-            new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary..JSONException")); // TODO update to new error
+            new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary..JSONException"), false); // TODO update to new error
         }
     }
 
@@ -594,7 +594,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result);
+                new ErrorDialog(CheckinActivity.this, result, false);
             }
         });
     }
@@ -618,7 +618,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result);
+                new ErrorDialog(CheckinActivity.this, result, false);
             }
         });
     }

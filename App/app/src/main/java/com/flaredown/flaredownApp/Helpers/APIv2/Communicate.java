@@ -39,7 +39,6 @@ import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
-
 /**
  * Contains methods used for communicating with the API.
  */
@@ -67,7 +66,14 @@ public class Communicate {
      * @param email The email of the user.
      * @param password The password for the user.
      */
-    public void userSignIn(String email, String password, final APIResponse<Session, Error> apiResponse){
+    public void userSignIn(final String email, final String password, final APIResponse<Session, Error> apiResponse){
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                userSignIn(email, password, apiResponse);
+            }
+        };
+
         final WebAttributes parameters = new WebAttributes();
         parameters.put("user[email]", email);
         parameters.put("user[password]", password);
@@ -89,17 +95,24 @@ public class Communicate {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.userSignIn::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.userSignIn::VolleyError").setRetryRunnable(retryRunnable));
             }
         }).setParams(parameters);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
     /**
-     * Get the check in object for a specific identification. // TODO needs testing.
-     * @param id
+     * Get the check in object for a specific identification.
+     * @param id The id of the check in to fetch.
+     * @param apiResponse Response or error callback.
      */
-    public void checkIn(String id, final APIResponse<CheckIn, Error> apiResponse) {
+    public void checkIn(final String id, final APIResponse<CheckIn, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkIn(id, apiResponse);
+            }
+        };
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins/" + id), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -128,23 +141,31 @@ public class Communicate {
                         });
                     }
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.chackIn::ParseError"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.chackIn::ParseError").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkIn::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkIn::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 
     /**
-     * Get the check in object for a specific date. // TODO needs testing.
+     * Get the check in object for a specific date.
      * @param date The date for the check in.
+     * @param apiResponse Response or error callback.
      */
     public void checkIn(final Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                checkIn(date, apiResponse);
+            }
+        };
+
         WebAttributes getParams = new WebAttributes();
         getParams.put("date", Date.calendarToString(date));
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("checkins", getParams), new Response.Listener<JSONObject>() {
@@ -192,13 +213,13 @@ public class Communicate {
                         }
                     }
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.checkInDate::Exception"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.checkInDate::Exception").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
@@ -211,20 +232,27 @@ public class Communicate {
      * @param apiResponse Getting the response from the api, including the check in object for the
      *                    date.
      */
-    public void createCheckIn(Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+    public void createCheckIn(final Calendar date, final APIResponse<CheckIn, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                createCheckIn(date, apiResponse);
+            }
+        };
+
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("checkins"), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     apiResponse.onSuccess(new CheckIn(response));
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.createCheckIn::Volley"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.createCheckIn::Volley").setRetryRunnable(retryRunnable));
             }
         });
         try {
@@ -241,11 +269,23 @@ public class Communicate {
             QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
 
         } catch (JSONException e) {
-            apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException2"));
+            apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.createCheckIn::JSONException2").setRetryRunnable(retryRunnable));
         }
     }
 
-    public void submitCheckin(CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
+    /**
+     * Submit the check in to the api.
+     * @param checkIn The check in to submit.
+     * @param apiResponse Getting the response from the api.
+     */
+    public void submitCheckin(final CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                submitCheckin(checkIn, apiResponse);
+            }
+        };
+
         try {
             JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("checkins/" + checkIn.getId()), new Response.Listener<JSONObject>() {
                 @Override
@@ -253,13 +293,13 @@ public class Communicate {
                     try {
                         apiResponse.onSuccess(new CheckIn(response));
                     } catch (JSONException e) {
-                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException"));
+                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException").setRetryRunnable(retryRunnable));
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitCheckin::volley"));
+                    apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitCheckin::volley").setRetryRunnable(retryRunnable));
                 }
             });
             jsonObjectExtraRequest.setRequestBody(checkIn.getResponseJson().toString());
@@ -268,7 +308,7 @@ public class Communicate {
             jsonObjectExtraRequest.setHeaders(headers);
             QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
         } catch (JSONException e) {
-            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.submitCheckin::JSONException2"));
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.submitCheckin::JSONException2").setRetryRunnable(retryRunnable));
         }
     }
 
@@ -287,7 +327,14 @@ public class Communicate {
      * @param type The trackable type i.e. Treatment, Symptom...
      * @param date The date for the trackable
      */
-    public void getTrackings(TrackableType type, Calendar date, final APIResponse<Trackings, Error> apiResponse) {
+    public void getTrackings(final TrackableType type, final Calendar date, final APIResponse<Trackings, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getTrackings(type, date, apiResponse);
+            }
+        };
+
         WebAttributes getParams = new WebAttributes();
         getParams.put("at", Date.calendarToString(date));
         getParams.put("trackable_type",type.getTrackingsFormattedType());
@@ -299,18 +346,18 @@ public class Communicate {
                     Trackings trackings = new Trackings(response);
                     if(trackings.size() <= 0) {
                         // No Trackings found
-                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings"));
+                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings").setRetryRunnable(retryRunnable));
                     } else {
                         apiResponse.onSuccess(trackings);
                     }
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackings::Exception"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackings::Exception").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
@@ -349,7 +396,14 @@ public class Communicate {
      * Get the treatment from a tracking
      * @param ids List of treatment ids
      */
-    public void getTreatments(List<Integer> ids, final APIResponse<List<Treatment>, Error> apiResponse){
+    public void getTreatments(final List<Integer> ids, final APIResponse<List<Treatment>, Error> apiResponse){
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getTreatments(ids, apiResponse);
+            }
+        };
+
         String params = "";
         for (int id : ids){
             params += "ids[]=" + id + "&";
@@ -369,13 +423,13 @@ public class Communicate {
                     }
                     apiResponse.onSuccess(treatments);
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.treatment::Exception"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.treatment::Exception").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
@@ -421,20 +475,27 @@ public class Communicate {
      * @param id User id
      * @param apiResponse response or error callback
      */
-    public void getProfile(String id, final APIResponse<Profile, Error> apiResponse){
+    public void getProfile(final String id, final APIResponse<Profile, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getProfile(id, apiResponse);
+            }
+        };
+
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("profiles") + "/" + id, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     apiResponse.onSuccess(new Profile(response));
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getProfile::Exception"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getProfile::Exception").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.getProfile::VolleyError"));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.getProfile::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
@@ -445,19 +506,25 @@ public class Communicate {
      * @param profile Profile of user
      * @param apiResponse Response object
      */
-    public void putProfile(Profile profile, final APIResponse<JSONObject, Error> apiResponse){
+    public void putProfile(final Profile profile, final APIResponse<JSONObject, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                putProfile(profile, apiResponse);
+            }
+        };
         try{
-        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("profiles") + "/" + profile.getId(), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                apiResponse.onSuccess(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.getProfile::VolleyError"));
-            }
-        });
+            JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.PUT, EndPointUrl.getAPIUrl("profiles") + "/" + profile.getId(), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    apiResponse.onSuccess(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.getProfile::VolleyError").setRetryRunnable(retryRunnable));
+                }
+            });
             jsonObjectExtraRequest.setRequestBody(profile.toJSON().toString());
             Map<String,String> headers = jsonObjectExtraRequest.getHeaders();
             headers.put("Content-Type", "application/json");
@@ -466,9 +533,9 @@ public class Communicate {
             jsonObjectExtraRequest.setHeaders(attr);
             QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
         } catch (JSONException e){
-            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.putProfile::JSONException"));
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.putProfile::JSONException").setRetryRunnable(retryRunnable));
         } catch (AuthFailureError authFailureError) {
-            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.putProfile::AuthFailure"));
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.putProfile::AuthFailure").setRetryRunnable(retryRunnable));
         }
     }
 
@@ -476,7 +543,14 @@ public class Communicate {
      * Get the list of available countries
      * @param apiResponse response or error callback
      */
-    public void getCountries(final APIResponse<List<Country>, Error> apiResponse){
+    public void getCountries(final APIResponse<List<Country>, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getCountries(apiResponse);
+            }
+        };
+
         JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("countries"), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -488,7 +562,7 @@ public class Communicate {
                     }
                     apiResponse.onSuccess(countries);
                 } catch (JSONException e) {
-                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getCountries:JSONException"));
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getCountries:JSONException").setRetryRunnable(retryRunnable));
                 }
             }
         }, new Response.ErrorListener() {
@@ -507,7 +581,14 @@ public class Communicate {
      * @param ids The ids for the MetaTrackables.
      * @param apiResponse Response or error callback.
      */
-    public void getTrackable(final TrackableType type, List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+    public void getTrackable(final TrackableType type, final List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getTrackable(type, ids, apiResponse);
+            }
+        };
+
         MetaTrackable.clearExpiredItems(mRealm, DEFAULT_DB_CACHE_EXPIRE_TIME);
 
         RealmQuery<MetaTrackable> inDBQuery = mRealm.where(MetaTrackable.class);
@@ -550,7 +631,7 @@ public class Communicate {
                         mRealm.commitTransaction();
                         apiResponse.onSuccess(result);
                     } catch (JSONException e) {
-                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackable:JSONException"));
+                        apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getTrackable:JSONException").setRetryRunnable(retryRunnable));
                     }
                 }
             }, new Response.ErrorListener() {
