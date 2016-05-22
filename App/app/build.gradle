@@ -28,7 +28,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
@@ -39,14 +39,12 @@ android {
             applicationId 'com.flaredown.flaredownApp'
             buildConfigField "String", "API_BASE_URI", "\"http://staging.flaredown.com/api\""
             resValue "string", "app_name", "Flaredown"
-            targetSdkVersion 22
         }
         productDebug {
             buildConfigField "String", "API_BASE_URI", "\"http://staging.flaredown.com/api\""
             resValue "string", "app_name", "\"Flaredown Debug\""
-            minSdkVersion 14
             applicationId 'com.flaredown.flaredownApp.DEBUG'
-            targetSdkVersion 22
+            ext.enableCrashlytics = false // Disable Crashlytics in debugging mode
         }
     }
 }
@@ -60,13 +58,13 @@ dependencies {
     compile 'io.realm:realm-android:0.84.2'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:support-v4:22.2.1'
-    compile ('io.intercom.android:intercom-sdk:1.+@aar'){
+    compile('io.intercom.android:intercom-sdk:1.+@aar') {
         transitive = true
     }
     //--- Used for JUnit Testing.
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.10.19'
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'org.robolectric:robolectric:3.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
