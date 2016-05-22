@@ -47,6 +47,7 @@ android {
             minSdkVersion 14
             applicationId 'com.flaredown.flaredownApp.DEBUG'
             targetSdkVersion 22
+            ext.enableCrashlytics = false // Disable Crashlytics in debugging mode
         }
     }
 }
