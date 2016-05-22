@@ -8,9 +8,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
@@ -19,8 +21,6 @@ import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -229,35 +229,20 @@ public class AlarmIntentService extends IntentService{
     }
 
     private boolean userAlreadyCheckedIn(){
-        // TODO Upgrade to the new api
-//        API api = new API(getApplicationContext());
-//        boolean checkedIn;
-//        JSONObject entryJson;
-//
-//        try{
-//            if (api.apiFromCacheIsDirty("entries")){
-//                entryJson = api.entryBlocking(Calendar.getInstance().getTime());
-//            } else {
-//                entryJson = new JSONObject(api.getAPIFromCache("entries"));
-//            }
-//
-//            Entry entry = new Entry(entryJson);
-//            Calendar today = Calendar.getInstance();
-//            today.set(Calendar.HOUR_OF_DAY, 0);
-//            today.set(Calendar.MINUTE, 0);
-//            today.set(Calendar.SECOND,0);
-//            today.set(Calendar.MILLISECOND, 0);
-//            if (entry.getEntryDate().before(today)){
-//                checkedIn = false;
-//            } else {
-//                checkedIn = entry.isComplete();
-//            }
-//
-//        } catch (Exception e){
-//            checkedIn = false;
-//        }
-//        return checkedIn;
-        return false; // Just put in to prevent exception TODO remove
+        Communicate api = new Communicate(getApplicationContext());
+        CheckIn checkin = api.checkInBlocking(Calendar.getInstance());
+        try{
+            if (checkin != null && checkin.hasResponse()){
+                Log.d("CheckedIn", "User already checked in");
+                return true;
+            } else {
+                Log.d("CheckedIn", "User not checked in");
+                return false;
+            }
+
+        } catch (Exception e){
+            return false;
+        }
     }
 
     private void updateAlarmInRealm(Alarm alarm, Long newTime){
