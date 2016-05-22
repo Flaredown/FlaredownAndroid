@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -31,7 +30,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
-import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Login.ForceLogin;
@@ -179,12 +177,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_SettingsLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sp = PreferenceKeys.getSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor spe = sp.edit();
-                spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, null);
-                spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, null);
-                spe.putString(PreferenceKeys.SP_Av2_USER_ID, null);
-                spe.commit();
+                flareDownAPI.userSignOut();
                 new ForceLogin(SettingsActivity.this);
                 finish();
             }

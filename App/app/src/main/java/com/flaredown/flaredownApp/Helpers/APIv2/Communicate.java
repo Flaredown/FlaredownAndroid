@@ -21,6 +21,7 @@ import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
+import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 
 import org.json.JSONArray;
@@ -99,6 +100,18 @@ public class Communicate {
             }
         }).setParams(parameters);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void userSignOut() {
+        SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.clear();
+        spe.commit();
+
+        Realm realm = Realm.getInstance(context);
+        realm.beginTransaction();
+        realm.clear(MetaTrackable.class);
+        realm.commitTransaction();
     }
 
     /**
