@@ -15,4 +15,6 @@
     <string name="help_feedback">Help and Feedback</string>
     <string name="title_terms_of_service">Terms of Service</string>
     <string name="title_privacy_policy">Privacy Policy</string>
+    <string name="add_trackable_list_view_text">"%s users"</string>
+    <string name="add_new_condition">Add new condition</string>
 </resources>

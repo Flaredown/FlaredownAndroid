@@ -59,12 +59,16 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
         mDone = (TextView) treatmentItemLayout.findViewById(R.id.doseDone);
         mDone.setOnClickListener(this);
         mTreatmentName.setText(trackable.getMetaTrackable().getName());
-        mTreatmentDose.setText(trackable.getValue());
+        if (null == trackable.getValue() || trackable.getValue().isEmpty()){
+            mTreatmentDose.setText(R.string.locales_no_dose);
+        } else {
+            mTreatmentDose.setText(trackable.getValue());
+        }
         mTreatmentDoseAutoComplete = (AutoCompleteTextView) findViewById(R.id.treatmentDoseAutoComplete);
         api.getSuggestedDoses(trackable.getTrackableId().toString(), new APIResponse<Search, Error>() {
             @Override
             public void onSuccess(Search result) {
-                ArrayList doses = new ArrayList();
+                ArrayList<String> doses = new ArrayList<>();
                 for (Searchable searchable : result.getSearchables()){
                     doses.add(searchable.getName());
                 }

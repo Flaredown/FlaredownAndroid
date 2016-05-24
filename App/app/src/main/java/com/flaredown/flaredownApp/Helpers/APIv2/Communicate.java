@@ -13,16 +13,17 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.Models.Treatment;
 
 import org.json.JSONArray;
@@ -363,12 +364,46 @@ public class Communicate {
     }
 
     /**
+     * Post the trackings object for a specific trackable type.
+     * @param tracking The tracking object
+     */
+    public void submitTracking(Tracking tracking, final APIResponse<Tracking, Error> apiResponse) {
+        try{
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, EndPointUrl.getAPIUrl("trackings"), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Tracking tracking = new Tracking(response);
+                    apiResponse.onSuccess(tracking);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitTracking::Exception"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitTracking::VolleyError"));
+            }
+        });
+
+        jsonObjectExtraRequest.setRequestBody(tracking.toJson().toString());
+        WebAttributes headers = new WebAttributes();
+        headers.put("Content-Type", "application/json");
+        jsonObjectExtraRequest.setHeaders(headers);
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+        } catch (JSONException e) {
+            apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.submitTracking::JSONException"));
+        }
+
+    }
+
+    /**
      * Get the treatment from a tracking
      * @param ids List of treatment ids
      */
-    public void getTreatments(List<String> ids, final APIResponse<List<Treatment>, Error> apiResponse){
+    public void getTreatments(List<Integer> ids, final APIResponse<List<Treatment>, Error> apiResponse){
         String params = "";
-        for (String id : ids){
+        for (Integer id : ids){
             params += "ids[]=" + id + "&";
         }
 
@@ -403,9 +438,9 @@ public class Communicate {
      * @param ids List of treatment ids
      * @return JSONObject of treatments
      */
-    public List<Treatment> getTreatmentsBlocking(List<String> ids){
+    public List<Treatment> getTreatmentsBlocking(List<Integer> ids){
         String params = "";
-        for (String id : ids){
+        for (Integer id : ids){
             params += "ids[]=" + id + "&";
         }
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
@@ -556,7 +591,7 @@ public class Communicate {
      * @param id id of Tracking to remove
      * @param apiResponse response or error callback
      */
-    public void removeTrackings(String id, final APIResponse<String, Error> apiResponse ){
+    public void removeTrackings(int id, final APIResponse<String, Error> apiResponse ){
         StringRequest stringRequest = new StringRequest(Request.Method.DELETE, EndPointUrl.getAPIUrl("trackings") + "/" + id, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -608,6 +643,57 @@ public class Communicate {
                 apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.getSuggestedDoses:VolleyError"));
             }
         });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void search(String queryname, String resource, final APIResponse<Search, Error> apiResponse){
+        WebAttributes params = new WebAttributes();
+        params.put("query[name]",queryname);
+        params.put("resource",resource);
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("searches",params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Search search = new Search(response);
+                    apiResponse.onSuccess(search);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.getSuggestedDoses:JSONException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error().setExceptionThrown(error).setDebugString("APIv2.Communicate.getSuggestedDoses:VolleyError"));
+            }
+        });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void submitNewTrackable(final TrackableType type, String name, final APIResponse<MetaTrackable, Error> apiResponse ){
+        String template = "{\"%s\":{\"name\":%s,\"color_id\":null,\"users_count\":null}}\n";
+        String newTrackable = String.format(template,type.toString().toLowerCase(),name);
+        String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
+
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    MetaTrackable meta = new MetaTrackable(response.getJSONObject(type.toString().toLowerCase()));
+                    apiResponse.onSuccess(meta);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitNewTrackable::Exception"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.submitNewTrackable::VolleyError"));
+            }
+        });
+        WebAttributes params = new WebAttributes();
+        jsonObjectExtraRequest.setRequestBody(newTrackable);
+        params.put("Content-Type", "application/json");
+        jsonObjectExtraRequest.setHeaders(params);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 }

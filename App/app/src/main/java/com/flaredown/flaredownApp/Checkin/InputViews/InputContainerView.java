@@ -17,6 +17,7 @@ public class InputContainerView extends LinearLayout{
     Trackable trackable;
     TextView tv_questionTitle;
     View v_input = null;
+    TextView tv_add;
     public InputContainerView(Context context, Trackable trackable) {
         super(context);
 

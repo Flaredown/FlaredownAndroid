@@ -17,4 +17,10 @@ public class FlaredownConstants {
     public static final String PROFILE_SEX_ID_FEMALE = "female";
     public static final String PROFILE_SEX_ID_OTHER = "other";
     public static final String PROFILE_SEX_ID_DOESNT_SAY = "doesnt_say";
+    public static final String ADD_TRACKABLE_TYPE_KEY = "add_trackable_key";
+    public static final int ADD_TRACKABLE_SEARCH_TIME_MAX = 1000;
+    public static final String CHECKIN_DATE_KEY = "checkin_date";
+    public static final int ADD_TRACKABLE_REQUEST_CODE = 1;
+    public static final String RETURN_TRACKABLE_KEY = "return_trackable";
+
 }

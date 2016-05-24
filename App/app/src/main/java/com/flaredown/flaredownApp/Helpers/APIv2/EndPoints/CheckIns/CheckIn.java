@@ -259,7 +259,7 @@ public class CheckIn implements Serializable{
             JSONArray trackablesJArray = new JSONArray();
             ArrayList<Trackable> trackables = getTrackables(trackableType);
             for (Trackable trackable : trackables) {
-                trackablesJArray.put(trackable.getResponseJson());
+                trackablesJArray.put(trackable.getResponseJson(this));
             }
 
             checkinJObject.put(name, trackablesJArray);

@@ -135,7 +135,7 @@ public class AlarmIntentService extends IntentService{
 
         try {
             Trackings trackings = flaredownApi.getTrackingsBlocking(TrackableType.TREATMENT,Calendar.getInstance());
-            List<String> ids = new ArrayList<>();
+            List<Integer> ids = new ArrayList<>();
             for (Tracking tracking : trackings){
                 ids.add(tracking.getTrackable_id());
             }

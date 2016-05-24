@@ -10,7 +10,8 @@
         android:text="Name"
         android:id="@+id/tv_name"
         android:layout_marginBottom="5dp"
-        android:textSize="19sp" />
+        android:textSize="19sp"
+        android:textColor="@android:color/black"/>
 
     <TextView
         android:layout_width="wrap_content"

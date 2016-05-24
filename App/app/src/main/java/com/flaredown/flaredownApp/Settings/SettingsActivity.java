@@ -46,7 +46,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-import io.intercom.android.sdk.Intercom;
+import io.intercom.android.sdk.*;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity {
         flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
             @Override
             public void onSuccess(Trackings trackings) {
-                List<String> ids = new ArrayList<>();
+                List<Integer> ids = new ArrayList<>();
                 for (int i = 0; i < trackings.size(); i++) {
                     ids.add(trackings.get(i).getTrackable_id());
                 }

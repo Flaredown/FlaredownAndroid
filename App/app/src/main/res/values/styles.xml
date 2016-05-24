@@ -110,7 +110,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="DoseTextView" parent="@android:style/TextAppearance.Widget.TextView">
+    <style name="DoseTextView" parent="@android:style/TextAppearance.Widget.TextView"/>
 
+    <style name="ListView" parent="@android:style/Widget.ListView">
+        <item name="android:textColor">@color/accent</item>
     </style>
 </resources>

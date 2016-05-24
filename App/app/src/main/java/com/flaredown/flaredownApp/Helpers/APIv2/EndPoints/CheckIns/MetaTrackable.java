@@ -19,6 +19,7 @@ public class MetaTrackable implements Serializable {
     private Calendar createdAt;
     private Calendar updatedAt;
 
+    public MetaTrackable(){}
 
     public MetaTrackable(JSONObject jObject) throws JSONException{
         this.colorId = jObject.optInt("color_id", 1);

@@ -2,11 +2,8 @@ package com.flaredown.flaredownApp;
 
 import android.app.Application;
 
-import io.intercom.android.sdk.Intercom;
+import io.intercom.android.sdk.*;
 
-/**
- * Created by squiggie on 3/8/16.
- */
 public class FlaredownApp extends Application {
 
     @Override

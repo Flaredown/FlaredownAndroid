@@ -13,6 +13,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,9 +29,12 @@ import android.widget.Toast;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.SnackbarStyling;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
@@ -48,7 +53,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class CheckinActivity extends AppCompatActivity {
+public class CheckinActivity extends AppCompatActivity{
     Communicate API;
     private static String DEBUG_KEY = "CHECKIN";
     private Calendar checkinDate = null;
@@ -98,7 +103,6 @@ public class CheckinActivity extends AppCompatActivity {
     private static final String SI_CHECKIN_DATE = "checkin date";
     private static final String SI_CHECKIN_PAGE_NUMBER = "checkin page number";
     private static final String KEY_FIRST_CHECKIN = "first_checkin";
-
 
     private enum Views {
         SPLASH_SCREEN, CHECKIN, NOT_CHECKED_IN_YET, SUMMARY
@@ -571,8 +575,9 @@ public class CheckinActivity extends AppCompatActivity {
                         public void run() {
                             try {
                                 Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
-                                if (updateTime.equals(lastUpdate))
+                                if (updateTime.equals(lastUpdate)) {
                                     SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
+                                }
                             } catch (InterruptedException e) {
                             }
                         }
@@ -793,6 +798,90 @@ public class CheckinActivity extends AppCompatActivity {
             onActivityResultListener.onActivityResult(requestCode, resultCode, data);
             onActivityResultListener = null;
         }
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == FlaredownConstants.ADD_TRACKABLE_REQUEST_CODE) {
+                //Retrieve trackable from intent
+                if (data.hasExtra(FlaredownConstants.RETURN_TRACKABLE_KEY)){
+                    Bundle bundle = data.getExtras();
+                    final Trackable trackable = (Trackable) bundle.get(FlaredownConstants.RETURN_TRACKABLE_KEY);
+                    if (trackable != null){
+                        trackable.setCheckInId(checkIn.getId());
+                        if (DateUtils.isToday(checkIn.getDate().getTimeInMillis())){
+                            //If checkin is today, add trackable to /tracking
+                            Tracking tracking = new Tracking();
+                            tracking.setTrackable_id(trackable.getTrackableId());
+                            //tracking.setId(trackable.getId());
+                            tracking.setTrackable_type(trackable.getType());
+                            API.submitTracking(tracking, new APIResponse<Tracking, Error>() {
+                                @Override
+                                public void onSuccess(Tracking result) {
+                                    updateLocalCheckinAndUI(trackable);
+                                }
+
+                                @Override
+                                public void onFailure(Error result) {
+                                    //Alert use that adding failed
+                                    //Cleanup
+                                    Log.d("Error",result.toString());
+                                }
+                            });
+                        } else {
+                            updateLocalCheckinAndUI(trackable);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateLocalCheckinAndUI(final Trackable trackable) {
+        //Update Checkin
+        if (trackable.getType() == TrackableType.CONDITION){
+            checkIn.getConditions().add(trackable);
+        } else if (trackable.getType() == TrackableType.SYMPTOM){
+            checkIn.getSymptoms().add(trackable);
+        } else if (trackable.getType() == TrackableType.TREATMENT){
+            checkIn.getTreatments().add(trackable);
+        }
+
+        API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
+            @Override
+            public void onSuccess(CheckIn result) {
+                for (Trackable newTrackable : result.getTrackables(trackable.getType())){
+                    if (newTrackable.getTrackableId().equals(trackable.getTrackableId())){
+                        trackable.setId(newTrackable.getId());
+                    }
+                }
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                List<Fragment> nestedFragments = fragmentManager.getFragments();
+
+                if (nestedFragments != null || nestedFragments.size() != 0) {
+                    for (Fragment fragment : nestedFragments){
+                        if (fragment instanceof CheckInSummaryFragment){
+                            List<ViewPagerFragmentBase> nestedCatalogQFragments = ((CheckInSummaryFragment) fragment).getFragments();
+                            for (Fragment frag: nestedCatalogQFragments){
+                                if (frag instanceof CheckinCatalogQFragment){
+                                    if (((CheckinCatalogQFragment) frag).getTrackableType() == trackable.getType()){
+                                        ((CheckinCatalogQFragment) frag).addTrackable(trackable);
+                                    }
+                                }
+                            }
+                        } else if (fragment instanceof CheckinCatalogQFragment){
+                            if (((CheckinCatalogQFragment) fragment).getTrackableType() == trackable.getType()){
+                                ((CheckinCatalogQFragment) fragment).addTrackable(trackable);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                Log.d("Checkin Error",result.toString());
+            }
+        });
     }
 
 
@@ -835,4 +924,6 @@ public class CheckinActivity extends AppCompatActivity {
     public boolean isActivityPaused() {
         return activityPaused;
     }
+
+
 }
