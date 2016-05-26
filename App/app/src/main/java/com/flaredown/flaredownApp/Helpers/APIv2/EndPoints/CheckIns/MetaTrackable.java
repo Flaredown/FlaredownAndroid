@@ -5,10 +5,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Calendar;
 
 import io.intercom.com.google.gson.annotations.SerializedName;
@@ -57,7 +53,6 @@ public class MetaTrackable extends RealmObject {
         this.colorId = 1;
         this.id = 0;
     }
-
 
     public MetaTrackable(JSONObject jObject) throws JSONException{
         this.colorId = jObject.optInt("color_id", 1);
