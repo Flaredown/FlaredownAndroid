@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 public class Error {
     @Nullable
     private VolleyError volleyError;
+    private boolean responseGiven = true; // Assuming true.
     private boolean internetConnection = true; // Assuming true.
     private Exception exceptionThrown = null;
     private int statusCode = 500;
@@ -52,10 +52,10 @@ public class Error {
         try {
             this.statusCode = volleyError.networkResponse.statusCode;
             if(this.statusCode == 503)
-                this.internetConnection = false;
+                setIsResponseGiven(false);
         } catch (NullPointerException e) {
             this.statusCode = 503;
-            this.internetConnection = false;
+            setIsResponseGiven(false);
         }
     }
 
@@ -93,16 +93,16 @@ public class Error {
      * Was the device connected to the internet at api call.
      * @return true if the device had an internet connection at api call.
      */
-    public boolean isInternetConnection() {
-        return internetConnection;
+    public boolean isResponseGiven() {
+        return responseGiven;
     }
 
     /**
      * Set if there is an internet connection.
-     * @param internetConnection True if there is an internet connection.
+     * @param responseGiven True if there is an internet connection.
      */
-    public void setInternetConnection(boolean internetConnection) {
-        this.internetConnection = internetConnection;
+    public void setIsResponseGiven(boolean responseGiven) {
+        this.responseGiven = responseGiven;
     }
 
     /**
@@ -151,7 +151,8 @@ public class Error {
      * Set the retry runnable, the runnable which can be run to retry the api request.
      * @param retryRunnable A runnable which can be run to retry the api request.
      */
-    public void setRetryRunnable(Runnable retryRunnable) {
+    public Error setRetryRunnable(Runnable retryRunnable) {
         this.retryRunnable = retryRunnable;
+        return this;
     }
 }

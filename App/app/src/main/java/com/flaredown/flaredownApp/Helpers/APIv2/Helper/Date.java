@@ -44,6 +44,42 @@ public class Date {
     }
 
     /**
+     * Get the time in millis from a string representation of a date.
+     * @param date The string representation of a date.
+     * @param format The format of the date given.
+     * @return The time in milliseconds.... Note returns null if error occurs.
+     */
+    @Nullable
+    public static Long stringToMillis(@Nullable String date, @NonNull SimpleDateFormat format) {
+        Calendar calendar = stringToCalendar(date, format);
+        if(calendar != null)
+            return calendar.getTimeInMillis();
+        return null;
+    }
+
+    /**
+     * Get the time in millis from a string representation of a date (In the API_DATE_FORMAT).
+     * @param date The string representation of a date (In the API_DATE_FORMAT).
+     * @return The time in milliseconds.... Note returns null if error occurs.
+     */
+    @Nullable
+    public static Long stringToMillis(@Nullable String date) {
+        return stringToMillis(date, API_DATE_FORMAT);
+    }
+
+    /**
+     * Creates a calendar instance from a millisecond time stamp.
+     * @param millis The time in millisecond values.
+     * @return New calendar object set to the millis given.
+     */
+    public static Calendar millisToCalendar(@Nullable Long millis) {
+        if(millis == null) return null;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar;
+    }
+
+    /**
      * Formats the Calendar object passed into a string in the API date format.
      * @param date The date to be parsed.
      * @return The string fro the date... Note if null date then null will be returned.

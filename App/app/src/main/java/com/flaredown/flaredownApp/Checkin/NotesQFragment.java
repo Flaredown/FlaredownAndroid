@@ -4,11 +4,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+<<<<<<< HEAD
+=======
+import android.util.Log;
+import android.view.KeyEvent;
+>>>>>>> development
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+<<<<<<< HEAD
+=======
+import android.widget.TextView;
+import android.widget.Toast;
+>>>>>>> development
 
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
@@ -72,7 +84,6 @@ public class NotesQFragment extends ViewPagerFragmentBase {
                 textChangeWaitingThread.start();
             }
         });
-
         // Save if the application is paused.
         getCheckInActivity().addActivityPauseListener(new ActivityPauseEventListener() {
             @Override

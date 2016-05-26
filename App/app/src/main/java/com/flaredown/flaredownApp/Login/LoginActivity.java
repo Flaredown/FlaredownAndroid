@@ -22,6 +22,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LoginEvent;
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.*;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
@@ -83,7 +85,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.et_login || id == EditorInfo.IME_NULL) {
+                if (id == EditorInfo.IME_ACTION_GO) {
                     attemptLogin();
                     return true;
                 }
@@ -102,7 +104,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginFormView = findViewById(R.id.ll_email_login_form);
 
         // Listen out for internet connectivity
-        InternetStatusBroadcastReceiver.setUp(mContext, new Runnable() {
+        InternetStatusBroadcastReceiver.initiate(mContext, new Runnable() {
             @Override
             public void run() {
                 internetConnectivity = true;
@@ -167,18 +169,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
-            mPasswordView.setError(getResources().getString(R.string.locales_nice_errors_field_invalid));
+            mPasswordView.setError(getResources().getString(R.string.locales_nice_errors_field_invalid).replace("{{field}}", "Password"));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getResources().getString(R.string.locales_nice_errors_field_required));
+            mEmailView.setError(getResources().getString(R.string.locales_nice_errors_field_required).replace("{{field}}", "Email"));
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.locales_nice_errors_field_invalid));
+            mEmailView.setError(getString(R.string.locales_nice_errors_field_invalid).replace("{{field}}", "Email"));
             focusView = mEmailView;
             cancel = true;
         }
@@ -197,6 +199,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
                 @Override
                 public void onSuccess(Session result) {
+                    // Tell Fabric.
+                    Answers.getInstance().logLogin(new LoginEvent()
+                        .putMethod("default")
+                        .putSuccess(true));
+
                     Intent intent = new Intent(mContext, CheckinActivity.class);
                     // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -217,7 +224,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
                     } else
-                        new ErrorDialog(mContext, result);
+                        new ErrorDialog(mContext, result).setCancelable(true).show();
                 }
             });
         }
