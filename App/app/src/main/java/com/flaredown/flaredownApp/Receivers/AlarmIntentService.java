@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
@@ -223,7 +222,7 @@ public class AlarmIntentService extends IntentService{
 
             //Reset alarm
             rescheduleCheckinAlarm(alarm);
-        } else if (diff < -60000) { //alarm in past, reschedule
+        } else if (diff < - 60000) { //alarm in past, reschedule
             rescheduleCheckinAlarm(alarm);
         }
     }
@@ -233,15 +232,13 @@ public class AlarmIntentService extends IntentService{
         CheckIn checkin = api.checkInBlocking(Calendar.getInstance());
         try{
             if (checkin != null && checkin.hasResponse()){
-                Log.d("CheckedIn", "User already checked in");
                 return true;
-            } else {
-                Log.d("CheckedIn", "User not checked in");
+            }
+            else {
                 return false;
             }
-
-        } catch (Exception e){
-            return false;
+        } catch (Exception e) {
+            return true;
         }
     }
 

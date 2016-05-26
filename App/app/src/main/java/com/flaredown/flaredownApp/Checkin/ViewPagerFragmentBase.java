@@ -1,6 +1,6 @@
 package com.flaredown.flaredownApp.Checkin;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 
 /**
@@ -11,9 +11,9 @@ public abstract class ViewPagerFragmentBase extends Fragment {
     private CheckinActivity activity;
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity activity) {
         this.activity = (CheckinActivity) getActivity();
-        super.onAttach(context);
+        super.onAttach(activity);
     }
 
     public CheckinActivity getCheckInActivity() {

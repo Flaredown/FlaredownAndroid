@@ -12,12 +12,17 @@ import java.io.Serializable;
 public class TreatmentTrackable extends Trackable implements Serializable{
 
     private Boolean isTaken = false;
+    private int treatment_id;
 
     /**
      * Default constructor for the treatment trackable object.
      */
     public TreatmentTrackable() {
         super(TrackableType.TREATMENT);
+    }
+
+    public TreatmentTrackable(Trackable trackable) throws JSONException{
+        super(trackable.getType(),trackable.toJson(),trackable.getMetaTrackable());
     }
 
     /**
@@ -27,10 +32,14 @@ public class TreatmentTrackable extends Trackable implements Serializable{
     public TreatmentTrackable(JSONObject jsonObject) {
         super(TrackableType.TREATMENT, jsonObject);
         this.isTaken = jsonObject.optBoolean("is_taken", false);
+        this.treatment_id = jsonObject.optInt("treatment_id", 0);
     }
-
     public Boolean getIsTaken() {
         return isTaken;
+    }
+
+    public int getTreatment_id() {
+        return treatment_id;
     }
 
     public void setIsTaken(Boolean taken) {
@@ -50,8 +59,8 @@ public class TreatmentTrackable extends Trackable implements Serializable{
      * @throws JSONException
      */
     @Override
-    public JSONObject getResponseJson() throws JSONException {
-        JSONObject rootJObject = super.getResponseJson();
+    public JSONObject getResponseJson(CheckIn checkIn) throws JSONException {
+        JSONObject rootJObject = super.getResponseJson(checkIn);
         rootJObject.put("is_taken", isTaken);
         return rootJObject;
     }

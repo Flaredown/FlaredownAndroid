@@ -17,6 +17,7 @@ public class InputContainerView extends LinearLayout{
     Trackable trackable;
     TextView tv_questionTitle;
     View v_input = null;
+    TextView tv_add;
     public InputContainerView(Context context, Trackable trackable) {
         super(context);
 
@@ -26,7 +27,9 @@ public class InputContainerView extends LinearLayout{
         this.setOrientation(VERTICAL);
 
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.gravity = Gravity.START;
+
+
         this.setLayoutParams(lp);
 
         // Adding the question title

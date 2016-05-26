@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:tools="http://schemas.android.com/tools">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -8,33 +9,50 @@
         android:paddingBottom="@dimen/viewpageprogress_size"
         android:id="@+id/scrollView"
         android:requiresFadingEdge="vertical">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:id="@+id/ll_questionHolder"
+        <RelativeLayout
             android:layout_width="@dimen/box_width"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             style="@style/AppTheme.Box">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Catalog Name"
-                android:id="@+id/tv_catalog"
-                android:textColor="@color/accent"/>
 
-            <TextView
-                android:id="@+id/tv_question"
-                android:gravity="center"
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/ll_questionHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sample Question"
-                android:textSize="25dp"
-                android:layout_marginBottom="@dimen/sep_margin_small"
-                android:layout_marginTop="@dimen/sep_margin_small" />
-        </LinearLayout>
+
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Catalog Name"
+                    android:id="@+id/tv_catalog"
+                    android:textColor="@color/accent"/>
+
+                <TextView
+                    android:id="@+id/tv_question"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sample Question"
+                    android:textSize="25dp"
+                    android:layout_marginBottom="@dimen/sep_margin_small"
+                    android:layout_marginTop="@dimen/sep_margin_small" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_addTrackable"
+                android:gravity="start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Add Treatment"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_alignParentBottom="true"
+                android:layout_below="@+id/ll_questionHolder"
+                android:layout_marginTop="@dimen/sep_margin_small"/>
+        </RelativeLayout>
+
     </ScrollView>
 
 </FrameLayout>

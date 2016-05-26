@@ -6,9 +6,6 @@ import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import io.intercom.android.sdk.Intercom;
 
-/**
- * Created by squiggie on 3/8/16.
- */
 public class FlaredownApp extends Application {
 
     @Override

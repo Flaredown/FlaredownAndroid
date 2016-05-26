@@ -91,6 +91,7 @@
     <string name="locales_nav_save_caps">SAVE</string>
     <string name="locales_nav_save">Save</string>
     <string name="locales_nav_saving">Saving...</string>
+    <string name="locales_nav_add_treatment">Add Treatment</string>
     <string name="locales_past_add_treatment">Add treatment</string>
     <string name="locales_past_remove_dose">Remove dose</string>
     <string name="locales_past_which_treatments_taken_today">Which treatments did you take today?</string>
@@ -806,4 +807,5 @@
 &amp;lt;h5&amp;gt;Questions about the Privacy Policy&amp;lt;/h5&amp;gt;
 &amp;lt;p&amp;gt;If you have questions or comments about our Privacy Policy, email us at contact@flaredown.com, or contact us at:&amp;lt;/p&amp;gt;&amp;lt;span&amp;gt;Flaredown, LLC&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;75 E 4th St #4157&amp;lt;/span&amp;gt;&amp;lt;br/&amp;gt;&amp;lt;span&amp;gt;New York, NY 10003&amp;lt;/span&amp;gt;
 </string>
+    <string name="locales_no_dose">No Dose</string>
 </resources>

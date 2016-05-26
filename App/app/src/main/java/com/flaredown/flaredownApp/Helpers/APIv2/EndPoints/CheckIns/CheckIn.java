@@ -5,6 +5,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +49,7 @@ public class CheckIn implements Serializable{
 
     /**
      * Returns the JSON object representation of the Check In
-     * @return
+     * @return JSONObject of the checkin
      */
     public JSONObject toJson() throws JSONException {
         JSONObject output = new JSONObject();
@@ -198,6 +199,24 @@ public class CheckIn implements Serializable{
         return null;
     }
 
+    public boolean removeTrackable(Trackable trackable){
+        try{
+            switch(trackable.getType()){
+                case CONDITION:
+                    return conditions.remove(trackable);
+                case SYMPTOM:
+                    return symptoms.remove(trackable);
+                case TREATMENT:
+                    return treatments.remove(trackable);
+                default:
+                    return false;
+            }
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
     /**
      * Get the trackable ids for a specific trackable type.
      * @param trackableType The trackable type.
@@ -240,7 +259,7 @@ public class CheckIn implements Serializable{
             JSONArray trackablesJArray = new JSONArray();
             ArrayList<Trackable> trackables = getTrackables(trackableType);
             for (Trackable trackable : trackables) {
-                trackablesJArray.put(trackable.getResponseJson());
+                trackablesJArray.put(trackable.getResponseJson(this));
             }
 
             checkinJObject.put(name, trackablesJArray);
