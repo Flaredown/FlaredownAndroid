@@ -24,14 +24,9 @@ public class Trackable implements Serializable {
     private String checkInId;
     private String value;
     private Integer trackableId;
-<<<<<<< HEAD
     private int colourId;
-    private MetaTrackable metaTrackable = null;
     private String destroy;
-=======
-    private String colourId;
     private transient MetaTrackable metaTrackable = null;
->>>>>>> development
 
     /**
 

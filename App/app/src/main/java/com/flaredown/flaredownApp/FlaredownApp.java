@@ -2,13 +2,9 @@ package com.flaredown.flaredownApp;
 
 import android.app.Application;
 
-<<<<<<< HEAD
-import io.intercom.android.sdk.*;
-=======
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 import io.intercom.android.sdk.Intercom;
->>>>>>> development
 
 public class FlaredownApp extends Application {
 

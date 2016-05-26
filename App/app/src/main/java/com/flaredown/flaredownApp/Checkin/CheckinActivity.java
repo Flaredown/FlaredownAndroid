@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -33,14 +32,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-=======
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-import com.flaredown.flaredownApp.Helpers.APIv2.*;
->>>>>>> development
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
@@ -591,14 +586,8 @@ public class CheckinActivity extends AppCompatActivity{
                         public void run() {
                             try {
                                 Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
-<<<<<<< HEAD
-                                if (updateTime.equals(lastUpdate)) {
-                                    SnackbarStyling.defaultColor(Snackbar.make(findViewById(android.R.id.content), R.string.locales_summary_title, Snackbar.LENGTH_SHORT)).show();
-                                }
-=======
                                 if (updateTime.equals(lastUpdate))
                                     SnackbarStyling.colorSnackBar(Snackbar.make(findViewById(R.id.cl_root_view), R.string.locales_summary_title, Snackbar.LENGTH_SHORT), getResources().getColor(R.color.background)).show();
->>>>>>> development
                             } catch (InterruptedException e) {
                             }
                         }
@@ -946,9 +935,6 @@ public class CheckinActivity extends AppCompatActivity{
         return activityPaused;
     }
 
-<<<<<<< HEAD
-
-=======
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         // Patching in the gesture detector.
@@ -977,5 +963,4 @@ public class CheckinActivity extends AppCompatActivity{
             return super.onSingleTapConfirmed(ev);
         }
     }
->>>>>>> development
 }

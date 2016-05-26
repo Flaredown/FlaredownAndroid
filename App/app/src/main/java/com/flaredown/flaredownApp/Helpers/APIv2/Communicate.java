@@ -24,12 +24,6 @@ import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
-<<<<<<< HEAD
-=======
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
-import com.flaredown.flaredownApp.Models.Alarm;
->>>>>>> development
 import com.flaredown.flaredownApp.Models.Treatment;
 
 import org.json.JSONArray;
@@ -397,11 +391,7 @@ public class Communicate {
                     Trackings trackings = new Trackings(response);
                     if(trackings.size() <= 0) {
                         // No Trackings found
-<<<<<<< HEAD
-                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.getTrackings::NoTrackings"));
-=======
                         apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings").setRetryRunnable(retryRunnable));
->>>>>>> development
                     } else {
                         apiResponse.onSuccess(trackings);
                     }
@@ -664,18 +654,6 @@ public class Communicate {
     }
 
     /**
-<<<<<<< HEAD
-     *
-     * @param type Trackable type
-     * @param ids List of ids to retrieve
-     * @param apiResponse response or error callback
-     */
-    public void getTrackable(final TrackableType type, List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
-        String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
-        url += "?";
-        for (Integer id : ids) {
-            url += "ids[]=" + id + "&";
-=======
      * Get a collection of MetaTrackables from the collection of id's provided. MetaTrackables are
      * cached and if ALL ids are stored in the DB then the cache will be used, otherwise a new query
      * will be made.
@@ -701,7 +679,6 @@ public class Communicate {
             else first = false;
 
             inDBQuery.equalTo("id", id);
->>>>>>> development
         }
 
         inDBQuery = inDBQuery.findAll().where().equalTo("typeRaw", type.name());
