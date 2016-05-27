@@ -18,6 +18,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
@@ -511,6 +512,40 @@ public class Communicate {
                 apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     * Get a list of popular tags from the api.
+     * @param apiResponse
+     */
+    public void getPopularTags(final APIResponse<List<Tag>, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                getPopularTags(apiResponse);
+            }
+        };
+
+        WebAttributes getParams = new WebAttributes();
+        getParams.put("scope", "most_popular");
+
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.GET, EndPointUrl.getAPIUrl("tags", getParams), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    apiResponse.onSuccess(Tag.convertList(response.getJSONArray("tags")));
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setDebugString("Communicate.getPopularTags:JSONException").setRetryRunnable(retryRunnable).setExceptionThrown(e));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setDebugString("Communicate.getPopularTags:VolleyError").setRetryRunnable(retryRunnable));
+            }
+        });
+
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
     }
 

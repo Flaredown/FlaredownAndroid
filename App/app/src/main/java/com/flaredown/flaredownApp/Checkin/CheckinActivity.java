@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.flaredown.flaredownApp.Checkin.tags.TagFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
@@ -669,6 +670,7 @@ public class CheckinActivity extends AppCompatActivity{
             CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
             fragments.add(checkinCatalogQFragment);
         }
+        fragments.add(TagFragment.newInstance());
         return fragments;
     }
 
