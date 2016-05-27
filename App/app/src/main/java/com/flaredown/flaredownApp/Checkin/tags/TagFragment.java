@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
@@ -57,9 +58,11 @@ public class TagFragment extends ViewPagerFragmentBase {
      */
     private void displayPopularTags() {
         fl_popular_tags.removeAllViews();
+        fl_popular_tags.addView(new ProgressBar(getActivity()));
         api.getPopularTags(new APIResponse<List<Tag>, Error>() {
             @Override
             public void onSuccess(List<Tag> result) {
+                fl_popular_tags.removeAllViews();
                 for (Tag tag : result) {
                     TextView tv = addPopularTag(tag.getName());
                 }
@@ -67,6 +70,7 @@ public class TagFragment extends ViewPagerFragmentBase {
 
             @Override
             public void onFailure(Error result) {
+                fl_popular_tags.removeAllViews();
                 TextView tv = addPopularTag("Error Loading Retry?");
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
