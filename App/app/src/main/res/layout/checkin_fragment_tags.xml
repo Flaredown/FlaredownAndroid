@@ -28,6 +28,23 @@
                 android:layout_marginBottom="@dimen/sep_margin_small"
                 android:layout_marginTop="@dimen/sep_margin_small" />
 
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/fl_selected_tags" />
+
+            <TextView
+                android:id="@+id/tv_add_tag"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/locales_tag_search_placeholder"
+                style="@style/AppTheme.TextView.Link"
+                android:layout_marginBottom="@dimen/sep_margin_small"
+                android:layout_marginTop="@dimen/sep_margin_small" />
+
             <TextView
                 android:id="@+id/tv_popular_title"
                 android:gravity="center"
