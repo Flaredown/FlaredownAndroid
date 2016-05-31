@@ -52,6 +52,11 @@ public class TagFragment extends ViewPagerFragmentBase {
         return fragment;
     }
 
+    public void addTag(Tag tag) {
+        if(flh_selected_tags != null)
+            flh_selected_tags.addItem(tag);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

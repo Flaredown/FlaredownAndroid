@@ -166,7 +166,7 @@ public class AddEditableActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(trackableType.isTrackable()) {
-                    api.submitNewTrackable(trackableType, tv_addNewTrackable.getText().toString(), new APIResponse<MetaTrackable, Error>() {
+                    api.submitNewTrackable(trackableType, et_userInput.getText().toString(), new APIResponse<MetaTrackable, Error>() {
                         @Override
                         public void onSuccess(MetaTrackable result) {
                             //Create trackable and pass back to checkin activity
@@ -185,22 +185,22 @@ public class AddEditableActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Error result) {
-                            new ErrorDialog(getApplicationContext(), result).setCancelable(true).show();
+                            new ErrorDialog(AddEditableActivity.this, result).setCancelable(true).show();
                         }
                     });
                 } else if(trackableType.equals(TrackableType.TAG)) {
-                    api.submitNewTag(tv_addNewTrackable.getText().toString(), new APIResponse<Tag, Error>() {
+                    api.submitNewTag(et_userInput.getText().toString(), new APIResponse<Tag, Error>() {
                         @Override
                         public void onSuccess(Tag result) {
                             Intent intent = getIntent();
-                            intent.putExtra(RESOURCE_TYPE_KEY, result);
+                            intent.putExtra(RETURN_TAG_KEY, result);
                             setResult(RESULT_OK, intent);
                             finish();
                         }
 
                         @Override
                         public void onFailure(Error result) {
-                            new ErrorDialog(getApplicationContext(), result).setCancelable(true).show();
+                            new ErrorDialog(AddEditableActivity.this, result).setCancelable(true).show();
                         }
                     });
                 }

@@ -58,6 +58,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -678,6 +679,29 @@ public class CheckinActivity extends AppCompatActivity{
     public List<ViewPagerFragmentBase> getFragmentQuestions() {
         return vpa_questions.getFragments();
     }
+
+    /**
+     * Get the tag fragment.
+     * @return
+     */
+    public TagFragment getTagFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fragments = fm.getFragments();
+        for (Fragment fragment : fragments) {
+            if(fragment instanceof TagFragment) {
+                return (TagFragment) fragment;
+            } else if(fragment instanceof CheckInSummaryFragment) {
+                List<ViewPagerFragmentBase> subFragments = ((CheckInSummaryFragment) fragment).getFragments();
+                for (ViewPagerFragmentBase subFragment : subFragments) {
+                    if(subFragment instanceof TagFragment) {
+                        return (TagFragment) subFragment;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public ViewPagerAdapter getScreenSlidePagerAdapter() {
         return vpa_questions;
     }
@@ -845,10 +869,9 @@ public class CheckinActivity extends AppCompatActivity{
                     }
                 } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {
                     Bundle bundle = data.getExtras();
-                    final Tag tag = (Tag) bundle.get(AddEditableActivity.RETURN_TAG_KEY);
+                    final Tag tag = (Tag) bundle.getSerializable(AddEditableActivity.RETURN_TAG_KEY);
                     if(tag != null) {
-                        // TODO add to check in
-                        Log.d(DEBUG_KEY, tag.getName());
+                        getTagFragment().addTag(tag);
                     }
                 }
             }

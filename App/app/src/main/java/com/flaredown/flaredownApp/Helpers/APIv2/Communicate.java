@@ -842,7 +842,7 @@ public class Communicate {
     }
 
     public void submitNewTrackable(final TrackableType type, String name, final APIResponse<MetaTrackable, Error> apiResponse ){
-        String template = "{\"%s\":{\"name\":%s,\"color_id\":null,\"users_count\":null}}\n";
+        String template = "{\"%s\":{\"name\":\"%s\",\"color_id\":null,\"users_count\":null}}\n";
         String newTrackable = String.format(template,type.toString().toLowerCase(),name);
         String url = EndPointUrl.getAPIUrl(type.name().toLowerCase() + "s");
 
