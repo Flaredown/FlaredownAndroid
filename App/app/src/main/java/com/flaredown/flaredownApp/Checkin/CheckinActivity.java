@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -946,7 +947,7 @@ public class CheckinActivity extends AppCompatActivity{
         @Override
         public boolean onSingleTapConfirmed(MotionEvent ev) {
             View v = getCurrentFocus();
-            if(v instanceof EditText) {
+            if((v instanceof EditText) && !(v instanceof AutoCompleteTextView)) {
                 Rect outRect = new Rect();
                 v.getGlobalVisibleRect(outRect);
                 if(!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {

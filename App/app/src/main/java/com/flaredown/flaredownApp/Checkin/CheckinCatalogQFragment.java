@@ -135,7 +135,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
                             @Override
                             public void onSuccess(Trackings trackings) {
                                 for (Tracking tracking : trackings){
-                                    if (tracking.getTrackable_id() == ((TreatmentTrackable) trackable).getTreatment_id()){
+                                    if (tracking.getTrackable_id() == treatment.getTrackableId()){
                                         getCheckInActivity().API.removeTrackings(tracking.getId(), new APIResponse<String, Error>() {
                                             @Override
                                             public void onSuccess(String result) {
