@@ -141,7 +141,7 @@ public class Communicate {
                     final CheckIn checkIn = new CheckIn(response);
                     final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
 
-                    for (final TrackableType trackableType : TrackableType.values()) {
+                    for (final TrackableType trackableType : TrackableType.trackableValues()) {
                         getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
                             @Override
                             public void onSuccess(ArrayList<MetaTrackable> result) {
@@ -150,7 +150,7 @@ public class Communicate {
                                 }
                                 completeCount.add(result);
 
-                                if (completeCount.size() >= TrackableType.values().length) {
+                                if (completeCount.size() >= TrackableType.trackableValues().length) {
                                     apiResponse.onSuccess(checkIn);
                                 }
                             }
@@ -212,7 +212,7 @@ public class Communicate {
                         final CheckIn checkIn = checkIns.get(0);
                         final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
 
-                        for (final TrackableType trackableType : TrackableType.values()) {
+                        for (final TrackableType trackableType : TrackableType.trackableValues()) {
                             getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
                                 @Override
                                 public void onSuccess(ArrayList<MetaTrackable> result) {
@@ -221,7 +221,7 @@ public class Communicate {
                                     }
                                     completeCount.add(result);
 
-                                    if (completeCount.size() >= TrackableType.values().length) {
+                                    if (completeCount.size() >= TrackableType.trackableValues().length) {
                                         apiResponse.onSuccess(checkIn);
                                     }
                                 }
@@ -864,6 +864,39 @@ public class Communicate {
         });
         WebAttributes params = new WebAttributes();
         jsonObjectExtraRequest.setRequestBody(newTrackable);
+        params.put("Content-Type", "application/json");
+        jsonObjectExtraRequest.setHeaders(params);
+        QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    public void submitNewTag(final String name, final APIResponse<Tag, Error> apiResponse) {
+        final Runnable retryRunnable = new Runnable() {
+            @Override
+            public void run() {
+                submitNewTag(name, apiResponse);
+            }
+        };
+
+        String url = EndPointUrl.getAPIUrl("tags");
+
+        JsonObjectExtraRequest jsonObjectExtraRequest = JsonObjectExtraRequest.createRequest(context, Request.Method.POST, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    Tag tag = new Tag(response.getJSONObject("tag"));
+                    apiResponse.onSuccess(tag);
+                } catch (JSONException e) {
+                    apiResponse.onFailure(new Error().setExceptionThrown(e).setRetryRunnable(retryRunnable).setDebugString("Communicate::submitNewTag:JsonException"));
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                apiResponse.onFailure(new Error(error).setRetryRunnable(retryRunnable).setDebugString("Communicate::submitNewTag:VolleyError"));
+            }
+        });
+        WebAttributes params = new WebAttributes();
+        jsonObjectExtraRequest.setRequestBody(String.format("{\"tag\":{\"name\":\"%s\"}}", name));
         params.put("Content-Type", "application/json");
         jsonObjectExtraRequest.setHeaders(params);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);

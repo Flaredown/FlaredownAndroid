@@ -254,7 +254,7 @@ public class CheckIn implements Serializable{
         checkinJObject.put("date", Date.calendarToString(date));
         checkinJObject.put("note", note);
 
-        for (TrackableType trackableType : TrackableType.values()) {
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
             String name = trackableType.name().toLowerCase() + "s_attributes";
             JSONArray trackablesJArray = new JSONArray();
             ArrayList<Trackable> trackables = getTrackables(trackableType);

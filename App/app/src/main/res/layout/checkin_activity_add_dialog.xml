@@ -27,19 +27,19 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_input"
+        android:id="@+id/et_user_input"
         android:layout_below="@+id/main_toolbar_view"
         android:background="@drawable/edittext_background_addadialog"
         android:padding="@dimen/sep_margin_large"
         android:singleLine="true"/>
 
     <LinearLayout
-        android:id="@+id/llAddNewCondition"
+        android:id="@+id/ll_addNewTrackable"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/activity_horizontal_margin"
-        android:layout_below="@+id/et_input"
+        android:layout_below="@+id/et_user_input"
         android:showDividers="none"
         android:clickable="true"
         android:background="?attr/selectableItemBackground"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Name"
-            android:id="@+id/tv_AddNewConditionName"
+            android:id="@+id/tv_addNewTrackable"
             android:layout_marginBottom="5dp"
             android:textSize="19sp"
             android:textColor="@android:color/black"/>
@@ -64,8 +64,8 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lvAddTrackable"
-        android:layout_below="@id/llAddNewCondition">
+        android:id="@+id/lv_suggestions"
+        android:layout_below="@id/ll_addNewTrackable">
     </ListView>
 
 </RelativeLayout>

@@ -11,9 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlowLayoutHelper;
@@ -37,6 +39,8 @@ public class TagFragment extends ViewPagerFragmentBase {
     private FlowLayout fl_selected_tags;
     private FlowLayoutHelper<Tag> flh_selected_tags;
 
+    private TextView tv_addTag;
+
     /**
      * Create a new instance for the fragment.
      * @return A new fragment instance.
@@ -55,6 +59,13 @@ public class TagFragment extends ViewPagerFragmentBase {
         api = new Communicate(getActivity());
         assignViews(inflater, container);
         displayPopularTags();
+
+        tv_addTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddEditableActivity.startActivity(getActivity(), TrackableType.TAG);
+            }
+        });
 
         return fl_root;
     }
@@ -97,6 +108,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      */
     private void assignViews(LayoutInflater inflater, ViewGroup container) {
         fl_root = (FrameLayout) inflater.inflate(R.layout.checkin_fragment_tags, container, false);
+        tv_addTag = (TextView) fl_root.findViewById(R.id.tv_add_tag);
         fl_popular_tags = (FlowLayout) fl_root.findViewById(R.id.fl_popular_tags);
         flh_popular_tags = new FlowLayoutHelper<>(fl_popular_tags, new FlowLayoutHelper.Adapter<Tag>() {
             @Override

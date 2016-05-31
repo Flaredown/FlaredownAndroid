@@ -40,6 +40,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
@@ -666,7 +667,7 @@ public class CheckinActivity extends AppCompatActivity{
      */
     public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
-        for (TrackableType trackableType : TrackableType.values()) {
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
             CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
             fragments.add(checkinCatalogQFragment);
         }
@@ -841,6 +842,13 @@ public class CheckinActivity extends AppCompatActivity{
                         } else {
                             updateLocalCheckinAndUI(trackable);
                         }
+                    }
+                } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {
+                    Bundle bundle = data.getExtras();
+                    final Tag tag = (Tag) bundle.get(AddEditableActivity.RETURN_TAG_KEY);
+                    if(tag != null) {
+                        // TODO add to check in
+                        Log.d(DEBUG_KEY, tag.getName());
                     }
                 }
             }

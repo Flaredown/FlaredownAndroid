@@ -83,10 +83,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         tv_addTrackable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(),AddEditableActivity.class);
-                intent.putExtra(FlaredownConstants.ADD_TRACKABLE_TYPE_KEY,trackableType);
-                intent.putExtra(FlaredownConstants.CHECKIN_DATE_KEY,getCheckInActivity().getCheckIn().getDate());
-                getActivity().startActivityForResult(intent,FlaredownConstants.ADD_TRACKABLE_REQUEST_CODE);
+                AddEditableActivity.startActivity(getActivity(), trackableType);
             }
         });
         return fl_root;
