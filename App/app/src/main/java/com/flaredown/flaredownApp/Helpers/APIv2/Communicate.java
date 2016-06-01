@@ -704,16 +704,21 @@ public class Communicate {
             }
         };
 
+        List<String> realmIds = new ArrayList<>(ids.size());
+        for (Integer id : ids) {
+            realmIds.add(MetaTrackable.calculateRealmId(type, id));
+        }
+
         MetaTrackable.clearExpiredItems(mRealm, DEFAULT_DB_CACHE_EXPIRE_TIME);
 
         RealmQuery<MetaTrackable> inDBQuery = mRealm.where(MetaTrackable.class);
         boolean first = true;
-        for(Integer id : ids) {
+        for(String realmId : realmIds) {
             if(!first)
                 inDBQuery.or();
             else first = false;
 
-            inDBQuery.equalTo("id", id);
+            inDBQuery.equalTo("realmId", realmId);
         }
 
         inDBQuery = inDBQuery.findAll().where().equalTo("typeRaw", type.name());

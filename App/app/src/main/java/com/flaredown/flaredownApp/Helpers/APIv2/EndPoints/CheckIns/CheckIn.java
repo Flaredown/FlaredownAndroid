@@ -1,5 +1,6 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 
 import org.json.JSONArray;
@@ -23,7 +24,7 @@ public class CheckIn implements Serializable{
     private ArrayList<Trackable> conditions = new ArrayList<>();
     private ArrayList<Trackable> symptoms = new ArrayList<>();
     private ArrayList<Trackable> treatments = new ArrayList<>();
-    private ArrayList<Integer> tagIds = new ArrayList<>();
+    private ArrayList<Tag> tags = new ArrayList<>();
 
     public CheckIn(String id, Calendar date) {
         this.id = id;
@@ -43,9 +44,12 @@ public class CheckIn implements Serializable{
         this.conditions = createTrackableList(TrackableType.CONDITION, jsonObject.getJSONArray("conditions"));
         this.symptoms = createTrackableList(TrackableType.SYMPTOM, jsonObject.getJSONArray("symptoms"));
         this.treatments = createTrackableList(TrackableType.TREATMENT, jsonObject.getJSONArray("treatments"));
-    }
 
-    // TODO support tags.
+        JSONArray tagIdJArray = jsonObject.getJSONArray("tag_ids");
+        for (int i = 0; i < tagIdJArray.length(); i++) {
+            this.tags.add(new Tag(tagIdJArray.getInt(i)));
+        }
+    }
 
     /**
      * Returns the JSON object representation of the Check In
@@ -64,8 +68,8 @@ public class CheckIn implements Serializable{
         output.put("treatments", createTrackableJArray(this.treatments));
 
         JSONArray tagIdsJArray = new JSONArray();
-        for (Integer tagId : tagIds) {
-            tagIdsJArray.put(tagId);
+        for (Tag tag : tags) {
+            tagIdsJArray.put(tag.getId());
         }
         output.put("tag_ids", tagIdsJArray);
         return output;
@@ -266,8 +270,8 @@ public class CheckIn implements Serializable{
         }
 
         JSONArray tagIdsJArray = new JSONArray();
-        for (Integer tagId : tagIds) {
-            tagIdsJArray.put(tagId);
+        for (Tag tag : tags) {
+            tagIdsJArray.put(tag.getId());
         }
         checkinJObject.put("tag_ids", tagIdsJArray);
 

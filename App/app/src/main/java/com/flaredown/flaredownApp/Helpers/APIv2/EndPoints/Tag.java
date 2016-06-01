@@ -32,6 +32,14 @@ public class Tag implements Serializable{
     }
 
     /**
+     * Create a new tag object
+     * @param id The id of the tag.
+     */
+    public Tag(Integer id) {
+        this(id, "", "");
+    }
+
+    /**
      * Create a new tag object.
      * @param id The id of the tag.
      * @param name The name of the tag.
