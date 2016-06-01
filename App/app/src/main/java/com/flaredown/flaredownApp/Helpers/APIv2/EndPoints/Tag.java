@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Used to represent a tag.
@@ -109,5 +110,27 @@ public class Tag implements Serializable{
             data.add(new Tag(jArray.getJSONObject(i)));
         }
         return data;
+    }
+
+    @Override
+    public int hashCode() {
+        final int HASH_MULTIPLIER = 31;
+        int result = 0;
+        result = HASH_MULTIPLIER * result + id;
+        result = HASH_MULTIPLIER * result + (name != null ? name.hashCode() : 0);
+        result = HASH_MULTIPLIER * result + (type != null ? type.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+
+        if(o == null || (this.getClass() != o.getClass())) return false;
+
+        Tag other = (Tag) o;
+        return id == other.id &&
+                (name != null && name.equals(other.name)) &&
+                (type != null && type.equals(other.type));
     }
 }
