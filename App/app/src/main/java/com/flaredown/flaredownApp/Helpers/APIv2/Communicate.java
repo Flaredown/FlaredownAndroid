@@ -703,6 +703,11 @@ public class Communicate {
      * @param apiResponse Response or error callback.
      */
     public void getTrackable(final TrackableType type, final List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+        if(ids.size() <= 0) {
+            apiResponse.onSuccess(new ArrayList<MetaTrackable>());
+            return;
+        }
+
         final Runnable retryRunnable = new Runnable() {
             @Override
             public void run() {
