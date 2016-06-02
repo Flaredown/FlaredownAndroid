@@ -72,6 +72,9 @@ public class TagFragment extends ViewPagerFragmentBase {
             }
         });
 
+        // Show already selected tags.
+        flh_selected_tags.addItems(getCheckInActivity().getCheckIn().getTags());
+
         return fl_root;
     }
 
