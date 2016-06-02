@@ -138,8 +138,9 @@ public class AddEditableActivity extends AppCompatActivity {
                 if(trackableType.isTrackable()) {
                     //Create trackable and pass back to checkin activity
                     Trackable trackable = new Trackable(trackableType);
-                    MetaTrackable meta = new MetaTrackable();
+                    MetaTrackable meta = new MetaTrackable(trackableType);
                     meta.setName(selected.getName());
+                    meta.setId(selected.getId());
                     trackable.setTrackableId(selected.getId());
                     trackable.setColourId(selected.getColor_id());
                     trackable.setCreatedAt(selected.getCreatedAt());
@@ -152,7 +153,11 @@ public class AddEditableActivity extends AppCompatActivity {
                     finish();
                 } else if(trackableType.equals(trackableType.TAG)) {
                     Intent intent = getIntent();
-                    Tag tag = new Tag(selected.getName(), trackableType.name().toLowerCase());
+                    Tag tag = new Tag(selected.getId());
+                    MetaTrackable metaTrackable = new MetaTrackable(TrackableType.TAG);
+                    metaTrackable.setId(selected.getId());
+                    metaTrackable.setName(selected.getName());
+                    tag.setMetaTrackable(metaTrackable);
 
                     intent.putExtra(RETURN_TAG_KEY, tag);
                     setResult(RESULT_OK, intent);

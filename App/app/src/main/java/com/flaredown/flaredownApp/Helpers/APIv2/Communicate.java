@@ -139,28 +139,7 @@ public class Communicate {
             public void onResponse(JSONObject response) {
                 try {
                     final CheckIn checkIn = new CheckIn(response);
-                    final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
-
-                    for (final TrackableType trackableType : TrackableType.trackableValues()) {
-                        getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
-                            @Override
-                            public void onSuccess(ArrayList<MetaTrackable> result) {
-                                for (MetaTrackable metaTrackable : result) {
-                                    checkIn.attachMetaTrackables(trackableType, metaTrackable);
-                                }
-                                completeCount.add(result);
-
-                                if (completeCount.size() >= TrackableType.trackableValues().length) {
-                                    apiResponse.onSuccess(checkIn);
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Error result) {
-                                apiResponse.onFailure(result);
-                            }
-                        });
-                    }
+                    processCheckin(checkIn, apiResponse);
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.chackIn::ParseError").setRetryRunnable(retryRunnable));
                 }
@@ -210,28 +189,7 @@ public class Communicate {
                         });
                     } else {
                         final CheckIn checkIn = checkIns.get(0);
-                        final ArrayList<ArrayList<MetaTrackable>> completeCount = new ArrayList<>();
-
-                        for (final TrackableType trackableType : TrackableType.trackableValues()) {
-                            getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
-                                @Override
-                                public void onSuccess(ArrayList<MetaTrackable> result) {
-                                    for (MetaTrackable metaTrackable : result) {
-                                        checkIn.attachMetaTrackables(trackableType, metaTrackable);
-                                    }
-                                    completeCount.add(result);
-
-                                    if (completeCount.size() >= TrackableType.trackableValues().length) {
-                                        apiResponse.onSuccess(checkIn);
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Error result) {
-                                    apiResponse.onFailure(result);
-                                }
-                            });
-                        }
+                        processCheckin(checkIn, apiResponse);
                     }
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.checkInDate::Exception").setRetryRunnable(retryRunnable));
@@ -244,6 +202,49 @@ public class Communicate {
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     * Process a check in... getting all the MetaTrackable objects for trackables and tags.
+     * @param checkIn The check in for processing.
+     */
+    private void processCheckin(final CheckIn checkIn, final APIResponse<CheckIn, Error> apiResponse) {
+        final int TOTAL_REQUESTS = TrackableType.values().length;
+        final List<Object> requestReceived = new ArrayList<>();
+        // Process actual trackables
+        for(final TrackableType trackableType : TrackableType.trackableValues()) {
+            getTrackable(trackableType, checkIn.getTrackableIds(trackableType), new APIResponse<ArrayList<MetaTrackable>, Error>() {
+                @Override
+                public void onSuccess(ArrayList<MetaTrackable> result) {
+                    for (MetaTrackable metaTrackable : result) {
+                        checkIn.attachMetaTrackables(trackableType, metaTrackable);
+                    }
+                    requestReceived.add(result);
+                    if(requestReceived.size() >= TOTAL_REQUESTS)
+                        apiResponse.onSuccess(checkIn);
+                }
+
+                @Override
+                public void onFailure(Error result) {
+                    apiResponse.onFailure(result);
+                }
+            });
+        }
+
+        getTag(checkIn.getTagIds(), new APIResponse<List<Tag>, Error>() {
+            @Override
+            public void onSuccess(List<Tag> result) {
+                checkIn.setTags(result);
+                requestReceived.add(result);
+                if(requestReceived.size() >= TOTAL_REQUESTS)
+                    apiResponse.onSuccess(checkIn);
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                apiResponse.onFailure(result);
+            }
+        });
     }
 
     /**
@@ -534,7 +535,12 @@ public class Communicate {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    apiResponse.onSuccess(Tag.convertList(response.getJSONArray("tags")));
+                    JSONArray jArray = response.getJSONArray("tags");
+                    List<Tag> tags = new ArrayList<>();
+                    for (int i = 0; i < jArray.length(); i++) {
+                        tags.add(new Tag(jArray.getJSONObject(i)));
+                    }
+                    apiResponse.onSuccess(tags);
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setDebugString("Communicate.getPopularTags:JSONException").setRetryRunnable(retryRunnable).setExceptionThrown(e));
                 }
@@ -763,6 +769,24 @@ public class Communicate {
         }
     }
 
+    public void getTag(final List<Integer> ids, final APIResponse<List<Tag>, Error> apiResponse) {
+        getTrackable(TrackableType.TAG, ids, new APIResponse<ArrayList<MetaTrackable>, Error>() {
+            @Override
+            public void onSuccess(ArrayList<MetaTrackable> result) {
+                List<Tag> tags = new ArrayList<>();
+                for (MetaTrackable metaTrackable : result) {
+                    tags.add(new Tag(metaTrackable));
+                }
+                apiResponse.onSuccess(tags);
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                apiResponse.onFailure(result);
+            }
+        });
+    }
+
     /**
      *
      * @param id id of Tracking to remove
@@ -888,7 +912,8 @@ public class Communicate {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    Tag tag = new Tag(response.getJSONObject("tag"));
+                    MetaTrackable metaTrackable = new MetaTrackable(response.getJSONObject("tag"));
+                    Tag tag = new Tag(metaTrackable.getId(), metaTrackable);
                     apiResponse.onSuccess(tag);
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setExceptionThrown(e).setRetryRunnable(retryRunnable).setDebugString("Communicate::submitNewTag:JsonException"));

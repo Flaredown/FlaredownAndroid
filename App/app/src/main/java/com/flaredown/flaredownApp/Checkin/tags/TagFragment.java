@@ -119,7 +119,7 @@ public class TagFragment extends ViewPagerFragmentBase {
             @Override
             public View viewCreation(final Tag item) {
                 TextView tv = new TextView(getActivity());
-                tv.setText(item.getName());
+                tv.setText(item.getMetaTrackable().getName());
                 tv.setTextAppearance(getActivity(), R.style.AppTheme_TextView_Link);
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -139,7 +139,7 @@ public class TagFragment extends ViewPagerFragmentBase {
             public View viewCreation(final Tag item) {
                 LinearLayout linearLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(R.layout.checkin_template_tag, null, false);
                 TextView tv = (TextView) linearLayout.findViewById(R.id.tv_tag);
-                tv.setText(item.getName());
+                tv.setText(item.getMetaTrackable().getName());
 //                ((ViewGroup.MarginLayoutParams) tv.getLayoutParams()).setMargins(100, 100, 100, 100);
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override

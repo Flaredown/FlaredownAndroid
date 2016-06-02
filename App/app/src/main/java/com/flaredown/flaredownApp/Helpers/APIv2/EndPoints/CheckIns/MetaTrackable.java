@@ -5,6 +5,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import io.intercom.com.google.gson.annotations.SerializedName;
@@ -17,7 +18,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Provides extra information about a trackable.
  */
-public class MetaTrackable extends RealmObject {
+public class MetaTrackable extends RealmObject implements Serializable {
     private Integer colorId;
 
     @PrimaryKey
@@ -55,6 +56,10 @@ public class MetaTrackable extends RealmObject {
         this.colorId = 1;
         this.id = 0;
         this.realmId = "----0";
+    }
+
+    public MetaTrackable(TrackableType trackableType) {
+        setType(trackableType);
     }
 
     public MetaTrackable(JSONObject jObject) throws JSONException{
