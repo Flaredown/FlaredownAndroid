@@ -40,7 +40,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
@@ -58,7 +58,6 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 

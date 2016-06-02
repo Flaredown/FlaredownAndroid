@@ -25,7 +25,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Searchable;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;

@@ -16,7 +16,7 @@ import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlowLayoutHelper;
 import com.flaredown.flaredownApp.R;

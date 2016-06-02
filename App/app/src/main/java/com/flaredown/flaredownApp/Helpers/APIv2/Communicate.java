@@ -18,7 +18,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;

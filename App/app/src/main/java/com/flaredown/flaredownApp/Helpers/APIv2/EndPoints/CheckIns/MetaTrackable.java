@@ -18,7 +18,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Provides extra information about a trackable.
  */
-public class MetaTrackable extends RealmObject implements Serializable {
+public class MetaTrackable extends RealmObject {
     private Integer colorId;
 
     @PrimaryKey

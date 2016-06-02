@@ -1,6 +1,5 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 
 import org.json.JSONArray;
