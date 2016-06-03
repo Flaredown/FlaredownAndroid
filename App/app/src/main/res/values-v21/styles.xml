@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="AppTheme" parent="AppTheme.v21">
 
-    <style name="AppTheme" parent="AppTheme.Base">
+    </style>
+    <style name="AppTheme.v21" parent="AppTheme.Base">
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:buttonStyle">@style/AppTheme.Button.v21</item>

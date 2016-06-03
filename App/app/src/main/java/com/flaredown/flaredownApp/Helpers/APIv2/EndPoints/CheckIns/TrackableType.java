@@ -3,6 +3,8 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 import com.flaredown.flaredownApp.R;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import io.realm.RealmObject;
 
@@ -10,17 +12,36 @@ import io.realm.RealmObject;
  * The type of trackable.
  */
 public enum TrackableType {
-    CONDITION(R.string.locales_conditions, R.string.locales_conditions_question_prompt),
-    SYMPTOM(R.string.locales_symptoms, R.string.locales_how_active_were_your_symptoms),
-    TREATMENT(R.string.locales_treatments, R.string.locales_which_treatments_taken_today);
+    CONDITION(R.string.locales_conditions, R.string.locales_conditions_question_prompt, true),
+    SYMPTOM(R.string.locales_symptoms, R.string.locales_how_active_were_your_symptoms, true),
+    TREATMENT(R.string.locales_treatments, R.string.locales_which_treatments_taken_today, true),
+    TAG(0, 0, false);
 
     private int nameResId;
     private int questionResId;
+    private boolean isTrackable;
 
+    /**
+     * Lists all enums that are trackable (Condition, Symptom and Treatment)
+     * @return Array of trackable enums.
+     */
+    public static TrackableType[] trackableValues() {
+        List<TrackableType> list = new LinkedList<>();
+        for (TrackableType trackableType : TrackableType.values()) {
+            if(trackableType.isTrackable())
+                list.add(trackableType);
+        }
+        return list.toArray(new TrackableType[list.size()]);
+    }
 
-    TrackableType(@android.support.annotation.StringRes int nameResId, @android.support.annotation.StringRes int questionResId) {
+    TrackableType(@android.support.annotation.StringRes int nameResId, @android.support.annotation.StringRes int questionResId, boolean isTrackable) {
         this.nameResId = nameResId;
         this.questionResId = questionResId;
+        this.isTrackable = isTrackable;
+    }
+
+    public boolean isTrackable() {
+        return isTrackable;
     }
 
     public int getNameResId() {

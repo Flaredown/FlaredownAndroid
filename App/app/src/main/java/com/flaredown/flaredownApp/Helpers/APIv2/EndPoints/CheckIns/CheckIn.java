@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -23,7 +24,7 @@ public class CheckIn implements Serializable{
     private ArrayList<Trackable> conditions = new ArrayList<>();
     private ArrayList<Trackable> symptoms = new ArrayList<>();
     private ArrayList<Trackable> treatments = new ArrayList<>();
-    private ArrayList<Integer> tagIds = new ArrayList<>();
+    private List<Tag> tags = new ArrayList<>();
 
     public CheckIn(String id, Calendar date) {
         this.id = id;
@@ -43,9 +44,12 @@ public class CheckIn implements Serializable{
         this.conditions = createTrackableList(TrackableType.CONDITION, jsonObject.getJSONArray("conditions"));
         this.symptoms = createTrackableList(TrackableType.SYMPTOM, jsonObject.getJSONArray("symptoms"));
         this.treatments = createTrackableList(TrackableType.TREATMENT, jsonObject.getJSONArray("treatments"));
-    }
 
-    // TODO support tags.
+        JSONArray tagIdJArray = jsonObject.getJSONArray("tag_ids");
+        for (int i = 0; i < tagIdJArray.length(); i++) {
+            this.tags.add(new Tag(tagIdJArray.getInt(i)));
+        }
+    }
 
     /**
      * Returns the JSON object representation of the Check In
@@ -64,8 +68,8 @@ public class CheckIn implements Serializable{
         output.put("treatments", createTrackableJArray(this.treatments));
 
         JSONArray tagIdsJArray = new JSONArray();
-        for (Integer tagId : tagIds) {
-            tagIdsJArray.put(tagId);
+        for (Tag tag : tags) {
+            tagIdsJArray.put(tag.getId());
         }
         output.put("tag_ids", tagIdsJArray);
         return output;
@@ -98,6 +102,8 @@ public class CheckIn implements Serializable{
      * @return True if the user has previously submitted a response for this check in.
      */
     public boolean hasResponse() {
+        if(tags.size() > 0) return true;
+
         for (Trackable condition : conditions) {
             if(condition.getValue() != null)
                 return true;
@@ -224,9 +230,15 @@ public class CheckIn implements Serializable{
      */
     public ArrayList<Integer> getTrackableIds(TrackableType trackableType) {
         ArrayList<Integer> result = new ArrayList<>();
-        ArrayList<Trackable> trackables = getTrackables(trackableType);
-        for (Trackable trackable : trackables) {
-            result.add(trackable.getTrackableId());
+        if(trackableType.isTrackable()) {
+            ArrayList<Trackable> trackables = getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                result.add(trackable.getTrackableId());
+            }
+        } else if(TrackableType.TAG.equals(trackableType)) {
+            for (Tag tag : tags) {
+                result.add(tag.getId());
+            }
         }
         return result;
     }
@@ -254,7 +266,7 @@ public class CheckIn implements Serializable{
         checkinJObject.put("date", Date.calendarToString(date));
         checkinJObject.put("note", note);
 
-        for (TrackableType trackableType : TrackableType.values()) {
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
             String name = trackableType.name().toLowerCase() + "s_attributes";
             JSONArray trackablesJArray = new JSONArray();
             ArrayList<Trackable> trackables = getTrackables(trackableType);
@@ -266,11 +278,51 @@ public class CheckIn implements Serializable{
         }
 
         JSONArray tagIdsJArray = new JSONArray();
-        for (Integer tagId : tagIds) {
-            tagIdsJArray.put(tagId);
+        for (Tag tag : tags) {
+            tagIdsJArray.put(tag.getId());
         }
         checkinJObject.put("tag_ids", tagIdsJArray);
 
         return rootJObject;
+    }
+
+    /**
+     * Get a list of tags for the check in.
+     * @return A list of tags
+     */
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public List<Integer> getTagIds() {
+        List<Integer> results = new ArrayList<>();
+        for (Tag tag : tags) {
+            results.add(tag.getId());
+        }
+        return results;
+    }
+
+    /**
+     * Set the list of tags for the check in.
+     * @param tags The list of tags to be associated with the check in.
+     */
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    /**
+     * Add a tag to the check in.
+     * @param tag The tag to add to the check in.
+     */
+    public void addTag(Tag tag) {
+        tags.add(tag);
+    }
+
+    /**
+     * Remove a specific tag from the check in.
+     * @param tag
+     */
+    public void removeTag(Tag tag) {
+        tags.remove(tag);
     }
 }

@@ -7,14 +7,13 @@
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:imeOptions">flagNoExtractUi</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
         <item name="android:textViewStyle">@style/AppTheme.TextView</item>
         <item name="android:textSize">@dimen/font_size</item>
-        <!--<item name="android:windowAnimationStyle">@style/AppTheme.ActivityAnimation</item>-->
         <item name="android:editTextStyle">@style/AppTheme.EditText</item>
         <item name="android:autoCompleteTextViewStyle">@style/AppTheme.EditText</item>
     </style>

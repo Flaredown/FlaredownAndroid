@@ -5,6 +5,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import io.intercom.com.google.gson.annotations.SerializedName;
@@ -21,6 +22,8 @@ public class MetaTrackable extends RealmObject {
     private Integer colorId;
 
     @PrimaryKey
+    private String realmId;
+
     private Integer id; // Unique to the trackable, used to prevent duplicates.
 
     private String name;
@@ -52,11 +55,16 @@ public class MetaTrackable extends RealmObject {
     public MetaTrackable() {
         this.colorId = 1;
         this.id = 0;
+        this.realmId = "----0";
+    }
+
+    public MetaTrackable(TrackableType trackableType) {
+        setType(trackableType);
     }
 
     public MetaTrackable(JSONObject jObject) throws JSONException{
         this.colorId = jObject.optInt("color_id", 1);
-        this.id = jObject.getInt("id");
+        setId(jObject.getInt("id"));
         this.name = jObject.getString("name");
         setType(TrackableType.valueOfs(jObject.getString("type")));
         this.createdAtRaw = Date.stringToMillis(jObject.optString("created_at", null));
@@ -77,6 +85,7 @@ public class MetaTrackable extends RealmObject {
 
     public void setId(Integer id) {
         this.id = id;
+        getRealmId();
     }
 
     public String getName() {
@@ -88,11 +97,16 @@ public class MetaTrackable extends RealmObject {
     }
 
     public TrackableType getType() {
-        return TrackableType.valueOf(getTypeRaw());
+        try {
+            return TrackableType.valueOf(getTypeRaw());
+        } catch(Exception e) {
+            return null;
+        }
     }
 
     public void setType(TrackableType type) {
-        setTypeRaw(type.name());
+        if(type != null)
+            setTypeRaw(type.name());
     }
 
     public String getTypeRaw() {
@@ -101,6 +115,7 @@ public class MetaTrackable extends RealmObject {
 
     public void setTypeRaw(String type) {
         typeRaw = type;
+        getRealmId();
     }
 
     public Calendar getCreatedAt() {
@@ -169,5 +184,18 @@ public class MetaTrackable extends RealmObject {
         RealmQuery<MetaTrackable> query = realmInstance.where(MetaTrackable.class).lessThanOrEqualTo("cachedAtRaw", Calendar.getInstance().getTimeInMillis() - maxAge).isNotNull("cachedAtRaw");
         query.findAll().clear();
         realmInstance.commitTransaction();
+    }
+
+    public String getRealmId() {
+        setRealmId(calculateRealmId(getType(), getId()));
+        return realmId;
+    }
+
+    public static String calculateRealmId(TrackableType trackableType, Integer id) {
+        return (trackableType == null ? "---" : trackableType.toString()) + "-" + (id == null ? "---" : id);
+    }
+
+    public void setRealmId(String realmId) {
+        this.realmId = realmId;
     }
 }

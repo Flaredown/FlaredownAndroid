@@ -192,6 +192,8 @@ public class Trackable implements Serializable {
     private final static String MT_UPDATED_AT = "mt_updatedAt";
     private final static String MT_CACHED_AT = "mt_cachedAt";
 
+    // Overriding java's serialization, this is because the realm database does not allow serialisation
+    // and a MetaTrackable is a serializable object
     private void writeObject(ObjectOutputStream oos) throws IOException {
         // Default serialzation.
         oos.defaultWriteObject();
