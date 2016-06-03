@@ -55,6 +55,7 @@ public class Communicate {
 
     private Context context;
     private Realm mRealm;
+    private static List<Tag> tempCachePopularTags;
 
     /**
      * Create a communication's class.
@@ -521,6 +522,11 @@ public class Communicate {
      * @param apiResponse
      */
     public void getPopularTags(final APIResponse<List<Tag>, Error> apiResponse) {
+        // If already loaded return the previously loaded item.
+        if(tempCachePopularTags != null) {
+            apiResponse.onSuccess(new ArrayList<>(tempCachePopularTags)); // Return a copy to prevent poisoning of the cache (doesn't prevent editing of the MetaTrackable objects or tags).
+            return;
+        }
         final Runnable retryRunnable = new Runnable() {
             @Override
             public void run() {
@@ -540,6 +546,7 @@ public class Communicate {
                     for (int i = 0; i < jArray.length(); i++) {
                         tags.add(new Tag(jArray.getJSONObject(i)));
                     }
+                    tempCachePopularTags = new ArrayList<>(tags);
                     apiResponse.onSuccess(tags);
                 } catch (JSONException e) {
                     apiResponse.onFailure(new Error().setDebugString("Communicate.getPopularTags:JSONException").setRetryRunnable(retryRunnable).setExceptionThrown(e));
