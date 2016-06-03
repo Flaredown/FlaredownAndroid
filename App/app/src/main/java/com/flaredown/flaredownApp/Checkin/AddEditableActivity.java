@@ -29,6 +29,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.StringHelper;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 
@@ -53,11 +54,13 @@ public class AddEditableActivity extends AppCompatActivity {
     private EditText et_userInput;
     private LinearLayout ll_addNewTrackable;
     private TextView tv_addNewTrackable;
+    private TextView tv_addNewTrackableSub;
     private ListView lv_suggestions;
     private ProgressBar pb_loading;
 
     private Communicate api;
     private long lastSuggestionRequest; // Used to throttle the number of requests.
+    private Thread tryAfterTimeLimit;
     private TrackableType trackableType;
     private ArrayList<Searchable> suggestionList = new ArrayList<>();
     private SearchableAdapter suggestionAdapter;
@@ -74,6 +77,7 @@ public class AddEditableActivity extends AppCompatActivity {
         et_userInput = (EditText) findViewById(R.id.et_user_input);
         ll_addNewTrackable = (LinearLayout) findViewById(R.id.ll_addNewTrackable);
         tv_addNewTrackable = (TextView) findViewById(R.id.tv_addNewTrackable);
+        tv_addNewTrackableSub = (TextView) findViewById(R.id.tv_addNewTrackableSub);
         lv_suggestions = (ListView) findViewById(R.id.lv_suggestions);
         pb_loading = (ProgressBar) findViewById(R.id.pb_loading);
 
@@ -92,6 +96,12 @@ public class AddEditableActivity extends AppCompatActivity {
 
         trackableType = (TrackableType) getIntent().getSerializableExtra(RESOURCE_TYPE_KEY);
 
+        // Set the title and Add new x.
+        tv_addNewTrackableSub.setText(String.format(getString(R.string.add_new_trackable), trackableType.name().toLowerCase()));
+
+        TextView title = (TextView) findViewById(R.id.toolbar_title);
+        title.setText(String.format(getString(R.string.add_trackable_activity_title), StringHelper.upperFirstChar(trackableType.name().toLowerCase())));
+
 
         // Listeners.
 
@@ -103,7 +113,7 @@ public class AddEditableActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, int start, int before, int count) {
                 // Only show add trackable option when input isn't blank.
                 if(s.length() > 0) {
                     ll_addNewTrackable.setVisibility(View.VISIBLE);
@@ -113,14 +123,33 @@ public class AddEditableActivity extends AppCompatActivity {
                     tv_addNewTrackable.setText("");
                 }
 
-                // Start getting suggestions once the user inputs length is greater than 2
-                if(s.length() > 2) {
+                // Start getting suggestions once the user inputs length is greater than 0
+                if(s.length() > 0) {
                     // Prevent over saturation of requests.
                     if(Calendar.getInstance().getTimeInMillis() - lastSuggestionRequest > FlaredownConstants.ADD_TRACKABLE_SEARCH_TIME_MAX) {
                         lastSuggestionRequest = Calendar.getInstance().getTimeInMillis();
                         displaySuggestions(s.toString());
                     } else {
-                        // TODO Send request after limit time is complete.
+                        final long timeToNextRequest = FlaredownConstants.ADD_TRACKABLE_SEARCH_TIME_MAX - (Calendar.getInstance().getTimeInMillis() - lastSuggestionRequest);
+                        if(tryAfterTimeLimit != null) {
+                            tryAfterTimeLimit.interrupt();
+                        }
+                        tryAfterTimeLimit = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(timeToNextRequest);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            lastSuggestionRequest = Calendar.getInstance().getTimeInMillis();
+                                            displaySuggestions(s.toString());
+                                        }
+                                    });
+                                } catch (InterruptedException e ){}
+                            }
+                        });
+                        tryAfterTimeLimit.start();
                     }
                 }
             }
