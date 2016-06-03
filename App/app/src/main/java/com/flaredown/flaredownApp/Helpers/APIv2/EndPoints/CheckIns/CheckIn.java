@@ -102,6 +102,8 @@ public class CheckIn implements Serializable{
      * @return True if the user has previously submitted a response for this check in.
      */
     public boolean hasResponse() {
+        if(tags.size() > 0) return true;
+
         for (Trackable condition : conditions) {
             if(condition.getValue() != null)
                 return true;

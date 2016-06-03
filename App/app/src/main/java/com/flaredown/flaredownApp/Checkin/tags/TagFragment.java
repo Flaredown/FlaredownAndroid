@@ -52,9 +52,30 @@ public class TagFragment extends ViewPagerFragmentBase {
         return fragment;
     }
 
+    /**
+     * Add a tag to the selected tags for the check in and update the check in object and api.
+     * @param tag The tag to add to the check in.
+     */
     public void addTag(Tag tag) {
-        if(flh_selected_tags != null)
+        if(flh_selected_tags != null) {
             flh_selected_tags.addItem(tag);
+            // Update the check in.
+            getCheckInActivity().getCheckIn().addTag(tag);
+            getCheckInActivity().checkInUpdate();
+        }
+    }
+
+    /**
+     * Remove a tag from the selected tags for the check in and update the check in object and api.
+     * @param tag The tag to remove from the check in.
+     */
+    public void removeTag(Tag tag) {
+        if(flh_selected_tags != null) {
+            flh_selected_tags.removeItem(tag);
+            // Update the check in.
+            getCheckInActivity().getCheckIn().removeTag(tag);
+            getCheckInActivity().checkInUpdate();
+        }
     }
 
     @Nullable
@@ -127,7 +148,7 @@ public class TagFragment extends ViewPagerFragmentBase {
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        flh_selected_tags.addItem(item);
+                        addTag(item);
                     }
                 });
                 int padding = (int) getResources().getDimension(R.dimen.sep_margin_small);
@@ -147,7 +168,7 @@ public class TagFragment extends ViewPagerFragmentBase {
                 tv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        flh_selected_tags.removeItem(item);
+                        removeTag(item);
                     }
                 });
                 return linearLayout;

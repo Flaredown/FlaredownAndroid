@@ -689,7 +689,7 @@ public class CheckinActivity extends AppCompatActivity{
         for (Fragment fragment : fragments) {
             if(fragment instanceof TagFragment) {
                 return (TagFragment) fragment;
-            } else if(fragment instanceof CheckInSummaryFragment) {
+            } else if(fragment instanceof CheckInSummaryFragment && currentView.equals(Views.SUMMARY)) {
                 List<ViewPagerFragmentBase> subFragments = ((CheckInSummaryFragment) fragment).getFragments();
                 for (ViewPagerFragmentBase subFragment : subFragments) {
                     if(subFragment instanceof TagFragment) {
