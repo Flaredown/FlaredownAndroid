@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class CheckInSummaryFragment extends Fragment {
+    private static final String MAIN_FRAGMENT_TAG_PREFIX = "SummaryFrag_";
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private View root;
@@ -73,9 +75,17 @@ public class CheckInSummaryFragment extends Fragment {
         fragments = CheckinActivity.createFragments(activity.getCheckIn());
         fragments.add(0, NotesQFragment.newInstance());
         int i = 0;
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         for (ViewPagerFragmentBase fragment : fragments) {
-            getChildFragmentManager().beginTransaction().add(ll_fragmentHolder.getId(), fragment, "summaryfrag" + i).commit();
+            Fragment previousFragment = getChildFragmentManager().findFragmentByTag(MAIN_FRAGMENT_TAG_PREFIX + i);
+            if(previousFragment != null) {
+                fragmentTransaction.remove(previousFragment);
+            }
+
+            fragmentTransaction.add(ll_fragmentHolder.getId(), fragment, MAIN_FRAGMENT_TAG_PREFIX + i);
+            i++;
         }
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -98,5 +108,15 @@ public class CheckInSummaryFragment extends Fragment {
         for (ViewPagerFragmentBase fragment : fragments) {
             fragment.onPageExit();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+        for (ViewPagerFragmentBase fragment : fragments) {
+            fragmentTransaction.remove(fragment);
+        }
+        fragmentTransaction.commitAllowingStateLoss();
+        super.onDestroy();
     }
 }

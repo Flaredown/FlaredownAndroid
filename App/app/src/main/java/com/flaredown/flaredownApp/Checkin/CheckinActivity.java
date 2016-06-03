@@ -498,7 +498,6 @@ public class CheckinActivity extends AppCompatActivity{
         bt_submitCheckin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitCheckin();
                 displaySummary();
                 setView(Views.SUMMARY);
             }
@@ -541,31 +540,27 @@ public class CheckinActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     * Submits the checkin to flaredown and displays the summary page.
-     */
-    private void submitCheckin() {
-        // Auto saves so no need to submit data to the api.
-    }
-
     private void displaySummary() {
         try {
+            removeSummary();
             f_checkin_sumary = CheckInSummaryFragment.newInstance();
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 
             trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
+            if(vpa_questions != null)
+                vpa_questions.removeAllFragments();
         } catch (Exception e) { // was jsonException
             new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary..JSONException")).setCancelable(false).show();
         }
     }
 
     private void removeSummary() {
-        /*if(f_checkin_sumary != null) {
+        if(f_checkin_sumary != null) {
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.remove(f_checkin_sumary);
-            trans.();
+            trans.commit();
             f_checkin_sumary = null;
-        }*/
+        }
     }
 
     Calendar lastUpdate = null;
@@ -643,7 +638,7 @@ public class CheckinActivity extends AppCompatActivity{
             if(checkIn.hasResponse()) // Show the correct view
             {
                 setView(Views.SUMMARY);
-                displaySummary(); // TODO display summary if check in completed
+                displaySummary();
             } else
             setView(Views.NOT_CHECKED_IN_YET);
         }
