@@ -35,11 +35,13 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.flaredown.flaredownApp.Checkin.tags.TagFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
@@ -666,16 +668,40 @@ public class CheckinActivity extends AppCompatActivity{
      */
     public static List<ViewPagerFragmentBase> createFragments(CheckIn checkIn) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
-        for (TrackableType trackableType : TrackableType.values()) {
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
             CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
             fragments.add(checkinCatalogQFragment);
         }
+        fragments.add(TagFragment.newInstance());
         return fragments;
     }
 
     public List<ViewPagerFragmentBase> getFragmentQuestions() {
         return vpa_questions.getFragments();
     }
+
+    /**
+     * Get the tag fragment.
+     * @return
+     */
+    public TagFragment getTagFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fragments = fm.getFragments();
+        for (Fragment fragment : fragments) {
+            if(fragment instanceof TagFragment) {
+                return (TagFragment) fragment;
+            } else if(fragment instanceof CheckInSummaryFragment && currentView.equals(Views.SUMMARY)) {
+                List<ViewPagerFragmentBase> subFragments = ((CheckInSummaryFragment) fragment).getFragments();
+                for (ViewPagerFragmentBase subFragment : subFragments) {
+                    if(subFragment instanceof TagFragment) {
+                        return (TagFragment) subFragment;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     public ViewPagerAdapter getScreenSlidePagerAdapter() {
         return vpa_questions;
     }
@@ -840,6 +866,12 @@ public class CheckinActivity extends AppCompatActivity{
                         } else {
                             updateLocalCheckinAndUI(trackable);
                         }
+                    }
+                } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {
+                    Bundle bundle = data.getExtras();
+                    final Tag tag = (Tag) bundle.getSerializable(AddEditableActivity.RETURN_TAG_KEY);
+                    if(tag != null) {
+                        getTagFragment().addTag(tag);
                     }
                 }
             }

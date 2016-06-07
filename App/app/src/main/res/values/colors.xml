@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background">#F2EEE8</color>
-    <color name="colorPrimaryDark">@color/background</color>
-    <!--<color name="colorPrimaryDark">#BFB19C</color>-->
+    <!--<color name="colorPrimaryDark">#D1C3AD</color>-->
+    <color name="colorPrimaryDark">@color/sub_text_color</color>
     <color name="textColor">#000000</color>
     <color name="accent">#73C1BA</color>
     <color name="accent_hover">#47a098</color>
