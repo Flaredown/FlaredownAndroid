@@ -1,6 +1,10 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session;
 
+import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+
 import org.json.JSONObject;
+
+import java.util.Calendar;
 
 /**
  * Represents the Session endpoint for the Flaredown API.
@@ -10,12 +14,16 @@ public class Session {
     private String token = null;
     private String userId = null;
     private String id = null;
+    private Calendar createdAt = null;
+    private Calendar updatedAt = null;
 
     public Session(JSONObject jsonObject){
         email = jsonObject.optString("email");
         token = jsonObject.optString("token");
         id = jsonObject.optString("id");
         userId = jsonObject.optString("user_id");
+        createdAt = Date.stringToCalendar(jsonObject.optString("created_at"), Date.API_DATE_TIME_FORMAT);
+        updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at"), Date.API_DATE_TIME_FORMAT);
     }
 
     public String getEmail() {
@@ -48,5 +56,21 @@ public class Session {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Calendar getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Calendar createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Calendar getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Calendar updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
