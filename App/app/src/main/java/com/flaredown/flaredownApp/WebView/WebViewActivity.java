@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -29,6 +30,7 @@ public class WebViewActivity extends Activity {
     private WebView wv_main;
     private CookieManager cookieManager;
     private Communicate API;
+    private String oldUrl = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,36 @@ public class WebViewActivity extends Activity {
             }
         };
         wv_main.setWebViewClient(webViewClient);
+        final WebAppInterface webAppInterface = new WebAppInterface();
+        wv_main.addJavascriptInterface(webAppInterface, "androidWebView");
+
+
+        // Temporary url change listener // TODO remove when JavaScript interface has been added.
+        Thread urlListenerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while(true) {
+                        Thread.sleep(200);
+                        if(wv_main != null) {
+                            WebViewActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!wv_main.getUrl().equals(oldUrl)) {
+                                        oldUrl = wv_main.getUrl();
+                                        webAppInterface.notifyUrlChange(oldUrl);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } catch (InterruptedException e) {
+
+                }
+            }
+        });
+
+        urlListenerThread.start();
     }
 
     @Override
@@ -105,6 +137,13 @@ public class WebViewActivity extends Activity {
         super.onResume();
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.getInstance().sync();
+        }
+    }
+
+    public class WebAppInterface {
+        @JavascriptInterface
+        public void notifyUrlChange(String url) {
+            Toast.makeText(WebViewActivity.this, "New Url " + url, Toast.LENGTH_SHORT).show();
         }
     }
 }
