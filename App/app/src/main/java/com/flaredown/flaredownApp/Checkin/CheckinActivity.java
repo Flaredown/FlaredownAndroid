@@ -109,6 +109,7 @@ public class CheckinActivity extends AppCompatActivity{
     /*
         Instance constant arguments.
      */
+    public static final String I_CHECK_IN_ID = "launch_intent_check_in_id";
     private static final String SI_CHECKIN = "entries endpoint";
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
@@ -337,6 +338,7 @@ public class CheckinActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
         setContentView(R.layout.checkin_activity);
+        Intent launchIntent = getIntent();
         API = new Communicate(this);
         if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
             new ForceLogin(this);
@@ -354,6 +356,10 @@ public class CheckinActivity extends AppCompatActivity{
             CheckIn savedCheckIn = (CheckIn) savedInstanceState.getSerializable(SI_CHECKIN);
             displayCheckin(savedCheckinDate, savedCheckIn);
             setView(savedViewState, false);
+        } else if (launchIntent != null && launchIntent.hasExtra(I_CHECK_IN_ID)) {
+            String checkInID = launchIntent.getStringExtra(I_CHECK_IN_ID);
+            setView(Views.SPLASH_SCREEN);
+            displayCheckin(checkInID);
         } else {
             setView(Views.SPLASH_SCREEN, false);
             displayCheckin(Calendar.getInstance());
@@ -614,6 +620,27 @@ public class CheckinActivity extends AppCompatActivity{
             @Override
             public void onSuccess(CheckIn result) {
                 displayCheckin(date, result);
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+            }
+        });
+    }
+
+    /**
+     * Display the check in for a specific id.
+     * @param id The id of the check in to display.
+     */
+    private void displayCheckin(final String id) {
+        removeSummary();
+        checkIn = null;
+        isLoadingCheckin = true;
+        API.checkIn(id, new APIResponse<CheckIn, Error>() {
+            @Override
+            public void onSuccess(CheckIn result) {
+                displayCheckin(result.getDate(), result);
             }
 
             @Override
