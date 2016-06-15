@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
@@ -21,6 +23,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
+import com.flaredown.flaredownApp.Settings.SettingsActivity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,6 +38,7 @@ public class WebViewActivity extends Activity {
     private CookieManager cookieManager;
     private Communicate API;
     private String oldUrl = "";
+    private FloatingActionButton fab_settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,32 +46,43 @@ public class WebViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.web_view_activity);
         API = new Communicate(this);
-        if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
+        if (!API.isCredentialsSaved()) { // Ensure the user is signed in.
             new ForceLogin(this);
             return;
         }
 
         // Assigning variables.
         wv_main = (WebView) findViewById(R.id.wv_main);
+        fab_settings = (FloatingActionButton) findViewById(R.id.fab_settings);
+
+
+        fab_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WebViewActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         // Managing the web view.
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(wv_main.getContext());
             cookieSyncManager.sync();
         }
 
         try {
             cookieManager.setCookie(BuildConfig.WEB_URL, "ember_simple_auth:session=" + URLEncoder.encode(API.createSessionCookieData(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {}
+        } catch (UnsupportedEncodingException e) {
+        }
         WebSettings webSettings = wv_main.getSettings();
 
         webSettings.setJavaScriptEnabled(true);
 
         // Set the website url
-        if(savedInstanceState == null)
+        if (savedInstanceState == null)
             wv_main.loadUrl(BuildConfig.WEB_URL);
         else
             wv_main.restoreState(savedInstanceState);
@@ -85,32 +100,6 @@ public class WebViewActivity extends Activity {
         wv_main.addJavascriptInterface(webAppInterface, "AndroidInterface");
 
 
-        // Temporary url change listener // TODO remove when JavaScript interface has been added.
-//        Thread urlListenerThread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    while(true) {
-//                        Thread.sleep(200);
-//                        if(wv_main != null) {
-//                            WebViewActivity.this.runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (!wv_main.getUrl().equals(oldUrl)) {
-//                                        oldUrl = wv_main.getUrl();
-//                                        webAppInterface.notifyUrlChange(oldUrl);
-//                                    }
-//                                }
-//                            });
-//                        }
-//                    }
-//                } catch (InterruptedException e) {
-//
-//                }
-//            }
-//        });
-//
-//        urlListenerThread.start();
     }
 
     @Override
