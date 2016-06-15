@@ -21,6 +21,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.CookieClearHelper;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
@@ -119,6 +120,9 @@ public class Communicate {
         realm.beginTransaction();
         realm.clear(MetaTrackable.class);
         realm.commitTransaction();
+
+        // Clear cookies
+        CookieClearHelper.clearCookies(context);
     }
 
     /**

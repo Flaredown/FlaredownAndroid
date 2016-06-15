@@ -136,7 +136,7 @@ public class WebViewActivity extends Activity {
     public class WebAppInterface {
         @JavascriptInterface
         public void pageChanged(String url) {
-            Matcher urlMatcher = Pattern.compile("https?://[^/]+/([^/]+)/([\\s\\S]*)").matcher(url);
+            Matcher urlMatcher = Pattern.compile("https?://[^/]+/([^/]+)/?([\\s\\S]+)?").matcher(url);
             if(urlMatcher.matches()) {
                 String endPoint = urlMatcher.group(1);
                 String remainder = urlMatcher.group(2);
@@ -163,6 +163,10 @@ public class WebViewActivity extends Activity {
                         }
                     }).start();
 //                    wv_main.goBack();
+                } else if(endPoint.equals("login")) {
+                    API.userSignOut();
+                    new ForceLogin(WebViewActivity.this);
+                    finish();
                 }
             }
         }
