@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.WebView;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.BuildConfig;
@@ -35,10 +38,12 @@ import java.util.regex.Pattern;
  */
 public class WebViewActivity extends Activity {
     private WebView wv_main;
+    private FloatingActionButton fab_settings;
+    private LinearLayout ll_splashScreen;
+
     private CookieManager cookieManager;
     private Communicate API;
     private String oldUrl = "";
-    private FloatingActionButton fab_settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,8 @@ public class WebViewActivity extends Activity {
         // Assigning variables.
         wv_main = (WebView) findViewById(R.id.wv_main);
         fab_settings = (FloatingActionButton) findViewById(R.id.fab_settings);
+        ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
+
 
 
         fab_settings.setOnClickListener(new View.OnClickListener() {
@@ -77,28 +84,51 @@ public class WebViewActivity extends Activity {
             cookieManager.setCookie(BuildConfig.WEB_URL, "ember_simple_auth:session=" + URLEncoder.encode(API.createSessionCookieData(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
         }
+
+
+
         WebSettings webSettings = wv_main.getSettings();
 
         webSettings.setJavaScriptEnabled(true);
 
         // Set the website url
-        if (savedInstanceState == null)
-            wv_main.loadUrl(BuildConfig.WEB_URL);
-        else
-            wv_main.restoreState(savedInstanceState);
 
 
         WebViewClient webViewClient = new WebViewClient() {
             @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                Log.v("WV", "URL CHANEGED TO " + url);
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                // Hide the splash screen... Only if it isn't already hidden.
+                if(ll_splashScreen.getVisibility() != View.GONE) {
+                    ll_splashScreen.setAlpha(1);
+                    ll_splashScreen.setVisibility(View.VISIBLE);
+                    ll_splashScreen.animate()
+                            .alpha(0)
+                            .translationY(-Styling.getInDP(WebViewActivity.this, 100))
+                            .setDuration(CheckinActivity.ANIMATION_DURATION)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    ll_splashScreen.setVisibility(View.GONE);
+                                    ll_splashScreen.setTranslationY(0);
+                                    ll_splashScreen.setAlpha(1);
+                                }
+                            });
+                }
             }
         };
         wv_main.setWebViewClient(webViewClient);
         final WebAppInterface webAppInterface = new WebAppInterface();
         wv_main.addJavascriptInterface(webAppInterface, "AndroidInterface");
 
+        if (savedInstanceState == null)
+            wv_main.loadUrl(BuildConfig.WEB_URL);
+        else {
+            wv_main.restoreState(savedInstanceState);
+            ll_splashScreen.setVisibility(View.GONE);
+        }
 
     }
 

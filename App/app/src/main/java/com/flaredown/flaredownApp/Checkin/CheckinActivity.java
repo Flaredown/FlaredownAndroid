@@ -122,7 +122,7 @@ public class CheckinActivity extends AppCompatActivity{
 
     private Views currentView = null;
     private Integer currentQuestionPage = 0;
-    private static final int ANIMATION_DURATION = 250;
+    public static final int ANIMATION_DURATION = 250;
     private boolean setViewAnimationInProgress = false;
     private class SetViewQueueItem {
         private Views views;
