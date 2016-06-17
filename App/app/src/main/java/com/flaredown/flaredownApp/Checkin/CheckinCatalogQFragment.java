@@ -23,6 +23,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrac
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.R;
 
@@ -30,6 +31,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 
 public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
     // Fragment Arguments.
@@ -103,7 +105,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
     }
 
     private void inflateQuestions() {
-        ArrayList<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
+        HashSet<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
         for (final Trackable trackable : trackables) {
             addTrackable(trackable);
         }
@@ -144,6 +146,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
                                             @Override
                                             public void onFailure(Error result) {
                                                 Log.d("Remove Tracking Error",result.toString());
+                                                new ErrorDialog(getActivity(), result).setCancelable(true).show();
                                             }
                                         });
                                     }

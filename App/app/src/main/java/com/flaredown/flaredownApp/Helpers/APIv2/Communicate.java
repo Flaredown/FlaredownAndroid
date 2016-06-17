@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -239,9 +241,9 @@ public class Communicate {
             });
         }
 
-        getTag(checkIn.getTagIds(), new APIResponse<List<Tag>, Error>() {
+        getTag(checkIn.getTagIds(), new APIResponse<TagCollection<Tag>, Error>() {
             @Override
-            public void onSuccess(List<Tag> result) {
+            public void onSuccess(TagCollection<Tag> result) {
                 checkIn.setTags(result);
                 requestReceived.add(result);
                 if(requestReceived.size() >= TOTAL_REQUESTS)
@@ -731,7 +733,7 @@ public class Communicate {
      * @param ids The ids for the MetaTrackables.
      * @param apiResponse Response or error callback.
      */
-    public void getTrackable(final TrackableType type, final List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+    public void getTrackable(final TrackableType type, final HashSet<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
         if(ids.size() <= 0) {
             apiResponse.onSuccess(new ArrayList<MetaTrackable>());
             return;
@@ -803,11 +805,11 @@ public class Communicate {
         }
     }
 
-    public void getTag(final List<Integer> ids, final APIResponse<List<Tag>, Error> apiResponse) {
+    public void getTag(final HashSet<Integer> ids, final APIResponse<TagCollection<Tag>, Error> apiResponse) {
         getTrackable(TrackableType.TAG, ids, new APIResponse<ArrayList<MetaTrackable>, Error>() {
             @Override
             public void onSuccess(ArrayList<MetaTrackable> result) {
-                List<Tag> tags = new ArrayList<>();
+                TagCollection<Tag> tags = new TagCollection<>();
                 for (MetaTrackable metaTrackable : result) {
                     tags.add(new Tag(metaTrackable));
                 }

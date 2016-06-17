@@ -885,7 +885,9 @@ public class CheckinActivity extends AppCompatActivity{
                                 }
                             });
                         } else {
-                            updateLocalCheckinAndUI(trackable);
+                            try {
+                                updateLocalCheckinAndUI(trackable);
+                            } catch (IllegalStateException e){}
                         }
                     }
                 } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {
