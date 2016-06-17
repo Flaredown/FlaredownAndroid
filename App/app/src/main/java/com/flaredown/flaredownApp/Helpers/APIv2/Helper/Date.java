@@ -12,6 +12,7 @@ import java.util.Calendar;
  */
 public class Date {
     public static final SimpleDateFormat API_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat API_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     /**
      * Get the Calendar for a standard api date string.

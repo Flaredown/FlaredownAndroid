@@ -57,8 +57,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_new_condition"
-            android:textColor="@color/checkin_selector_button_text" />
+            android:text="@string/add_new_trackable"
+            android:textColor="@color/checkin_selector_button_text"
+            android:id="@+id/tv_addNewTrackableSub"/>
     </LinearLayout>
 
     <ListView

@@ -44,7 +44,7 @@ public class Trackable implements Serializable {
      */
     public Trackable(TrackableType type, JSONObject jsonObject) {
         this.type = type;
-        this.id = (jsonObject.has("id")) ? jsonObject.optString("id") : null;
+        this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
@@ -62,7 +62,7 @@ public class Trackable implements Serializable {
      */
     public Trackable(TrackableType type, JSONObject jsonObject, MetaTrackable meta) {
         this.type = type;
-        this.id = (jsonObject.has("id")) ? jsonObject.optString("id") : null;
+        this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
@@ -183,6 +183,7 @@ public class Trackable implements Serializable {
 
     public void setMetaTrackable(MetaTrackable metaTrackable) {
         this.metaTrackable = metaTrackable;
+        this.setTrackableId(metaTrackable.getId());
     }
 
     private final static String MT_ID = "mt_id";
@@ -222,5 +223,20 @@ public class Trackable implements Serializable {
             metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
             metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+        Trackable other = (Trackable) o;
+
+        return (this.getTrackableId() == other.getTrackableId() || (this.getTrackableId() != null && this.getTrackableId().equals(other.getTrackableId())));
+    }
+
+    @Override
+    public int hashCode() {
+        return (getTrackableId() == null)? 0 : getTrackableId();
     }
 }
