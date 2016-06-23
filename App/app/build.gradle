@@ -63,6 +63,10 @@ dependencies {
     compile ('io.intercom.android:intercom-sdk-base:1.+@aar') {
         transitive = true
     }
+
+    //--- RxJava
+    compile 'io.reactivex:rxandroid:1.1.0'
+
     //--- Used for JUnit Testing.
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.10.19'

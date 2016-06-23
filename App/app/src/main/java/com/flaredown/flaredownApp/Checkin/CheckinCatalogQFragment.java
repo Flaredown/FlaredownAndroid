@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Checkin;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +23,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
-import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
@@ -32,6 +30,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+
+import rx.Subscriber;
 
 public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
     // Fragment Arguments.
@@ -173,15 +173,21 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
 
         } else {
             SmileyRating smileyRating = new SmileyRating(getActivity());
-            if (trackable.getValue() != null){
-                smileyRating.setValue(Integer.valueOf(trackable.getValue()));
-            } else {
-                smileyRating.setValue(null);
-            }
-            smileyRating.addOnValueChangeListener(new SmileyRatingOnValueChange() {
+           smileyRating.setTrackable(trackable);
+
+            trackable.getValueObserver().subscribe(new Subscriber<String>() {
                 @Override
-                public void onClick(int value, Integer oldValue) {
-                    trackable.setValue(String.valueOf(value));
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(String s) {
                     getCheckInActivity().checkInUpdate();
                 }
             });

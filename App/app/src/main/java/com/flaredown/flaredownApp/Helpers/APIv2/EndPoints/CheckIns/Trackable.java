@@ -11,7 +11,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
+import rx.Observable;
+import rx.Subscriber;
 
 /**
  * Used as a base to represent the trackables (Symptoms, Conditions & Treatments).
@@ -28,13 +33,42 @@ public class Trackable implements Serializable {
     private String destroy;
     private transient MetaTrackable metaTrackable = null;
 
+    private transient List<OnValueUpdateListener> handleValueChange = new LinkedList<>();
+    private transient Observable<String> valueObserver = Observable.create(new Observable.OnSubscribe<String>() {
+        @Override
+        public void call(final Subscriber<? super String> subscriber) {
+            handleValueChange.add(new OnValueUpdateListener() {
+                @Override
+                public void valueUpdate(String value) {
+                    if(subscriber.isUnsubscribed())
+                        return;
+                    subscriber.onNext(value);
+                }
+            });
+        }
+    });
+
+    private interface OnValueUpdateListener {
+        void valueUpdate(String value);
+    }
+
     /**
 
      * Default constructor for the trackable object.
      * @param type The type of trackable (condition, symptom, treatment).
      */
-    public Trackable(TrackableType type) {
+    private Trackable(TrackableType type) {
         this.type = type;
+    }
+
+    /**
+     * Default constructor for the trackable object.
+     * @param type The type of trackable (condition, symptom, treatment).
+     * @param trackableId The trackable id of the object.
+     */
+    public Trackable(TrackableType type, Integer trackableId) {
+        this.type = type;
+        this.trackableId = new Integer(trackableId);
     }
 
     /**
@@ -48,7 +82,7 @@ public class Trackable implements Serializable {
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null;
+        this.setValue((jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null);
         this.colourId = jsonObject.optInt("color_id", 0);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
         this.destroy = (jsonObject.has("_destroy")) ? jsonObject.optString("_destroy") : null;
@@ -66,7 +100,7 @@ public class Trackable implements Serializable {
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null;
+        this.setValue((jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null);
         this.colourId = jsonObject.optInt("color_id", 0);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
         this.destroy = (jsonObject.has("_destroy")) ? jsonObject.optString("_destroy") : null;
@@ -150,7 +184,10 @@ public class Trackable implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        Trackable.this.value = value;
+        for (OnValueUpdateListener onValueUpdateListener : handleValueChange) {
+            onValueUpdateListener.valueUpdate(value);
+        }
     }
 
     public String getDestroy() {
@@ -165,7 +202,7 @@ public class Trackable implements Serializable {
         return trackableId;
     }
 
-    public void setTrackableId(Integer trackableId) {
+    private void setTrackableId(Integer trackableId) {
         this.trackableId = trackableId;
     }
 
@@ -186,11 +223,20 @@ public class Trackable implements Serializable {
         this.setTrackableId(metaTrackable.getId());
     }
 
+    /**
+     * Get the value observer.... The observer emits whenever the value changes.
+     * @return Value observer.
+     */
+    public Observable<String> getValueObserver() {
+        return valueObserver;
+    }
+
     private final static String MT_ID = "mt_id";
     private final static String MT_NAME = "mt_name";
     private final static String MT_TYPE = "mt_type";
     private final static String MT_CREATED_AT = "mt_createdAt";
     private final static String MT_UPDATED_AT = "mt_updatedAt";
+
     private final static String MT_CACHED_AT = "mt_cachedAt";
 
     // Overriding java's serialization, this is because the realm database does not allow serialisation
