@@ -8,6 +8,7 @@ import android.widget.Adapter;
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class FlowLayoutHelper<T> {
      * Add multiple items.
      * @param items
      */
-    public void addItems(List<T> items) {
+    public void addItems(HashSet<T> items) {
         for (T item : items) {
             addItem(item);
         }

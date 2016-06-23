@@ -23,6 +23,9 @@ public class PreferenceKeys {
     public static final String SP_Av2_USER_TOKEN = "APIv2User[token]";
     public static final String SP_Av2_USER_EMAIL = "APIv2User[email]";
     public static final String SP_Av2_USER_ID = "APIv2User[id]";
+    public static final String SP_Av2_SESSION_ID = "APIv2User[session_id]";
+    public static final String SP_Av2_CREATED_AT = "APIv2User[created_at]";
+    public static final String SP_Av2_UPDATED_AT = "APIv2User[updated_at]";
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);

@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -21,10 +22,10 @@ public class CheckIn implements Serializable{
     private Calendar updatedAt;
     private Calendar date;
     private String note;
-    private ArrayList<Trackable> conditions = new ArrayList<>();
-    private ArrayList<Trackable> symptoms = new ArrayList<>();
-    private ArrayList<Trackable> treatments = new ArrayList<>();
-    private List<Tag> tags = new ArrayList<>();
+    private TrackableCollection<Trackable> conditions = new TrackableCollection<>();
+    private TrackableCollection<Trackable> symptoms = new TrackableCollection<>();
+    private TrackableCollection<Trackable> treatments = new TrackableCollection<>();
+    private TagCollection<Tag> tags = new TagCollection<>();
 
     public CheckIn(String id, Calendar date) {
         this.id = id;
@@ -75,8 +76,8 @@ public class CheckIn implements Serializable{
         return output;
     }
 
-    private ArrayList<Trackable> createTrackableList(TrackableType type, JSONArray trackableJArray) throws JSONException {
-        ArrayList<Trackable> output = new ArrayList<>();
+    private TrackableCollection<Trackable> createTrackableList(TrackableType type, JSONArray trackableJArray) throws JSONException {
+        TrackableCollection<Trackable> output = new TrackableCollection<>();
         for (int i = 0; i < trackableJArray.length(); i++) {
             Trackable trackable;
             JSONObject trackableJObject = trackableJArray.getJSONObject(i);
@@ -89,7 +90,7 @@ public class CheckIn implements Serializable{
         return output;
     }
 
-    private JSONArray createTrackableJArray(ArrayList<Trackable> trackableList) throws JSONException {
+    private JSONArray createTrackableJArray(TrackableCollection<Trackable> trackableList) throws JSONException {
         JSONArray output = new JSONArray();
         for (Trackable trackable : trackableList) {
             output.put(trackable.toJson());
@@ -164,27 +165,27 @@ public class CheckIn implements Serializable{
         this.note = note;
     }
 
-    public ArrayList<Trackable> getConditions() {
+    public TrackableCollection<Trackable> getConditions() {
         return conditions;
     }
 
-    public void setConditions(ArrayList<Trackable> conditions) {
+    public void setConditions(TrackableCollection<Trackable> conditions) {
         this.conditions = conditions;
     }
 
-    public ArrayList<Trackable> getSymptoms() {
+    public TrackableCollection<Trackable> getSymptoms() {
         return symptoms;
     }
 
-    public void setSymptoms(ArrayList<Trackable> symptoms) {
+    public void setSymptoms(TrackableCollection<Trackable> symptoms) {
         this.symptoms = symptoms;
     }
 
-    public ArrayList<Trackable> getTreatments() {
+    public TrackableCollection<Trackable> getTreatments() {
         return treatments;
     }
 
-    public void setTreatments(ArrayList<Trackable> treatments) {
+    public void setTreatments(TrackableCollection<Trackable> treatments) {
         this.treatments = treatments;
     }
 
@@ -193,7 +194,7 @@ public class CheckIn implements Serializable{
      * @param trackableType The trackable type for the array returned.
      * @return ArrayLost of trackables for the specific trackable type.
      */
-    public ArrayList<Trackable> getTrackables(TrackableType trackableType) {
+    public TrackableCollection<Trackable> getTrackables(TrackableType trackableType) {
        switch (trackableType) {
            case CONDITION:
                return getConditions();
@@ -228,10 +229,10 @@ public class CheckIn implements Serializable{
      * @param trackableType The trackable type.
      * @return The ids inside the trackable type.
      */
-    public ArrayList<Integer> getTrackableIds(TrackableType trackableType) {
-        ArrayList<Integer> result = new ArrayList<>();
+    public HashSet<Integer> getTrackableIds(TrackableType trackableType) {
+        HashSet<Integer> result = new HashSet<>();
         if(trackableType.isTrackable()) {
-            ArrayList<Trackable> trackables = getTrackables(trackableType);
+            TrackableCollection<Trackable> trackables = getTrackables(trackableType);
             for (Trackable trackable : trackables) {
                 result.add(trackable.getTrackableId());
             }
@@ -244,7 +245,7 @@ public class CheckIn implements Serializable{
     }
 
     public void attachMetaTrackables(TrackableType trackableType, MetaTrackable metaTrackable) {
-        ArrayList<Trackable> trackables = getTrackables(trackableType);
+        TrackableCollection<Trackable> trackables = getTrackables(trackableType);
         for (Trackable trackable : trackables) {
             if(metaTrackable.getId() == trackable.getTrackableId()) {
                 trackable.setMetaTrackable(metaTrackable);
@@ -269,7 +270,7 @@ public class CheckIn implements Serializable{
         for (TrackableType trackableType : TrackableType.trackableValues()) {
             String name = trackableType.name().toLowerCase() + "s_attributes";
             JSONArray trackablesJArray = new JSONArray();
-            ArrayList<Trackable> trackables = getTrackables(trackableType);
+            TrackableCollection<Trackable> trackables = getTrackables(trackableType);
             for (Trackable trackable : trackables) {
                 trackablesJArray.put(trackable.getResponseJson(this));
             }
@@ -290,12 +291,12 @@ public class CheckIn implements Serializable{
      * Get a list of tags for the check in.
      * @return A list of tags
      */
-    public List<Tag> getTags() {
+    public TagCollection<Tag> getTags() {
         return tags;
     }
 
-    public List<Integer> getTagIds() {
-        List<Integer> results = new ArrayList<>();
+    public HashSet<Integer> getTagIds() {
+        HashSet<Integer> results = new HashSet<>();
         for (Tag tag : tags) {
             results.add(tag.getId());
         }
@@ -306,7 +307,7 @@ public class CheckIn implements Serializable{
      * Set the list of tags for the check in.
      * @param tags The list of tags to be associated with the check in.
      */
-    public void setTags(List<Tag> tags) {
+    public void setTags(TagCollection<Tag> tags) {
         this.tags = tags;
     }
 

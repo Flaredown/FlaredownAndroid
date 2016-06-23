@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIns;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
@@ -21,6 +22,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.CookieClearHelper;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Volley.JsonObjectExtraRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
@@ -33,6 +35,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -93,6 +96,9 @@ public class Communicate {
                 spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, session.getEmail());
                 spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, session.getToken());
                 spe.putString(PreferenceKeys.SP_Av2_USER_ID, session.getUserId());
+                spe.putString(PreferenceKeys.SP_Av2_SESSION_ID, session.getId());
+                spe.putLong(PreferenceKeys.SP_Av2_CREATED_AT, session.getCreatedAt().getTimeInMillis());
+                spe.putLong(PreferenceKeys.SP_Av2_UPDATED_AT, session.getUpdatedAt().getTimeInMillis());
                 spe.apply();
 
                 apiResponse.onSuccess(session);
@@ -116,6 +122,9 @@ public class Communicate {
         realm.beginTransaction();
         realm.clear(MetaTrackable.class);
         realm.commitTransaction();
+
+        // Clear cookies
+        CookieClearHelper.clearCookies(context);
     }
 
     /**
@@ -232,9 +241,9 @@ public class Communicate {
             });
         }
 
-        getTag(checkIn.getTagIds(), new APIResponse<List<Tag>, Error>() {
+        getTag(checkIn.getTagIds(), new APIResponse<TagCollection<Tag>, Error>() {
             @Override
-            public void onSuccess(List<Tag> result) {
+            public void onSuccess(TagCollection<Tag> result) {
                 checkIn.setTags(result);
                 requestReceived.add(result);
                 if(requestReceived.size() >= TOTAL_REQUESTS)
@@ -367,7 +376,22 @@ public class Communicate {
      */
     public boolean isCredentialsSaved() {
         SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
-        return sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, null) != null && sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, null) != null && sp.getString(PreferenceKeys.SP_Av2_USER_ID, null) != null;
+
+        // Check that all user details are present
+        String pkValues[] = {
+                PreferenceKeys.SP_Av2_SESSION_ID,
+                PreferenceKeys.SP_Av2_CREATED_AT,
+                PreferenceKeys.SP_Av2_UPDATED_AT,
+                PreferenceKeys.SP_Av2_USER_ID,
+                PreferenceKeys.SP_Av2_USER_EMAIL,
+                PreferenceKeys.SP_Av2_USER_TOKEN
+        };
+        for (String pkValue : pkValues) {
+            if(!sp.contains(pkValue)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -709,7 +733,7 @@ public class Communicate {
      * @param ids The ids for the MetaTrackables.
      * @param apiResponse Response or error callback.
      */
-    public void getTrackable(final TrackableType type, final List<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
+    public void getTrackable(final TrackableType type, final HashSet<Integer> ids, final APIResponse<ArrayList<MetaTrackable>, Error> apiResponse) {
         if(ids.size() <= 0) {
             apiResponse.onSuccess(new ArrayList<MetaTrackable>());
             return;
@@ -781,11 +805,11 @@ public class Communicate {
         }
     }
 
-    public void getTag(final List<Integer> ids, final APIResponse<List<Tag>, Error> apiResponse) {
+    public void getTag(final HashSet<Integer> ids, final APIResponse<TagCollection<Tag>, Error> apiResponse) {
         getTrackable(TrackableType.TAG, ids, new APIResponse<ArrayList<MetaTrackable>, Error>() {
             @Override
             public void onSuccess(ArrayList<MetaTrackable> result) {
-                List<Tag> tags = new ArrayList<>();
+                TagCollection<Tag> tags = new TagCollection<>();
                 for (MetaTrackable metaTrackable : result) {
                     tags.add(new Tag(metaTrackable));
                 }
@@ -942,5 +966,38 @@ public class Communicate {
         params.put("Content-Type", "application/json");
         jsonObjectExtraRequest.setHeaders(params);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+
+    /**
+     * Creates a string which represents the data stored inside the ember simple auth cookie.
+     * @return A string representing the data stored inside the ember simple auth cookie.
+     * @throws IllegalStateException If not all of the user data is present.
+     */
+    public String createSessionCookieData() throws IllegalStateException{
+        String cookie = "{" +
+                    "\"authenticated\":{" +
+                        "\"authenticator\":\"authenticator:devise\"," +
+                        "\"id\":%s," +
+                        "\"created_at\":\"%s\"," +
+                        "\"updated_at\":\"%s\"," +
+                        "\"user_id\":%s," +
+                        "\"email\":\"%s\"," +
+                        "\"token\":\"%s\"" +
+                    "}" +
+                "}";
+        SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
+
+        if(!isCredentialsSaved()) throw new IllegalStateException("Not all user details are present, this could be because extra info has been added to the login stage. Try clearing app data and try again.");
+
+
+        String id = sp.getString(PreferenceKeys.SP_Av2_SESSION_ID, "");
+        String createdAt = Date.calendarToString(Date.millisToCalendar(sp.getLong(PreferenceKeys.SP_Av2_CREATED_AT, 0)), Date.API_DATE_TIME_FORMAT);
+        String updatedAt = Date.calendarToString(Date.millisToCalendar(sp.getLong(PreferenceKeys.SP_Av2_UPDATED_AT, 0)), Date.API_DATE_TIME_FORMAT);
+        String userId = sp.getString(PreferenceKeys.SP_Av2_USER_ID, "");
+        String email = sp.getString(PreferenceKeys.SP_Av2_USER_EMAIL, "");
+        String token = sp.getString(PreferenceKeys.SP_Av2_USER_TOKEN, "");
+        cookie = String.format(cookie, id, createdAt, updatedAt, userId, email, token);
+        return cookie;
     }
 }

@@ -110,6 +110,7 @@ public class CheckinActivity extends AppCompatActivity{
     /*
         Instance constant arguments.
      */
+    public static final String I_CHECK_IN_ID = "launch_intent_check_in_id";
     private static final String SI_CHECKIN = "entries endpoint";
     private static final String SI_CURRENT_VIEW = "current view";
     private static final String SI_CHECKIN_DATE = "checkin date";
@@ -122,7 +123,7 @@ public class CheckinActivity extends AppCompatActivity{
 
     private Views currentView = null;
     private Integer currentQuestionPage = 0;
-    private static final int ANIMATION_DURATION = 250;
+    public static final int ANIMATION_DURATION = 250;
     private boolean setViewAnimationInProgress = false;
     private class SetViewQueueItem {
         private Views views;
@@ -338,6 +339,7 @@ public class CheckinActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         gestureDetector = new GestureDetectorCompat(this, new GestureListener());
         setContentView(R.layout.checkin_activity);
+        Intent launchIntent = getIntent();
         API = new Communicate(this);
         if(!API.isCredentialsSaved()) { // Ensure the user is signed in.
             new ForceLogin(this);
@@ -355,6 +357,10 @@ public class CheckinActivity extends AppCompatActivity{
             CheckIn savedCheckIn = (CheckIn) savedInstanceState.getSerializable(SI_CHECKIN);
             displayCheckin(savedCheckinDate, savedCheckIn);
             setView(savedViewState, false);
+        } else if (launchIntent != null && launchIntent.hasExtra(I_CHECK_IN_ID)) {
+            String checkInID = launchIntent.getStringExtra(I_CHECK_IN_ID);
+            setView(Views.SPLASH_SCREEN);
+            displayCheckin(checkInID);
         } else {
             setView(Views.SPLASH_SCREEN, false);
             displayCheckin(Calendar.getInstance());
@@ -499,7 +505,6 @@ public class CheckinActivity extends AppCompatActivity{
         bt_submitCheckin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitCheckin();
                 displaySummary();
                 setView(Views.SUMMARY);
             }
@@ -542,31 +547,27 @@ public class CheckinActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     * Submits the checkin to flaredown and displays the summary page.
-     */
-    private void submitCheckin() {
-        // Auto saves so no need to submit data to the api.
-    }
-
     private void displaySummary() {
         try {
+            removeSummary();
             f_checkin_sumary = CheckInSummaryFragment.newInstance();
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
 
             trans.replace(fl_checkin_summary.getId(), f_checkin_sumary).commit();
+            if(vpa_questions != null)
+                vpa_questions.removeAllFragments();
         } catch (Exception e) { // was jsonException
             new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary..JSONException")).setCancelable(false).show();
         }
     }
 
     private void removeSummary() {
-        /*if(f_checkin_sumary != null) {
+        if(f_checkin_sumary != null) {
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.remove(f_checkin_sumary);
-            trans.();
+            trans.commit();
             f_checkin_sumary = null;
-        }*/
+        }
     }
 
     Calendar lastUpdate = null;
@@ -630,6 +631,27 @@ public class CheckinActivity extends AppCompatActivity{
     }
 
     /**
+     * Display the check in for a specific id.
+     * @param id The id of the check in to display.
+     */
+    private void displayCheckin(final String id) {
+        removeSummary();
+        checkIn = null;
+        isLoadingCheckin = true;
+        API.checkIn(id, new APIResponse<CheckIn, Error>() {
+            @Override
+            public void onSuccess(CheckIn result) {
+                displayCheckin(result.getDate(), result);
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+            }
+        });
+    }
+
+    /**
      * Display the check in for a specific date, passing the entries json object.
      * @param date The date for the check in.
      * @param checkIn Prefetched entries json object, including response.
@@ -644,7 +666,7 @@ public class CheckinActivity extends AppCompatActivity{
             if(checkIn.hasResponse()) // Show the correct view
             {
                 setView(Views.SUMMARY);
-                displaySummary(); // TODO display summary if check in completed
+                displaySummary();
             } else
             setView(Views.NOT_CHECKED_IN_YET);
         }
@@ -864,7 +886,9 @@ public class CheckinActivity extends AppCompatActivity{
                                 }
                             });
                         } else {
-                            updateLocalCheckinAndUI(trackable);
+                            try {
+                                updateLocalCheckinAndUI(trackable);
+                            } catch (IllegalStateException e){}
                         }
                     }
                 } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {

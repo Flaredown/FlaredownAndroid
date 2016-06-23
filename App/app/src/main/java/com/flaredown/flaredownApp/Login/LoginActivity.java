@@ -31,6 +31,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
+import com.flaredown.flaredownApp.WebView.WebViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -204,7 +205,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         .putMethod("default")
                         .putSuccess(true));
 
-                    Intent intent = new Intent(mContext, CheckinActivity.class);
+                    Intent intent = new Intent(mContext, WebViewActivity.class);
                     // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     // Prevents the user going back.

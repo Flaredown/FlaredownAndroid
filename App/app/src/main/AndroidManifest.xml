@@ -27,16 +27,26 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:name=".FlaredownApp">
+        <activity android:name=".WebView.WebViewActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Checkin.CheckinActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:launchMode="singleTop"
+            android:parentActivityName=".WebView.WebViewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.flaredown.flaredownApp.WebView.WebViewActivity" />
+            <!-- Note when removing the web view update the meta-data on all activities.-->
         </activity>
 
         <activity
@@ -50,10 +60,10 @@
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="behind"
-            android:parentActivityName=".Checkin.CheckinActivity">
+            android:parentActivityName=".WebView.WebViewActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.flaredown.flaredownApp.Checkin.CheckinActivity" />
+                android:value="com.flaredown.flaredownApp.WebView.WebViewActivity" />
         </activity>
 
         <activity
