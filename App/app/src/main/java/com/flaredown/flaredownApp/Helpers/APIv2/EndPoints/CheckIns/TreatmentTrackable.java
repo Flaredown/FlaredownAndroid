@@ -14,11 +14,12 @@ public class TreatmentTrackable extends Trackable implements Serializable{
     private Boolean isTaken = false;
     private int treatment_id;
 
+
     /**
      * Default constructor for the treatment trackable object.
      */
-    public TreatmentTrackable() {
-        super(TrackableType.TREATMENT);
+    public TreatmentTrackable(Integer trackableId) {
+        super(TrackableType.TREATMENT, trackableId);
     }
 
     public TreatmentTrackable(Trackable trackable) throws JSONException{

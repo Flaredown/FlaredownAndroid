@@ -33,32 +33,70 @@ public class Trackable implements Serializable {
     private String destroy;
     private transient MetaTrackable metaTrackable = null;
 
-    private transient List<OnValueUpdateListener> handleValueChange = new LinkedList<>();
-    private transient Observable<String> valueObserver = Observable.create(new Observable.OnSubscribe<String>() {
-        @Override
-        public void call(final Subscriber<? super String> subscriber) {
-            handleValueChange.add(new OnValueUpdateListener() {
-                @Override
-                public void valueUpdate(String value) {
-                    if(subscriber.isUnsubscribed())
-                        return;
-                    subscriber.onNext(value);
-                }
-            });
-        }
-    });
+    private transient List<OnValueUpdateListener> handleValueChange;// Default value inside readResolve method. = new LinkedList<>(); // Also inside readResolve method
+    private transient Observable<String> valueObserver;// Default value inside readResolve method. = Observable.create(new TrackableOnSubscribe()); // Also inside readResolve method
 
     private interface OnValueUpdateListener {
         void valueUpdate(String value);
     }
 
-    /**
 
-     * Default constructor for the trackable object.
-     * @param type The type of trackable (condition, symptom, treatment).
-     */
-    private Trackable(TrackableType type) {
-        this.type = type;
+    private final static String MT_ID = "mt_id";
+    private final static String MT_NAME = "mt_name";
+    private final static String MT_TYPE = "mt_type";
+    private final static String MT_CREATED_AT = "mt_createdAt";
+    private final static String MT_UPDATED_AT = "mt_updatedAt";
+
+    private final static String MT_CACHED_AT = "mt_cachedAt";
+
+    // Overriding java's serialization, this is because the realm database does not allow serialisation
+    // and a MetaTrackable is a serializable object
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        // Default serialzation.
+        oos.defaultWriteObject();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put(MT_ID, metaTrackable.getId());
+        data.put(MT_NAME, metaTrackable.getName());
+        data.put(MT_TYPE, metaTrackable.getTypeRaw());
+        data.put(MT_CREATED_AT, metaTrackable.getCreatedAtRaw());
+        data.put(MT_UPDATED_AT, metaTrackable.getUpdatedAtRaw());
+        data.put(MT_CACHED_AT, metaTrackable.getCachedAtRaw());
+        oos.writeObject(data);
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        // Default deserializarion.
+        ois.defaultReadObject();
+
+        Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
+        if(data.containsKey(MT_ID)) {
+            if(metaTrackable == null) metaTrackable = new MetaTrackable();
+            metaTrackable.setId((Integer) data.get(MT_ID));
+            metaTrackable.setName((String) data.get(MT_NAME));
+            metaTrackable.setTypeRaw((String) data.get(MT_TYPE));
+            metaTrackable.setCreatedAtRaw((Long) data.get(MT_CREATED_AT));
+            metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
+            metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
+        }
+    }
+
+    private Object readResolve() {
+        this.valueObserver = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                handleValueChange.add(new OnValueUpdateListener() {
+                    @Override
+                    public void valueUpdate(String value) {
+                        if (subscriber.isUnsubscribed())
+                            return;
+                        subscriber.onNext(value);
+                    }
+                });
+            }
+        });
+        this.handleValueChange = new LinkedList<>();
+        return this;
     }
 
     /**
@@ -67,6 +105,7 @@ public class Trackable implements Serializable {
      * @param trackableId The trackable id of the object.
      */
     public Trackable(TrackableType type, Integer trackableId) {
+        readResolve();
         this.type = type;
         this.trackableId = new Integer(trackableId);
     }
@@ -77,6 +116,7 @@ public class Trackable implements Serializable {
      * @param jsonObject Representing a trackable.
      */
     public Trackable(TrackableType type, JSONObject jsonObject) {
+        readResolve();
         this.type = type;
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
@@ -95,6 +135,7 @@ public class Trackable implements Serializable {
      * @param meta meta for the trackable
      */
     public Trackable(TrackableType type, JSONObject jsonObject, MetaTrackable meta) {
+        readResolve();
         this.type = type;
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
@@ -229,46 +270,6 @@ public class Trackable implements Serializable {
      */
     public Observable<String> getValueObserver() {
         return valueObserver;
-    }
-
-    private final static String MT_ID = "mt_id";
-    private final static String MT_NAME = "mt_name";
-    private final static String MT_TYPE = "mt_type";
-    private final static String MT_CREATED_AT = "mt_createdAt";
-    private final static String MT_UPDATED_AT = "mt_updatedAt";
-
-    private final static String MT_CACHED_AT = "mt_cachedAt";
-
-    // Overriding java's serialization, this is because the realm database does not allow serialisation
-    // and a MetaTrackable is a serializable object
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        // Default serialzation.
-        oos.defaultWriteObject();
-
-        Map<String, Object> data = new HashMap<>();
-        data.put(MT_ID, metaTrackable.getId());
-        data.put(MT_NAME, metaTrackable.getName());
-        data.put(MT_TYPE, metaTrackable.getTypeRaw());
-        data.put(MT_CREATED_AT, metaTrackable.getCreatedAtRaw());
-        data.put(MT_UPDATED_AT, metaTrackable.getUpdatedAtRaw());
-        data.put(MT_CACHED_AT, metaTrackable.getCachedAtRaw());
-        oos.writeObject(data);
-    }
-
-    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-        // Default deserializarion.
-        ois.defaultReadObject();
-
-        Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
-        if(data.containsKey(MT_ID)) {
-            if(metaTrackable == null) metaTrackable = new MetaTrackable();
-            metaTrackable.setId((Integer) data.get(MT_ID));
-            metaTrackable.setName((String) data.get(MT_NAME));
-            metaTrackable.setTypeRaw((String) data.get(MT_TYPE));
-            metaTrackable.setCreatedAtRaw((Long) data.get(MT_CREATED_AT));
-            metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
-            metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
-        }
     }
 
     @Override
