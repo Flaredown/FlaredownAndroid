@@ -105,10 +105,10 @@ public class TagFragment extends ViewPagerFragmentBase {
             public void onNext(TagCollection.CollectionChange collectionChange) {
                 switch (collectionChange.getChangeType()) {
                     case ADD:
-                        flh_popular_tags.addItem(collectionChange.getObject());
+                        flh_popular_tags.addItem((Tag) collectionChange.getObject());
                         break;
                     case REMOVE:
-                        flh_popular_tags.removeItem(collectionChange.getObject());
+                        flh_popular_tags.removeItem((Tag) collectionChange.getObject());
                         break;
                 }
 
