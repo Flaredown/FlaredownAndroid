@@ -33,6 +33,10 @@ android {
         debug {
             minifyEnabled false
         }
+        buildTypes.each {
+            it.buildConfigField "String", "INTERCOM_API", "$System.env.IntercomApiKey"
+            it.buildConfigField "String", "INTERCOM_SECRET", "$System.env.IntercomApiSecret"
+        }
     }
     productFlavors {
         productRelease {
