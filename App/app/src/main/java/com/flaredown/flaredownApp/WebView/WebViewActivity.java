@@ -47,6 +47,11 @@ public class WebViewActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO remove
+        Intent intent = new Intent(WebViewActivity.this, CheckinActivity.class);
+        startActivity(intent);
+
+
         Styling.forcePortraitOnSmallDevices(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.web_view_activity);
