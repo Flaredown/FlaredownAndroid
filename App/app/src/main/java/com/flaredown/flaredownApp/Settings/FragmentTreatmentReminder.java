@@ -68,7 +68,7 @@ public class FragmentTreatmentReminder extends DialogFragment implements View.On
 
         mContext = mView.getContext();
 
-        mRealm = Realm.getInstance(getActivity());
+        mRealm = Realm.getDefaultInstance();
 
         swMonday = (Switch) mView.findViewById(R.id.swTreatmentReminderMonday);
         swTuesday = (Switch) mView.findViewById(R.id.swTreatmentReminderTuesday);

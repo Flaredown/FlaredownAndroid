@@ -66,7 +66,7 @@ public class Communicate {
      */
     public Communicate(Context context) {
         this.context = context;
-        this.mRealm = Realm.getInstance(context);
+        this.mRealm = Realm.getDefaultInstance();
     }
 
     /**
@@ -118,9 +118,9 @@ public class Communicate {
         spe.clear();
         spe.commit();
 
-        Realm realm = Realm.getInstance(context);
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(MetaTrackable.class);
+        realm.delete(MetaTrackable.class);
         realm.commitTransaction();
 
         // Clear cookies

@@ -1,14 +1,17 @@
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        jcenter()
     }
 
     dependencies {
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath "io.realm:realm-gradle-plugin:1.1.0"
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'realm-android'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -23,8 +26,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
-        versionName "0.01"
-    }
+        versionName "0.01" }
     buildTypes {
         release {
             minifyEnabled true
@@ -32,10 +34,7 @@ android {
         }
         debug {
             minifyEnabled false
-        }
-        buildTypes.each {
-            it.buildConfigField "String", "INTERCOM_API", "$System.env.IntercomApiKey"
-            it.buildConfigField "String", "INTERCOM_SECRET", "$System.env.IntercomApiSecret"
+            buildConfigField "String","INTERCOM_API", "\""+getIntercomApiKey()+"\""
         }
     }
     productFlavors {
@@ -61,7 +60,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'org.apmem.tools:layouts:1.9@aar'
-    compile 'io.realm:realm-android:0.84.2'
     compile 'com.android.support:design:22.2.1'
     compile 'com.android.support:support-v4:22.2.1'
     compile ('io.intercom.android:intercom-sdk-base:1.+@aar') {
@@ -74,4 +72,10 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+}
+
+def getIntercomApiKey(){
+    def Properties props = new Properties()
+    props.load(new FileInputStream(new File('api.properties')))
+    return props['intercom_api']
 }

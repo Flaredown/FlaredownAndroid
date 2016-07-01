@@ -37,7 +37,7 @@ public class AlarmIntentService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Realm realm = Realm.getInstance(getApplicationContext());
+        Realm realm = Realm.getDefaultInstance();
         RealmQuery<Alarm> query = realm.where(Alarm.class);
         int id = 0;
         String key = "";
@@ -243,7 +243,7 @@ public class AlarmIntentService extends IntentService{
     }
 
     private void updateAlarmInRealm(Alarm alarm, Long newTime){
-        Realm realm = Realm.getInstance(getApplicationContext());
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         alarm.setTime(newTime);
         realm.copyToRealmOrUpdate(alarm);
@@ -251,7 +251,7 @@ public class AlarmIntentService extends IntentService{
     }
 
     private void removeAlarmFromRealm(Alarm alarm){
-        Realm realm = Realm.getInstance(getApplicationContext());
+        Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.where(Alarm.class).equalTo("id",alarm.getId()).findAll().clear();
         realm.commitTransaction();

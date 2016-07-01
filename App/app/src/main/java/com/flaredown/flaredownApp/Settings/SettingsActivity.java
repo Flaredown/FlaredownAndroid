@@ -47,6 +47,7 @@ import java.util.Random;
 import io.intercom.android.sdk.*;
 import io.realm.Realm;
 import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -78,7 +79,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.settings_activity);
         mContext = this;
         Styling.setFont();
-        mRealm = Realm.getInstance(mContext);
+        mRealm = Realm.getDefaultInstance();
 
         flareDownAPI = new Communicate(mContext);
         if(!flareDownAPI.isCredentialsSaved()) {  // Prevent other code running if not logged in.
@@ -177,6 +178,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_SettingsLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                removeAndUnscheduleAllAlarms();
                 flareDownAPI.userSignOut();
                 new ForceLogin(SettingsActivity.this);
                 finish();
@@ -316,9 +318,25 @@ public class SettingsActivity extends AppCompatActivity {
         mRealm.commitTransaction();
     }
 
-    private void removeAlarm(){
+    private void removeCheckInAlarm(){
         mRealm.beginTransaction();
-        mRealm.where(Alarm.class).equalTo(FlaredownConstants.ALARM_TITLE_NAME, FlaredownConstants.ALARM_TITLE_VALUE_CHECKIN_REMINDER).findAll().clear();
+        mRealm.where(Alarm.class).equalTo(FlaredownConstants.ALARM_TITLE_NAME, FlaredownConstants.ALARM_TITLE_VALUE_CHECKIN_REMINDER).findAll().deleteAllFromRealm();
+        mRealm.commitTransaction();
+    }
+
+    private void removeAndUnscheduleAllAlarms(){
+        RealmQuery query = mRealm.where(Alarm.class);
+        RealmResults<Alarm> alarms = query.findAll();
+        for (Alarm alarm : alarms){
+            //Recreate pending intent and delete
+            Intent recreatedIntent = new Intent(getApplicationContext(),AlarmReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), alarm.getId(), recreatedIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
+            manager.cancel(pi);
+        }
+        //Remove from Realm
+        mRealm.beginTransaction();
+        mRealm.delete(Alarm.class);
         mRealm.commitTransaction();
     }
 
@@ -396,8 +414,9 @@ public class SettingsActivity extends AppCompatActivity {
             }
         }
         else { //delete alarm in realm and remove pending intent
-            removeAlarm();
+            removeCheckInAlarm();
             manager.cancel(pendingIntent);
         }
     }
+
 }
