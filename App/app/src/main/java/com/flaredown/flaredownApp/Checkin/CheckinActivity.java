@@ -3,6 +3,8 @@ package com.flaredown.flaredownApp.Checkin;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -13,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -28,10 +31,13 @@ import com.flaredown.flaredownApp.Checkin.tags.TagFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.AndroidViewAnimation.ViewAnimationHelper;
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Observers.ImmutableObserver;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.SnackbarStyling;
@@ -83,7 +89,6 @@ public class CheckinActivity extends AppCompatActivity {
     private Calendar lastUpdate;
     private final ImmutableObserver<Boolean> isActivityPaused = new ImmutableObserver<>(false);
 
-
     private enum VIEW_STATES {
         SPLASH_SCREEN, CHECK_IN, SUMMARY
     }
@@ -95,7 +100,7 @@ public class CheckinActivity extends AppCompatActivity {
         setContentView(R.layout.checkin_activity);
         Intent launchIntent = getIntent();
         API = new Communicate(this);
-        if(!API.isCredentialsSaved()) {
+        if (!API.isCredentialsSaved()) {
             new ForceLogin(this);
             return;
         }
@@ -195,7 +200,7 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.CHECK_IN, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     rl_checkin.setAlpha(0);
                     rl_checkin.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
                     rl_checkin.setVisibility(View.VISIBLE);
@@ -216,7 +221,7 @@ public class CheckinActivity extends AppCompatActivity {
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     rl_checkin.setAlpha(1);
                     rl_checkin.setTranslationY(0);
                     rl_checkin.setVisibility(View.VISIBLE);
@@ -243,7 +248,7 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.SUMMARY, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     fl_checkin_summary.setAlpha(0);
                     fl_checkin_summary.setVisibility(View.VISIBLE);
                     fl_checkin_summary.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
@@ -266,7 +271,7 @@ public class CheckinActivity extends AppCompatActivity {
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     fl_checkin_summary.setAlpha(1);
                     fl_checkin_summary.setTranslationY(0);
                     fl_checkin_summary.setVisibility(View.VISIBLE);
@@ -289,7 +294,7 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.SPLASH_SCREEN, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     ll_splashScreen.setAlpha(0);
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.setTranslationY(0);
@@ -309,7 +314,7 @@ public class CheckinActivity extends AppCompatActivity {
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if(animate) {
+                if (animate) {
                     ll_splashScreen.setAlpha(1);
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.animate()
@@ -333,7 +338,7 @@ public class CheckinActivity extends AppCompatActivity {
 
 
         // If no check in set, display one
-        if(checkIn == null) { // TODO handle intent
+        if (checkIn == null) { // TODO handle intent
             displayCheckin(Calendar.getInstance());
         }
     }
@@ -359,14 +364,15 @@ public class CheckinActivity extends AppCompatActivity {
         fl_checkin_summary = (FrameLayout) findViewById(R.id.fl_checkin_summary);
     }
 
-    private class ViewPagerAdapter extends FragmentPagerAdapter{
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
         private List<ViewPagerFragmentBase> fragments;
         private FragmentManager fragmentManager;
 
         /**
          * Constructs the custom view pager adapter with fragments that extend the ViewPagerFragment class.
+         *
          * @param fragmentManger
-         * @param fragments The fragments to display in view pager.
+         * @param fragments      The fragments to display in view pager.
          */
         public ViewPagerAdapter(FragmentManager fragmentManger, List<ViewPagerFragmentBase> fragments) {
             super(fragmentManger);
@@ -423,6 +429,7 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Get the check in object for the activity.
+     *
      * @return Check in object for the activity.
      */
     public CheckIn getCheckIn() {
@@ -435,7 +442,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onSuccess(CheckIn result) {
                 PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "Check in saved successfully");
-                if(isActivityPaused().getValue()) {
+                if (isActivityPaused().getValue()) {
                     Toast.makeText(getApplicationContext(), getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
                 } else {
                     new Thread(new Runnable() {
@@ -443,9 +450,10 @@ public class CheckinActivity extends AppCompatActivity {
                         public void run() {
                             try {
                                 Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
-                                if(updateTime.equals(lastUpdate))
+                                if (updateTime.equals(lastUpdate))
                                     SnackbarStyling.colorSnackBar(Snackbar.make(findViewById(R.id.cl_root_view), R.string.locales_summary_title, Snackbar.LENGTH_SHORT), getResources().getColor(R.color.background)).show();
-                            } catch (InterruptedException e) {}
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }).start();
                 }
@@ -460,9 +468,10 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Get the check in and display the check in for a specific date.
+     *
      * @param date The date for the check in to load.
      */
-    public void displayCheckin(final Calendar date) {
+    private void displayCheckin(final Calendar date) {
         removeSummary();
         vsAnimationHelper.changeState(VIEW_STATES.SPLASH_SCREEN, true);
         // TODO update date buttons via observer.
@@ -484,9 +493,10 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Get the check in and display the check in for a specific id.
+     *
      * @param id The id for the check in to load.
      */
-    public void displayCheckin(final String id) {
+    private void displayCheckin(final String id) {
         removeSummary();
         vsAnimationHelper.changeState(VIEW_STATES.SPLASH_SCREEN, true);
         isLoadingCheckIn.setValue(true);
@@ -506,19 +516,20 @@ public class CheckinActivity extends AppCompatActivity {
 
     /**
      * Display the check in from a chack in object.
+     *
      * @param checkIn The object for the check in to display.
      */
-    public void displayCheckin(final CheckIn checkIn) {
+    private void displayCheckin(final CheckIn checkIn) {
         removeSummary();
         CheckinActivity.checkIn = checkIn;
-        if(checkIn.hasResponse()) {
+        if (checkIn.hasResponse()) {
             displaySummary();
             return;
         } else {
             vsAnimationHelper.changeState(VIEW_STATES.CHECK_IN, true);
         }
         List<ViewPagerFragmentBase> fragments = createFragments();
-        if(vpa_questions == null) {
+        if (vpa_questions == null) {
             vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
             vp_questions.setAdapter(vpa_questions);
         } else {
@@ -528,16 +539,16 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
-    public void displaySummary() {
+    private void displaySummary() {
         try {
             removeSummary();
             f_checkin_sumary = CheckInSummaryFragment.newInstance();
-            FragmentTransaction transaction  = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
             transaction.replace(fl_checkin_summary.getId(), f_checkin_sumary);
             transaction.commitAllowingStateLoss();
 
-            if(vpa_questions != null) {
+            if (vpa_questions != null) {
                 vpa_questions.removeAllFragments();
             }
         } catch (Exception e) {
@@ -548,8 +559,8 @@ public class CheckinActivity extends AppCompatActivity {
     /**
      * Remove the summary fragment (including fragment transaction removal and setting field to null).
      */
-    public void removeSummary() {
-        if(f_checkin_sumary != null) {
+    private void removeSummary() {
+        if (f_checkin_sumary != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.remove(f_checkin_sumary);
             transaction.commitAllowingStateLoss();
@@ -557,9 +568,52 @@ public class CheckinActivity extends AppCompatActivity {
         }
     }
 
+    private void updateLocalCheckInAndUI(final Trackable trackable) {
+        // Update Check in.
+        checkIn.getTrackables(trackable.getType()).add(trackable);
+        
+        API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
+            @Override
+            public void onSuccess(CheckIn result) {
+                for (Trackable newTrackable : result.getTrackables(trackable.getType())) {
+                    if(newTrackable.getTrackableId().equals(trackable.getTrackableId())) {
+                        trackable.setId(newTrackable.getId());
+                    }
+                }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                List<Fragment> nestedFragments = fragmentManager.getFragments();
+
+                if (nestedFragments != null || nestedFragments.size() != 0) {
+                    for (Fragment fragment : nestedFragments){
+                        if (fragment instanceof CheckInSummaryFragment){
+                            List<ViewPagerFragmentBase> nestedCatalogQFragments = ((CheckInSummaryFragment) fragment).getFragments();
+                            for (Fragment frag: nestedCatalogQFragments){
+                                if (frag instanceof CheckinCatalogQFragment){
+                                    if (((CheckinCatalogQFragment) frag).getTrackableType() == trackable.getType()){
+                                        ((CheckinCatalogQFragment) frag).addTrackable(trackable);
+                                    }
+                                }
+                            }
+                        } else if (fragment instanceof CheckinCatalogQFragment){
+                            if (((CheckinCatalogQFragment) fragment).getTrackableType() == trackable.getType()){
+                                ((CheckinCatalogQFragment) fragment).addTrackable(trackable);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+            }
+        });
+    }
+
     /**
      * Creates a list of fragment objects for each page (for example, conditions, treatments,
      * symptoms and tags.
+     *
      * @return List of fragment objects for each page of the check in (not the extra pages inside
      * the summary fragment).
      */
@@ -586,8 +640,56 @@ public class CheckinActivity extends AppCompatActivity {
         isActivityPaused.setValue(false);
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == FlaredownConstants.ADD_TRACKABLE_REQUEST_CODE) {
+                // Retrieve trackable from intent.
+                if (data.hasExtra(FlaredownConstants.RETURN_TRACKABLE_KEY)) {
+                    Bundle bundle = data.getExtras();
+                    final Trackable trackable = (Trackable) bundle.get(FlaredownConstants.RETURN_TRACKABLE_KEY);
+                    if (trackable != null) {
+                        trackable.setCheckInId(checkIn.getId());
+                        if (DateUtils.isToday(checkIn.getDate().getTimeInMillis())) {
+                            // If check in is today, add trackable to /tracking
+                            Tracking tracking = new Tracking();
+                            tracking.setTrackable_id(trackable.getTrackableId());
+//                            tracking.setId(trackable.getId());
+                            tracking.setTrackable_type(trackable.getType());
+                            API.submitTracking(tracking, new APIResponse<Tracking, Error>() {
+                                @Override
+                                public void onSuccess(Tracking result) {
+                                    updateLocalCheckInAndUI(trackable);
+                                }
+
+                                @Override
+                                public void onFailure(Error result) {
+                                    new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                                }
+                            });
+                        } else {
+                            try {
+                                updateLocalCheckInAndUI(trackable);
+                            } catch (IllegalStateException e) {
+                                new ErrorDialog(this, new Error().setExceptionThrown(e).setDebugString("AddEditableActivity result exception catched.").setRetryRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        onActivityResult(requestCode, resultCode, data);
+                                    }
+                                })).setCancelable(false).show();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Returns true if the activity is paused.
+     *
      * @return True if the activity is paused.
      */
     public ImmutableObserver<Boolean> isActivityPaused() {
