@@ -1,22 +1,26 @@
 package com.flaredown.flaredownApp.Checkin;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.InputViews.InputContainerView;
 import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRating;
-import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRatingOnValueChange;
 import com.flaredown.flaredownApp.Checkin.InputViews.TreatmentChangeListener;
 import com.flaredown.flaredownApp.Checkin.InputViews.TreatmentDetails;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.ObservableHashSet;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
@@ -30,6 +34,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 
 import rx.Subscriber;
 
@@ -42,8 +47,14 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
     private FrameLayout fl_root;
     private TextView tv_catalog;
     private TextView tv_question;
-    private LinearLayout ll_questionHolder;
+    private LinearLayout ll_contentHolder;
+    private ListView lv_questionHolder;
     private TextView tv_addTrackable;
+
+    // Array for displaying current questions.
+    private List<Trackable> currentQuestions = new ArrayList<>();
+    private QuestionAdapter currentQuestionsAdapter;
+    Subscriber<TrackableCollection.CollectionChange> trackableSubscriber;
 
     public TrackableType getTrackableType() {
         return trackableType;
@@ -76,7 +87,37 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             e.printStackTrace();
         }
 
+        currentQuestionsAdapter = new QuestionAdapter(getActivity(), currentQuestions);
+
         assignViews(layoutInflater, viewGroup);
+
+        // Set up observers
+        trackableSubscriber = new Subscriber<TrackableCollection.CollectionChange>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(TrackableCollection.CollectionChange collectionChange) {
+                switch (collectionChange.getChangeType()) {
+                    case ADD:
+                        // TODO add view.
+                        currentQuestions.add((Trackable) collectionChange.getObject());
+                        currentQuestionsAdapter.notifyDataSetChanged();
+                        break;
+                    case REMOVE:
+                        // TODO remove view.
+                        break;
+                }
+            }
+        };
+
         tv_catalog.setText(trackableType.getNameResId());
         tv_question.setText(trackableType.getQuestionResId());
         inflateQuestions();
@@ -100,110 +141,49 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         fl_root = (FrameLayout) layoutInflater.inflate(R.layout.checkin_fragment_catalog_q, viewGroup, false);
         tv_catalog = (TextView) fl_root.findViewById(R.id.tv_catalog);
         tv_question = (TextView) fl_root.findViewById(R.id.tv_question);
-        ll_questionHolder = (LinearLayout) fl_root.findViewById(R.id.ll_questionHolder);
+        ll_contentHolder = (LinearLayout) fl_root.findViewById(R.id.ll_contentHolder);
+        lv_questionHolder = (ListView) fl_root.findViewById(R.id.lv_questionHolder);
         tv_addTrackable = (TextView) fl_root.findViewById(R.id.tv_addTrackable);
     }
 
     private void inflateQuestions() {
+        lv_questionHolder.setAdapter(currentQuestionsAdapter);
         HashSet<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
         for (final Trackable trackable : trackables) {
-            addTrackable(trackable);
-        }
-    }
-
-    public void addTrackable(final Trackable trackable){
-        if (trackable.getType() == TrackableType.TREATMENT){
-            try {
-                final TreatmentTrackable treatment;
-                if (trackable instanceof  TreatmentTrackable){
-                    treatment = (TreatmentTrackable)trackable;
-                } else {
-                    treatment = new TreatmentTrackable(trackable);
-                }
-                TreatmentDetails treatmentDetailsView = new TreatmentDetails(getActivity(),treatment);
-                final InputContainerView inputContainerView = new InputContainerView(getActivity(), trackable).setInputView(treatmentDetailsView);
-                treatmentDetailsView.addOnChangeListener(new TreatmentChangeListener() {
-                    @Override
-                    public void onIsTakenUpdate(boolean isTaken) {
-                        treatment.setIsTaken(isTaken);
-                        getCheckInActivity().checkInUpdate();
-                    }
-                    @Override
-                    public void onRemove() {
-                        getCheckInActivity().API.getTrackings(trackable.getType(), Calendar.getInstance(), new APIResponse<Trackings, Error>() {
-                            @Override
-                            public void onSuccess(Trackings trackings) {
-                                for (Tracking tracking : trackings){
-                                    if (tracking.getTrackable_id() == ((TreatmentTrackable) trackable).getTreatment_id()){
-                                        getCheckInActivity().API.removeTrackings(tracking.getId(), new APIResponse<String, Error>() {
-                                            @Override
-                                            public void onSuccess(String result) {
-                                                trackable.setDestroy("1");
-                                                getCheckInActivity().checkInUpdate();
-                                                getCheckInActivity().getCheckIn().removeTrackable(trackable);
-                                                inputContainerView.setVisibility(View.GONE);
-                                            }
-                                            @Override
-                                            public void onFailure(Error result) {
-                                                Log.d("Remove Tracking Error",result.toString());
-                                                new ErrorDialog(getActivity(), result).setCancelable(true).show();
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onFailure(Error result) {
-                            }
-                        });
-                    }
-                    @Override
-                    public void onUpdateDose(String dose) {
-                        treatment.setValue(dose);
-                        getCheckInActivity().checkInUpdate();
-                    }
-                });
-                inputContainerViews.add(inputContainerView);
-                ll_questionHolder.addView(inputContainerView);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            SmileyRating smileyRating = new SmileyRating(getActivity());
-           smileyRating.setTrackable(trackable);
-
-            trackable.getValueObserver().subscribe(new Subscriber<String>() {
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onNext(String s) {
-                    getCheckInActivity().checkInUpdate();
-                }
-            });
-            try {
-                InputContainerView inputContainerView = new InputContainerView(getActivity(), trackable);
-                inputContainerView.setQuestionTitle(trackable.getMetaTrackable().getName());
-                inputContainerView.setInputView(smileyRating);
-                inputContainerViews.add(inputContainerView);
-                ll_questionHolder.addView(inputContainerView);
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
+            trackableSubscriber.onNext(new ObservableHashSet.CollectionChange(trackable, ObservableHashSet.ChangeType.ADD));
         }
     }
 
     public void removeTrackable(Trackable trackable){
         //TODO: Implement delete trackables
+    }
+
+    /**
+     * Array Adaptor for the questions list view.
+     */
+    private class QuestionAdapter extends ArrayAdapter<Trackable> {
+        public QuestionAdapter(Context context, List<Trackable> trackables) {
+            super(context, 0, trackables);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // Get the item for this position.
+            Trackable trackable = getItem(position);
+            // Check if existing view is being 'reused', otherwise inflate the view.
+            if(convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.checkin_question_blank, parent, false);
+            } else {
+                // TODO remove any other views excluding the question title.
+            }
+
+            TextView tv_question = (TextView) convertView.findViewById(R.id.tv_question); // Question title.
+            // TODO create question view.
+
+            // Set the question title.
+            tv_question.setText(trackable.getMetaTrackable().getName());
+
+            return convertView;
+        }
     }
 }

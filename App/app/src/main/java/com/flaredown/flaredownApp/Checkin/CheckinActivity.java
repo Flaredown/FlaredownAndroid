@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -340,6 +341,8 @@ public class CheckinActivity extends AppCompatActivity {
         // If no check in set, display one
         if (checkIn == null) { // TODO handle intent
             displayCheckin(Calendar.getInstance());
+        } else {
+            displayCheckin(checkIn);
         }
     }
 
@@ -590,13 +593,13 @@ public class CheckinActivity extends AppCompatActivity {
                             for (Fragment frag: nestedCatalogQFragments){
                                 if (frag instanceof CheckinCatalogQFragment){
                                     if (((CheckinCatalogQFragment) frag).getTrackableType() == trackable.getType()){
-                                        ((CheckinCatalogQFragment) frag).addTrackable(trackable);
+//                                        ((CheckinCatalogQFragment) frag).addTrackable(trackable); // TODO check working (the model should be updated there for updating the view)
                                     }
                                 }
                             }
                         } else if (fragment instanceof CheckinCatalogQFragment){
                             if (((CheckinCatalogQFragment) fragment).getTrackableType() == trackable.getType()){
-                                ((CheckinCatalogQFragment) fragment).addTrackable(trackable);
+//                                ((CheckinCatalogQFragment) fragment).addTrackable(trackable); // TODO check working (the model should be updated there for the view should be updated).
                             }
                         }
                     }
