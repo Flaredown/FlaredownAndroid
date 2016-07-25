@@ -39,7 +39,7 @@
                     android:textSize="25dp"
                     android:layout_marginBottom="@dimen/sep_margin_small"
                     android:layout_marginTop="@dimen/sep_margin_small" />
-                <ListView
+                <com.flaredown.flaredownApp.Helpers.HeightContentWrapListView
                     android:id="@+id/lv_questionHolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
