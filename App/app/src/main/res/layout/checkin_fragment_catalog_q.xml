@@ -42,7 +42,8 @@
                 <com.flaredown.flaredownApp.Helpers.HeightContentWrapListView
                     android:id="@+id/lv_questionHolder"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:divider="@null"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
             <TextView
                 android:id="@+id/tv_addTrackable"

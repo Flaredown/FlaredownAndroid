@@ -4,6 +4,7 @@ package com.flaredown.flaredownApp.Checkin;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +88,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             e.printStackTrace();
         }
 
+        currentQuestions.clear(); // Remove any existing items inside the array
         currentQuestionsAdapter = new QuestionAdapter(getActivity(), currentQuestions);
 
         assignViews(layoutInflater, viewGroup);
@@ -107,16 +109,18 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             public void onNext(TrackableCollection.CollectionChange collectionChange) {
                 switch (collectionChange.getChangeType()) {
                     case ADD:
-                        // TODO add view.
                         currentQuestions.add((Trackable) collectionChange.getObject());
                         currentQuestionsAdapter.notifyDataSetChanged();
                         break;
                     case REMOVE:
-                        // TODO remove view.
+                        currentQuestions.remove(collectionChange.getObject());
+                        currentQuestionsAdapter.notifyDataSetChanged();
                         break;
                 }
             }
         };
+
+        getCheckInActivity().getCheckIn().getTrackables(trackableType).getCollectionObservable().subscribe(trackableSubscriber);
 
         tv_catalog.setText(trackableType.getNameResId());
         tv_question.setText(trackableType.getQuestionResId());
@@ -173,12 +177,15 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             // Check if existing view is being 'reused', otherwise inflate the view.
             if(convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.checkin_question_blank, parent, false);
-            } else {
-                // TODO remove any other views excluding the question title.
             }
 
             TextView tv_question = (TextView) convertView.findViewById(R.id.tv_question); // Question title.
-            // TODO create question view.
+            FrameLayout fl_inputContainer = (FrameLayout) convertView.findViewById(R.id.fl_inputContainer); // Contains the input view.
+            fl_inputContainer.removeAllViews();
+
+            SmileyRating sr_input = new SmileyRating(getContext());
+            sr_input.setGravity(Gravity.START);
+            fl_inputContainer.addView(sr_input);
 
             // Set the question title.
             tv_question.setText(trackable.getMetaTrackable().getName());
