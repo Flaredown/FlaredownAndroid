@@ -27,7 +27,7 @@ public class SmileyRating extends LinearLayout{
     private ArrayList<SmileyRatingOnValueChange> onValueChangeListeners = new ArrayList<>();
     private ButtonClickerListener buttonClickerListener = new ButtonClickerListener();
     private Trackable trackable;
-    public SmileyRating(final Context context) {
+    public SmileyRating(final Context context, Trackable trackable) {
         super(context);
 
         // Set parameters.
@@ -52,6 +52,7 @@ public class SmileyRating extends LinearLayout{
         }
         // Set a smiley face for the 1st button
         Styling.setBackground(context, buttons.get(0), R.drawable.button_selector_meta_smiley_selector);
+        this.setTrackable(trackable);
     }
 
     /**
@@ -59,7 +60,7 @@ public class SmileyRating extends LinearLayout{
      * @param trackable A value 0-4 or null to deselect
      */
     public void setTrackable(Trackable trackable) {
-        this.trackable = trackable;
+        this.trackable = trackable; // TODO disassociate old subscription
 
         Subscriber<String> subscriber = new Subscriber<String>() {
             @Override

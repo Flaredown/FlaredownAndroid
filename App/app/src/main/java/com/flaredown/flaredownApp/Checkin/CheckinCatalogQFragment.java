@@ -183,7 +183,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             FrameLayout fl_inputContainer = (FrameLayout) convertView.findViewById(R.id.fl_inputContainer); // Contains the input view.
             fl_inputContainer.removeAllViews();
 
-            SmileyRating sr_input = new SmileyRating(getContext());
+            SmileyRating sr_input = new SmileyRating(getContext(), trackable);
             sr_input.setGravity(Gravity.START);
             fl_inputContainer.addView(sr_input);
 
@@ -191,6 +191,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             tv_question.setText(trackable.getMetaTrackable().getName());
 
             return convertView;
+        }
+
+        @Override
+        public boolean isEnabled(int position) {
+//            return super.isEnabled(position);
+            return false; // Disabled standard input click listening... handled in the input listener as an item has different actions.
         }
     }
 }
