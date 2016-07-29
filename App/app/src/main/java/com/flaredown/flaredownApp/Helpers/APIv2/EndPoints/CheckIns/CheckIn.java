@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,11 +13,17 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
+import rx.Subscriber;
+
 
 /**
  * An element of the JSON returned from the check in endpoint.
  */
 public class CheckIn implements Serializable{
+    // Used for notifying changes to the check in (add/remove/value change of trackables etc.)
+    private ObservableHelper<Void> checkInChangeObservable = new ObservableHelper<>();
+
+
     private String id;
     private Calendar createdAt;
     private Calendar updatedAt;
@@ -30,6 +37,7 @@ public class CheckIn implements Serializable{
     public CheckIn(String id, Calendar date) {
         this.id = id;
         this.date = date;
+        readResolver();
     }
 
     public CheckIn(JSONObject inputJsonObject) throws JSONException {
@@ -50,6 +58,53 @@ public class CheckIn implements Serializable{
         for (int i = 0; i < tagIdJArray.length(); i++) {
             this.tags.add(new Tag(tagIdJArray.getInt(i)));
         }
+        readResolver();
+    }
+
+    /**
+     * Run on construction and when object is dematerialized.
+     * @return
+     */
+    public Object readResolver() {
+        // Emits checkInChangeObservable when the data changes inside a trackable collection.
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
+            TrackableCollection<Trackable> tc = getTrackables(trackableType);
+            tc.getDataChangeObservable().subscribe(new Subscriber<Void>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(Void aVoid) {
+                    checkInChangeObservable.notifySubscribers(null);
+                }
+            });
+        }
+
+        // Emits checkInChangeObservable when the tags collection changes.
+        getTags().getCollectionObservable().subscribe(new Subscriber<ObservableHashSet.CollectionChange>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(ObservableHashSet.CollectionChange collectionChange) {
+                checkInChangeObservable.notifySubscribers(null);
+            }
+        });
+        return this;
     }
 
     /**
@@ -295,12 +350,25 @@ public class CheckIn implements Serializable{
         return tags;
     }
 
+    /**
+     * Get a hash set of tag ids.
+     * @return Tag ids.
+     */
     public HashSet<Integer> getTagIds() {
         HashSet<Integer> results = new HashSet<>();
         for (Tag tag : tags) {
             results.add(tag.getId());
         }
         return results;
+    }
+
+    /**
+     * Get the check in change observable... This observable emits when.
+     *      - A trackable is added, removed or value is changed.
+     * @return Observable helper for the check in change.
+     */
+    public ObservableHelper<Void> getCheckInChangeObservable() {
+        return checkInChangeObservable;
     }
 
     /**

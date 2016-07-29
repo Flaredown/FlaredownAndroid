@@ -51,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import rx.Subscriber;
+
 public class CheckinActivity extends AppCompatActivity {
     public Communicate API;
     private static final String DEBUG_KEY = "CHECK_IN";
@@ -525,6 +527,22 @@ public class CheckinActivity extends AppCompatActivity {
     private void displayCheckin(final CheckIn checkIn) {
         removeSummary();
         CheckinActivity.checkIn = checkIn;
+        checkIn.getCheckInChangeObservable().subscribe(new Subscriber<Void>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Void aVoid) {
+                checkInUpdate();
+            }
+        });
         if (checkIn.hasResponse()) {
             displaySummary();
             return;
@@ -554,6 +572,7 @@ public class CheckinActivity extends AppCompatActivity {
             if (vpa_questions != null) {
                 vpa_questions.removeAllFragments();
             }
+            vsAnimationHelper.changeState(VIEW_STATES.SUMMARY, true);
         } catch (Exception e) {
             new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary...DISPLAYSUMMARY")).setCancelable(false).show();
         }

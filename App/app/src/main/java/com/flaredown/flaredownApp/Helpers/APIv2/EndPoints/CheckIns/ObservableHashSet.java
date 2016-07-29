@@ -9,7 +9,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 /**
- * Created by thunter on 25/06/16.
+ * Hash set which is observable, the observable emits when an item is added/removed from the collection.
  */
 public class ObservableHashSet <T> extends HashSet<T> {
     private transient List<OnCollectionChangeListener> collectionChangeHandler;
@@ -56,6 +56,10 @@ public class ObservableHashSet <T> extends HashSet<T> {
         return this;
     }
 
+    /**
+     * Get the observable for monitoring changes to the collection (add/remove).
+     * @return Observable for monitoring changes to the collection (add/remove).
+     */
     public Observable<CollectionChange> getCollectionObservable() {
         return collectionObservable;
     }
@@ -94,7 +98,7 @@ public class ObservableHashSet <T> extends HashSet<T> {
         boolean result = super.removeAll(collection);
         for (Object o : collection) {
             try {
-                triggerCollectionChange(new CollectionChange((T) o, ChangeType.REMOVE));
+                triggerCollectionChange(new CollectionChange((T) o, ChangeType.REMOVE)); // Notify observer of changes.
             } catch (ClassCastException e) {}
         }
         return result;
@@ -114,6 +118,10 @@ public class ObservableHashSet <T> extends HashSet<T> {
         }
     }
 
+    /**
+     * Used to emit the changes made to the collection (add/remove) and the item that has been changed.
+     * @param <T> The object type the change is about.
+     */
     public static class CollectionChange<T> {
         private T object;
         private ChangeType changeType;
@@ -132,6 +140,9 @@ public class ObservableHashSet <T> extends HashSet<T> {
         }
     }
 
+    /**
+     * The type of change.
+     */
     public enum ChangeType {
         REMOVE, ADD
     }
