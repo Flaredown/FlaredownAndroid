@@ -45,6 +45,7 @@ public class TreatmentTrackable extends Trackable implements Serializable{
 
     public void setIsTaken(Boolean taken) {
         isTaken = taken;
+        valueObservable.notifySubscribers(this.getValue());
     }
 
     @Override

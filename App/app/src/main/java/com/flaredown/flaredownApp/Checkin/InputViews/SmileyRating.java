@@ -14,10 +14,7 @@ import com.flaredown.flaredownApp.R;
 
 import java.util.ArrayList;
 
-import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Func1;
 
 /**
  * Input view for a smiley face rating used for symptom and condition tracking.
@@ -93,7 +90,7 @@ public class SmileyRating extends LinearLayout{
             }
         };
 
-        trackable.getValueObserver().subscribe(subscriber);
+        trackable.subscribeValueObservable(subscriber);
 
         subscriber.onNext(trackable.getValue());
     }

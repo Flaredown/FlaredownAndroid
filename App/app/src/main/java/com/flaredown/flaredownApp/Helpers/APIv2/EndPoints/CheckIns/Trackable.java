@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,11 +12,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
 import rx.Subscriber;
 
 /**
@@ -33,8 +31,7 @@ public class Trackable implements Serializable {
     private String destroy;
     private transient MetaTrackable metaTrackable = null;
 
-    private transient List<OnValueUpdateListener> handleValueChange;// Default value inside readResolve method. = new LinkedList<>(); // Also inside readResolve method
-    private transient Observable<String> valueObserver;// Default value inside readResolve method. = Observable.create(new TrackableOnSubscribe()); // Also inside readResolve method
+    protected transient ObservableHelper<String> valueObservable;
 
     private interface OnValueUpdateListener {
         void valueUpdate(String value);
@@ -82,20 +79,7 @@ public class Trackable implements Serializable {
     }
 
     private Object readResolve() {
-        this.valueObserver = Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(final Subscriber<? super String> subscriber) {
-                handleValueChange.add(new OnValueUpdateListener() {
-                    @Override
-                    public void valueUpdate(String value) {
-                        if (subscriber.isUnsubscribed())
-                            return;
-                        subscriber.onNext(value);
-                    }
-                });
-            }
-        });
-        this.handleValueChange = new LinkedList<>();
+        this.valueObservable = new ObservableHelper<>();
         return this;
     }
 
@@ -226,9 +210,7 @@ public class Trackable implements Serializable {
 
     public void setValue(String value) {
         Trackable.this.value = value;
-        for (OnValueUpdateListener onValueUpdateListener : handleValueChange) {
-            onValueUpdateListener.valueUpdate(value);
-        }
+        valueObservable.notifySubscribers(value);
     }
 
     public String getDestroy() {
@@ -265,11 +247,11 @@ public class Trackable implements Serializable {
     }
 
     /**
-     * Get the value observer.... The observer emits whenever the value changes.
-     * @return Value observer.
+     * Subscribe to the value observable which emits whenever the value for the trackable changes.
+     * @param subscriber The subscriber in which to subscribe to the value observable.
      */
-    public Observable<String> getValueObserver() {
-        return valueObserver;
+    public void subscribeValueObservable(Subscriber<String> subscriber) {
+        valueObservable.subscribe(subscriber);
     }
 
     @Override

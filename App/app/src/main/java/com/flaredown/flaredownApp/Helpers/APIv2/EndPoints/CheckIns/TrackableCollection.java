@@ -64,7 +64,7 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
             }
         };
 
-        trackable.getValueObserver().subscribe(subscriber);
+        trackable.subscribeValueObservable(subscriber);
         valueChangeSubscribers.put(trackable, subscriber);
 
         return super.add(trackable);
@@ -99,7 +99,7 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
                 }
             };
 
-            trackable.getValueObserver().subscribe(subscriber);
+            trackable.subscribeValueObservable(subscriber);
             valueChangeSubscribers.put(trackable, subscriber);
         }
         return super.addAll(collection);

@@ -180,12 +180,19 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             }
 
             TextView tv_question = (TextView) convertView.findViewById(R.id.tv_question); // Question title.
+            tv_question.setVisibility(View.VISIBLE);
             FrameLayout fl_inputContainer = (FrameLayout) convertView.findViewById(R.id.fl_inputContainer); // Contains the input view.
             fl_inputContainer.removeAllViews();
 
-            SmileyRating sr_input = new SmileyRating(getContext(), trackable);
-            sr_input.setGravity(Gravity.START);
-            fl_inputContainer.addView(sr_input);
+            if(trackable instanceof TreatmentTrackable) {
+                TreatmentDetails td_input = new TreatmentDetails(getContext(), (TreatmentTrackable) trackable); // TODO check that treatment details is using the observer technique.
+                fl_inputContainer.addView(td_input);
+                tv_question.setVisibility(View.INVISIBLE);
+            } else {
+                SmileyRating sr_input = new SmileyRating(getContext(), trackable);
+                sr_input.setGravity(Gravity.START);
+                fl_inputContainer.addView(sr_input);
+            }
 
             // Set the question title.
             tv_question.setText(trackable.getMetaTrackable().getName());
