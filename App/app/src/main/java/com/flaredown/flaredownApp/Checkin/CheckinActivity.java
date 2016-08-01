@@ -53,15 +53,17 @@ import java.util.Date;
 import java.util.List;
 
 import rx.Subscriber;
+import rx.functions.Action1;
 
 public class CheckinActivity extends AppCompatActivity {
     public Communicate API;
     private static final String DEBUG_KEY = "CHECK_IN";
     public static final int ANIMATION_DURATION = 250;
+    private boolean isActivityDestroyed = false;
 
 
     // Application state variables.... (Static so persistent across instances, should also be valid at ALL times).
-    private static CheckIn checkIn;
+    private static ImmutableObserver<CheckIn> checkIn = new ImmutableObserver<>(null);
     private static List<Trackable> checkInIdUpdate = new ArrayList<>(); // List of trackables which need there individual id updating on check in submission.
     private static ImmutableObserver<Boolean> isLoadingCheckIn = new ImmutableObserver<>(false);
 
@@ -184,7 +186,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isLoadingCheckIn.getValue()) {
-                    Calendar c = (Calendar) checkIn.getDate().clone();
+                    Calendar c = (Calendar) checkIn.getValue().getDate().clone();
                     c.add(Calendar.DATE, 1);
                     displayCheckin(c);
                 }
@@ -194,7 +196,7 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!isLoadingCheckIn.getValue()) {
-                    Calendar c = (Calendar) checkIn.getDate().clone();
+                    Calendar c = (Calendar) checkIn.getValue().getDate().clone();
                     c.add(Calendar.DATE, -1);
                     displayCheckin(c);
                 }
@@ -341,12 +343,65 @@ public class CheckinActivity extends AppCompatActivity {
             }
         }, false));
 
+        /*
+         * Observes the check in object for when it is replaced with another. When this occurs the
+         * code will update the view, updating the title bar and re creating the check in fragments.
+         *
+         * It is done with observers as it allows previous activities which have been destroyed to
+         * change the check in object and for it to be reflected in the view.
+         *
+         * For example. If the user rotates the phone straight after a web request is sent and the
+         * response is triggered after the activity is destroyed this would cause the app to crash.
+         * As it would be modifying an activity which has been destroyed. With an observer it makes
+         * changes to the current running activity.
+         */
+        checkIn.getObservable().subscribe(new Action1<CheckIn>() {
+            @Override
+            public void call(CheckIn checkIn) {
+                // Providing the activity hasn't been destroyed then display the check in.
+                if(!isActivityDestroyed) {
+                    removeSummary();
+                    updateDateButtons(checkIn.getDate());
+                    checkIn.getCheckInChangeObservable().subscribe(new Subscriber<Void>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(Void aVoid) {
+                            checkInUpdate();
+                        }
+                    });
+                    if (checkIn.hasResponse()) {
+                        displaySummary();
+                        return;
+                    } else {
+                        vsAnimationHelper.changeState(VIEW_STATES.CHECK_IN, true);
+                    }
+                    List<ViewPagerFragmentBase> fragments = createFragments();
+                    if (vpa_questions == null) {
+                        vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+                        vp_questions.setAdapter(vpa_questions);
+                    } else {
+                        vpa_questions.removeAllFragments();
+                        vpa_questions.setFragments(fragments);
+                        vp_questions.setCurrentItem(0, false);
+                    }
+                }
+            }
+        });
 
         // If no check in set, display one
-        if (checkIn == null) { // TODO handle intent
+        if (checkIn.getValue() == null) { // TODO handle intent
             displayCheckin(Calendar.getInstance());
         } else {
-            displayCheckin(checkIn);
+            displayCheckin(checkIn.getValue());
         }
     }
 
@@ -440,12 +495,12 @@ public class CheckinActivity extends AppCompatActivity {
      * @return Check in object for the activity.
      */
     public CheckIn getCheckIn() {
-        return checkIn;
+        return checkIn.getValue();
     }
 
     public void checkInUpdate() { // TODO reduce update frequencies.
         final Calendar updateTime = lastUpdate = Calendar.getInstance();
-        API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
+        API.submitCheckin(checkIn.getValue(), new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
                 // For removing once the id has been found.
@@ -544,41 +599,7 @@ public class CheckinActivity extends AppCompatActivity {
      * @param checkIn The object for the check in to display.
      */
     private void displayCheckin(final CheckIn checkIn) {
-        removeSummary();
-        CheckinActivity.checkIn = checkIn;
-        updateDateButtons(checkIn.getDate());
-        checkIn.getCheckInChangeObservable().subscribe(new Subscriber<Void>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Void aVoid) {
-                checkInUpdate();
-            }
-        });
-        if (checkIn.hasResponse()) {
-            displaySummary();
-            return;
-        } else {
-            vsAnimationHelper.changeState(VIEW_STATES.CHECK_IN, true);
-        }
-        List<ViewPagerFragmentBase> fragments = createFragments();
-        if (vpa_questions == null) {
-            vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
-            vp_questions.setAdapter(vpa_questions);
-        } else {
-            vpa_questions.removeAllFragments();
-            vpa_questions.setFragments(fragments);
-            vp_questions.setCurrentItem(0, false);
-        }
-
+        CheckinActivity.checkIn.setValue(checkIn);
     }
 
     private void displaySummary() {
@@ -627,7 +648,7 @@ public class CheckinActivity extends AppCompatActivity {
         // When the check in is updated because of the statement below it's id is updated from the returned check in.
         checkInIdUpdate.add(trackable);
         // Updates the model which automatically submits the check in.
-        checkIn.getTrackables(trackable.getType()).add(trackable);
+        checkIn.getValue().getTrackables(trackable.getType()).add(trackable);
     }
 
     /**
@@ -661,6 +682,12 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        isActivityDestroyed = true;
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -671,8 +698,8 @@ public class CheckinActivity extends AppCompatActivity {
                     Bundle bundle = data.getExtras();
                     final Trackable trackable = (Trackable) bundle.get(FlaredownConstants.RETURN_TRACKABLE_KEY);
                     if (trackable != null) {
-                        trackable.setCheckInId(checkIn.getId());
-                        if (DateUtils.isToday(checkIn.getDate().getTimeInMillis())) {
+                        trackable.setCheckInId(checkIn.getValue().getId());
+                        if (DateUtils.isToday(checkIn.getValue().getDate().getTimeInMillis())) {
                             // If check in is today, add trackable to /tracking
                             Tracking tracking = new Tracking();
                             tracking.setTrackable_id(trackable.getTrackableId());
@@ -715,4 +742,5 @@ public class CheckinActivity extends AppCompatActivity {
     public ImmutableObserver<Boolean> isActivityPaused() {
         return isActivityPaused;
     }
+
 }
