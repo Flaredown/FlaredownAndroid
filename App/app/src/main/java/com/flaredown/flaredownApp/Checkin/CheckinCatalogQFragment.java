@@ -3,7 +3,6 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,24 +15,17 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Checkin.InputViews.InputContainerView;
 import com.flaredown.flaredownApp.Checkin.InputViews.SmileyRating;
-import com.flaredown.flaredownApp.Checkin.InputViews.TreatmentChangeListener;
 import com.flaredown.flaredownApp.Checkin.InputViews.TreatmentDetails;
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.ObservableHashSet;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
-import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -55,7 +47,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
     // Array for displaying current questions.
     private List<Trackable> currentQuestions = new ArrayList<>();
     private QuestionAdapter currentQuestionsAdapter;
-    Subscriber<TrackableCollection.CollectionChange> trackableSubscriber;
+    Subscriber<TrackableCollection.CollectionChange<Trackable>> trackableSubscriber;
 
     public TrackableType getTrackableType() {
         return trackableType;
@@ -94,7 +86,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         assignViews(layoutInflater, viewGroup);
 
         // Set up observers
-        trackableSubscriber = new Subscriber<TrackableCollection.CollectionChange>() {
+        trackableSubscriber = new Subscriber<TrackableCollection.CollectionChange<Trackable>>() {
             @Override
             public void onCompleted() {
 
@@ -106,10 +98,10 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             }
 
             @Override
-            public void onNext(TrackableCollection.CollectionChange collectionChange) {
+            public void onNext(TrackableCollection.CollectionChange<Trackable> collectionChange) {
                 switch (collectionChange.getChangeType()) {
                     case ADD:
-                        currentQuestions.add((Trackable) collectionChange.getObject());
+                        currentQuestions.add(collectionChange.getObject());
                         currentQuestionsAdapter.notifyDataSetChanged();
                         break;
                     case REMOVE:
@@ -120,7 +112,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             }
         };
 
-        getCheckInActivity().getCheckIn().getTrackables(trackableType).getCollectionObservable().subscribe(trackableSubscriber);
+        getCheckInActivity().getCheckIn().getTrackables(trackableType).subscribeCollectionObservable(trackableSubscriber);
 
         tv_catalog.setText(trackableType.getNameResId());
         tv_question.setText(trackableType.getQuestionResId());

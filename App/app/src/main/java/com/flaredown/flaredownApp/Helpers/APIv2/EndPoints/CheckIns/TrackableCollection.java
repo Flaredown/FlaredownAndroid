@@ -26,9 +26,19 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
     @Override
     public Object readResolver() {
         super.readResolver();
-        getCollectionObservable().subscribe(new Action1<CollectionChange>() {
+        subscribeCollectionObservable(new Subscriber<CollectionChange<T>>() {
             @Override
-            public void call(CollectionChange collectionChange) {
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(CollectionChange<T> tCollectionChange) {
                 dataChangeObservable.notifySubscribers(null);
             }
         });

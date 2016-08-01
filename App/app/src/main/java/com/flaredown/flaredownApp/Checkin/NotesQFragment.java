@@ -112,8 +112,8 @@ public class NotesQFragment extends ViewPagerFragmentBase {
      * Updates the check in note with the edit text value.
      */
     private void updateCheckIn() {
+        // Automatically submits the check in with an update.
         getCheckInActivity().getCheckIn().setNote(et_noteText.getText().toString());
-        getCheckInActivity().checkInUpdate();
     }
 
     private class TextChangedWaiting implements Runnable {

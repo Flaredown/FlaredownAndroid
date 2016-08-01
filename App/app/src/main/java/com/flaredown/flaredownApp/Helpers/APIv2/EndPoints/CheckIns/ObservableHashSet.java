@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
+import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,13 +9,13 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 
 /**
  * Hash set which is observable, the observable emits when an item is added/removed from the collection.
  */
 public class ObservableHashSet <T> extends HashSet<T> {
-    private transient List<OnCollectionChangeListener> collectionChangeHandler;
-    private transient Observable<CollectionChange> collectionObservable;
+    private transient ObservableHelper<CollectionChange<T>> collectionObservable = new ObservableHelper<>();
 
     public ObservableHashSet() {
         readResolver();
@@ -39,29 +41,15 @@ public class ObservableHashSet <T> extends HashSet<T> {
      * @return Itself.
      */
     public Object readResolver() {
-        this.collectionChangeHandler = new LinkedList<>();
-        this.collectionObservable = Observable.create(new Observable.OnSubscribe<CollectionChange>() {
-            @Override
-            public void call(final Subscriber<? super CollectionChange> subscriber) {
-                collectionChangeHandler.add(new OnCollectionChangeListener() {
-                    @Override
-                    public void CollectionChange(CollectionChange collectionChange) {
-                        if(subscriber.isUnsubscribed())
-                            return;
-                        subscriber.onNext(collectionChange);
-                    }
-                });
-            }
-        });
         return this;
     }
 
     /**
-     * Get the observable for monitoring changes to the collection (add/remove).
-     * @return Observable for monitoring changes to the collection (add/remove).
+     * Subscribes to the collection observable, which emits on addition or removing of items.
+     * @param subscriber The subscriber in which to subscribe to the collection.
      */
-    public Observable<CollectionChange> getCollectionObservable() {
-        return collectionObservable;
+    public void subscribeCollectionObservable(Subscriber<CollectionChange<T>> subscriber) {
+        collectionObservable.subscribe(subscriber);
     }
 
     @Override
@@ -112,10 +100,8 @@ public class ObservableHashSet <T> extends HashSet<T> {
         super.clear();
     }
 
-    private void triggerCollectionChange(CollectionChange collectionChange) {
-        for (OnCollectionChangeListener onCollectionChangeListener : collectionChangeHandler) {
-            onCollectionChangeListener.CollectionChange(collectionChange);
-        }
+    private void triggerCollectionChange(CollectionChange<T> collectionChange) {
+        collectionObservable.notifySubscribers(collectionChange);
     }
 
     /**

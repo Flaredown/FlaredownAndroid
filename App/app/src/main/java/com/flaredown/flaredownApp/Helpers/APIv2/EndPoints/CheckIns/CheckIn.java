@@ -8,12 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
 
 import rx.Subscriber;
+import rx.functions.Action1;
 
 
 /**
@@ -21,7 +20,7 @@ import rx.Subscriber;
  */
 public class CheckIn implements Serializable{
     // Used for notifying changes to the check in (add/remove/value change of trackables etc.)
-    private ObservableHelper<Void> checkInChangeObservable = new ObservableHelper<>();
+    private transient ObservableHelper<Void> checkInChangeObservable = new ObservableHelper<>();
 
 
     private String id;
@@ -29,6 +28,7 @@ public class CheckIn implements Serializable{
     private Calendar updatedAt;
     private Calendar date;
     private String note;
+    private transient ObservableHelper<String> noteObserverable = new ObservableHelper<>();
     private TrackableCollection<Trackable> conditions = new TrackableCollection<>();
     private TrackableCollection<Trackable> symptoms = new TrackableCollection<>();
     private TrackableCollection<Trackable> treatments = new TrackableCollection<>();
@@ -88,7 +88,7 @@ public class CheckIn implements Serializable{
         }
 
         // Emits checkInChangeObservable when the tags collection changes.
-        getTags().getCollectionObservable().subscribe(new Subscriber<ObservableHashSet.CollectionChange>() {
+        tags.subscribeCollectionObservable(new Subscriber<ObservableHashSet.CollectionChange<Tag>>() {
             @Override
             public void onCompleted() {
 
@@ -100,10 +100,19 @@ public class CheckIn implements Serializable{
             }
 
             @Override
-            public void onNext(ObservableHashSet.CollectionChange collectionChange) {
+            public void onNext(ObservableHashSet.CollectionChange<Tag> collectionChange) {
                 checkInChangeObservable.notifySubscribers(null);
             }
         });
+
+        // Emits checkInChangeObservable when the notes string changes.
+        noteObserverable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                checkInChangeObservable.notifySubscribers(null);
+            }
+        });
+
         return this;
     }
 
@@ -218,6 +227,7 @@ public class CheckIn implements Serializable{
 
     public void setNote(String note) {
         this.note = note;
+        noteObserverable.notifySubscribers(note);
     }
 
     public TrackableCollection<Trackable> getConditions() {
@@ -300,11 +310,20 @@ public class CheckIn implements Serializable{
     }
 
     public void attachMetaTrackables(TrackableType trackableType, MetaTrackable metaTrackable) {
-        TrackableCollection<Trackable> trackables = getTrackables(trackableType);
-        for (Trackable trackable : trackables) {
-            if(metaTrackable.getId() == trackable.getTrackableId()) {
-                trackable.setMetaTrackable(metaTrackable);
-                return;
+        if(trackableType.equals(TrackableType.TAG)) {
+            TagCollection<Tag> tags = getTags();
+            for (Tag tag : tags) {
+                if(metaTrackable.getId().equals(tag.getId())){
+                    tag.setMetaTrackable(metaTrackable);
+                }
+            }
+        } else {
+            TrackableCollection<Trackable> trackables = getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                if (metaTrackable.getId() == trackable.getTrackableId()) {
+                    trackable.setMetaTrackable(metaTrackable);
+                    return;
+                }
             }
         }
     }
@@ -376,7 +395,8 @@ public class CheckIn implements Serializable{
      * @param tags The list of tags to be associated with the check in.
      */
     public void setTags(TagCollection<Tag> tags) {
-        this.tags = tags;
+        this.tags.clear();
+        this.tags.addAll(tags);
     }
 
     /**

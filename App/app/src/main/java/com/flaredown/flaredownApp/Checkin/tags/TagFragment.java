@@ -15,6 +15,7 @@ import com.flaredown.flaredownApp.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.ObservableHashSet;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
@@ -63,12 +64,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to add to the check in.
      */
     public void addTag(Tag tag) {
-        if(flh_selected_tags != null) {
-            flh_selected_tags.addItem(tag);
-            // Update the check in.
-            getCheckInActivity().getCheckIn().addTag(tag);
-            getCheckInActivity().checkInUpdate();
-        }
+        getCheckInActivity().getCheckIn().addTag(tag);
     }
 
     /**
@@ -76,12 +72,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to remove from the check in.
      */
     public void removeTag(Tag tag) {
-        if(flh_selected_tags != null) {
-            flh_selected_tags.removeItem(tag);
-            // Update the check in.
-            getCheckInActivity().getCheckIn().removeTag(tag);
-            getCheckInActivity().checkInUpdate();
-        }
+        getCheckInActivity().getCheckIn().removeTag(tag);
     }
 
     @Nullable
@@ -90,7 +81,7 @@ public class TagFragment extends ViewPagerFragmentBase {
         super.onCreateView(inflater, container, savedInstanceState);
         api = new Communicate(getActivity());
         assignViews(inflater, container);
-        Subscriber<TagCollection.CollectionChange> popularTagsSubscriber = new Subscriber<TagCollection.CollectionChange>() {
+        Subscriber<TagCollection.CollectionChange<Tag>> popularTagsSubscriber = new Subscriber<TagCollection.CollectionChange<Tag>>() {
             @Override
             public void onCompleted() {
 
@@ -102,7 +93,7 @@ public class TagFragment extends ViewPagerFragmentBase {
             }
 
             @Override
-            public void onNext(TagCollection.CollectionChange collectionChange) {
+            public void onNext(TagCollection.CollectionChange<Tag> collectionChange) {
                 switch (collectionChange.getChangeType()) {
                     case ADD:
                         flh_popular_tags.addItem((Tag) collectionChange.getObject());
@@ -119,6 +110,31 @@ public class TagFragment extends ViewPagerFragmentBase {
                 }
             }
         };
+
+        Subscriber<TagCollection.CollectionChange<Tag>> selectedTagsSubscriber = new Subscriber<TagCollection.CollectionChange<Tag>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(TagCollection.CollectionChange<Tag> tagCollectionChange) {
+                switch (tagCollectionChange.getChangeType()) {
+                    case ADD:
+                        flh_selected_tags.addItem(tagCollectionChange.getObject());
+                        break;
+                    case REMOVE:
+                        flh_selected_tags.removeItem(tagCollectionChange.getObject());
+                        break;
+                }
+            }
+        };
+
         if(popularTags == null) {
             popularTags = new TagCollection<>();
             displayPopularTags();
@@ -139,7 +155,8 @@ public class TagFragment extends ViewPagerFragmentBase {
         flh_selected_tags.addItems(getCheckInActivity().getCheckIn().getTags());
 
 
-        popularTags.getCollectionObservable().subscribe(popularTagsSubscriber);
+        popularTags.subscribeCollectionObservable(popularTagsSubscriber);
+        getCheckInActivity().getCheckIn().getTags().subscribeCollectionObservable(selectedTagsSubscriber);
 
         return fl_root;
     }

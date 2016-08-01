@@ -244,7 +244,9 @@ public class Communicate {
         getTag(checkIn.getTagIds(), new APIResponse<TagCollection<Tag>, Error>() {
             @Override
             public void onSuccess(TagCollection<Tag> result) {
-                checkIn.setTags(result);
+                for (Tag tag : result) {
+                    checkIn.attachMetaTrackables(TrackableType.TAG, tag.getMetaTrackable());
+                }
                 requestReceived.add(result);
                 if(requestReceived.size() >= TOTAL_REQUESTS)
                     apiResponse.onSuccess(checkIn);
