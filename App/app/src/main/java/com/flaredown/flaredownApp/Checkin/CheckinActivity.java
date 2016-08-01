@@ -49,6 +49,7 @@ import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import rx.Subscriber;
@@ -545,6 +546,7 @@ public class CheckinActivity extends AppCompatActivity {
     private void displayCheckin(final CheckIn checkIn) {
         removeSummary();
         CheckinActivity.checkIn = checkIn;
+        updateDateButtons(checkIn.getDate());
         checkIn.getCheckInChangeObservable().subscribe(new Subscriber<Void>() {
             @Override
             public void onCompleted() {
@@ -576,6 +578,7 @@ public class CheckinActivity extends AppCompatActivity {
             vpa_questions.setFragments(fragments);
             vp_questions.setCurrentItem(0, false);
         }
+
     }
 
     private void displaySummary() {
@@ -594,6 +597,18 @@ public class CheckinActivity extends AppCompatActivity {
         } catch (Exception e) {
             new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary...DISPLAYSUMMARY")).setCancelable(false).show();
         }
+    }
+
+    private void updateDateButtons(Calendar date) {
+        if(DateUtils.isToday(date.getTimeInMillis()) || date.after(Calendar.getInstance())) {
+            // Date is today, hide the next button.
+            mainToolbarView.setPrevButtonState(MainToolbarView.ButtonState.VISIBLE);
+            mainToolbarView.setNextButtonState(MainToolbarView.ButtonState.HIDDEN);
+        } else {
+            mainToolbarView.setPrevButtonState(MainToolbarView.ButtonState.VISIBLE);
+            mainToolbarView.setNextButtonState(MainToolbarView.ButtonState.VISIBLE);
+        }
+        toolbarTitle.setText(Styling.displayDateLong(date));
     }
 
     /**
