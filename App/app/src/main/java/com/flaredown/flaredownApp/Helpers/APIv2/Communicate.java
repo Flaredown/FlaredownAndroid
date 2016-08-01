@@ -348,7 +348,8 @@ public class Communicate {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
-                        apiResponse.onSuccess(new CheckIn(response));
+                        CheckIn result = new CheckIn(response);
+                        processCheckin(result, apiResponse);
                     } catch (JSONException e) {
                         apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException").setRetryRunnable(retryRunnable));
                     }

@@ -1,6 +1,8 @@
 package com.flaredown.flaredownApp.Helpers.Observers;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,15 @@ public class ObservableHelper<T>{
      * Add subscriber to the observable.
      * @param subscriber The subscriber to observer the observable.
      */
-    public void subscribe(Subscriber<T> subscriber) {
-        observable.subscribe(subscriber);
+    public Subscription subscribe(Subscriber<T> subscriber) {
+        return observable.subscribe(subscriber);
+    }
+
+    /**
+     * Add action subscriber to the observable.
+     * @param action1 The action which observes the observable.
+     */
+    public Subscription subscribe(Action1<T> action1) {
+        return observable.subscribe(action1);
     }
 }

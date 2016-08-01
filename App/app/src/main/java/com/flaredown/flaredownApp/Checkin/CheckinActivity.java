@@ -61,6 +61,7 @@ public class CheckinActivity extends AppCompatActivity {
 
     // Application state variables.... (Static so persistent across instances, should also be valid at ALL times).
     private static CheckIn checkIn;
+    private static List<Trackable> checkInIdUpdate = new ArrayList<>(); // List of trackables which need there individual id updating on check in submission.
     private static ImmutableObserver<Boolean> isLoadingCheckIn = new ImmutableObserver<>(false);
 
     // Intent keys.
@@ -446,6 +447,23 @@ public class CheckinActivity extends AppCompatActivity {
         API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
+                // For removing once the id has been found.
+                List<Trackable> foundIdTrackables = new ArrayList<Trackable>();
+                for (Trackable trackable : checkInIdUpdate) {
+                    for (Trackable trackable1 : result.getTrackables(trackable.getType())) {
+                        try {
+                            if (trackable.getMetaTrackable().getId().equals(trackable1.getMetaTrackable().getId())) {
+                                foundIdTrackables.add(trackable);
+                                trackable.setId(trackable1.getId());
+                            }
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                checkInIdUpdate.removeAll(foundIdTrackables); // Remove found trackables... otherwise wait for the next check in (shouldn't ever happen just in case).
+
+
                 PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "Check in saved successfully");
                 if (isActivityPaused().getValue()) {
                     Toast.makeText(getApplicationContext(), getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
@@ -591,45 +609,10 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     private void updateLocalCheckInAndUI(final Trackable trackable) {
-        // Update Check in.
+        // When the check in is updated because of the statement below it's id is updated from the returned check in.
+        checkInIdUpdate.add(trackable);
+        // Updates the model which automatically submits the check in.
         checkIn.getTrackables(trackable.getType()).add(trackable);
-        
-        API.submitCheckin(checkIn, new APIResponse<CheckIn, Error>() {
-            @Override
-            public void onSuccess(CheckIn result) {
-                for (Trackable newTrackable : result.getTrackables(trackable.getType())) {
-                    if(newTrackable.getTrackableId().equals(trackable.getTrackableId())) {
-                        trackable.setId(newTrackable.getId());
-                    }
-                }
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                List<Fragment> nestedFragments = fragmentManager.getFragments();
-
-                if (nestedFragments != null || nestedFragments.size() != 0) {
-                    for (Fragment fragment : nestedFragments){
-                        if (fragment instanceof CheckInSummaryFragment){
-                            List<ViewPagerFragmentBase> nestedCatalogQFragments = ((CheckInSummaryFragment) fragment).getFragments();
-                            for (Fragment frag: nestedCatalogQFragments){
-                                if (frag instanceof CheckinCatalogQFragment){
-                                    if (((CheckinCatalogQFragment) frag).getTrackableType() == trackable.getType()){
-//                                        ((CheckinCatalogQFragment) frag).addTrackable(trackable); // TODO check working (the model should be updated there for updating the view)
-                                    }
-                                }
-                            }
-                        } else if (fragment instanceof CheckinCatalogQFragment){
-                            if (((CheckinCatalogQFragment) fragment).getTrackableType() == trackable.getType()){
-//                                ((CheckinCatalogQFragment) fragment).addTrackable(trackable); // TODO check working (the model should be updated there for the view should be updated).
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
-            }
-        });
     }
 
     /**
