@@ -500,7 +500,8 @@ public class CheckinActivity extends AppCompatActivity {
 
     public void checkInUpdate() { // TODO reduce update frequencies.
         final Calendar updateTime = lastUpdate = Calendar.getInstance();
-        API.submitCheckin(checkIn.getValue(), new APIResponse<CheckIn, Error>() {
+        if(!isActivityDestroyed)
+            API.submitCheckin(checkIn.getValue(), new APIResponse<CheckIn, Error>() {
             @Override
             public void onSuccess(CheckIn result) {
                 // For removing once the id has been found.
