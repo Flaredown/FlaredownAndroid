@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +13,8 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import rx.Subscriber;
 
 /**
  * Used as a base to represent the trackables (Symptoms, Conditions & Treatments).
@@ -28,13 +31,67 @@ public class Trackable implements Serializable {
     private String destroy;
     private transient MetaTrackable metaTrackable = null;
 
-    /**
+    protected transient ObservableHelper<String> valueObservable;
 
+    private interface OnValueUpdateListener {
+        void valueUpdate(String value);
+    }
+
+
+    private final static String MT_ID = "mt_id";
+    private final static String MT_NAME = "mt_name";
+    private final static String MT_TYPE = "mt_type";
+    private final static String MT_CREATED_AT = "mt_createdAt";
+    private final static String MT_UPDATED_AT = "mt_updatedAt";
+
+    private final static String MT_CACHED_AT = "mt_cachedAt";
+
+    // Overriding java's serialization, this is because the realm database does not allow serialisation
+    // and a MetaTrackable is a serializable object
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        // Default serialzation.
+        oos.defaultWriteObject();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put(MT_ID, metaTrackable.getId());
+        data.put(MT_NAME, metaTrackable.getName());
+        data.put(MT_TYPE, metaTrackable.getTypeRaw());
+        data.put(MT_CREATED_AT, metaTrackable.getCreatedAtRaw());
+        data.put(MT_UPDATED_AT, metaTrackable.getUpdatedAtRaw());
+        data.put(MT_CACHED_AT, metaTrackable.getCachedAtRaw());
+        oos.writeObject(data);
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        // Default deserializarion.
+        ois.defaultReadObject();
+
+        Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
+        if(data.containsKey(MT_ID)) {
+            if(metaTrackable == null) metaTrackable = new MetaTrackable();
+            metaTrackable.setId((Integer) data.get(MT_ID));
+            metaTrackable.setName((String) data.get(MT_NAME));
+            metaTrackable.setTypeRaw((String) data.get(MT_TYPE));
+            metaTrackable.setCreatedAtRaw((Long) data.get(MT_CREATED_AT));
+            metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
+            metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
+        }
+    }
+
+    private Object readResolve() {
+        this.valueObservable = new ObservableHelper<>();
+        return this;
+    }
+
+    /**
      * Default constructor for the trackable object.
      * @param type The type of trackable (condition, symptom, treatment).
+     * @param trackableId The trackable id of the object.
      */
-    public Trackable(TrackableType type) {
+    public Trackable(TrackableType type, Integer trackableId) {
+        readResolve();
         this.type = type;
+        this.trackableId = new Integer(trackableId);
     }
 
     /**
@@ -43,12 +100,13 @@ public class Trackable implements Serializable {
      * @param jsonObject Representing a trackable.
      */
     public Trackable(TrackableType type, JSONObject jsonObject) {
+        readResolve();
         this.type = type;
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null;
+        this.setValue((jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null);
         this.colourId = jsonObject.optInt("color_id", 0);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
         this.destroy = (jsonObject.has("_destroy")) ? jsonObject.optString("_destroy") : null;
@@ -61,12 +119,13 @@ public class Trackable implements Serializable {
      * @param meta meta for the trackable
      */
     public Trackable(TrackableType type, JSONObject jsonObject, MetaTrackable meta) {
+        readResolve();
         this.type = type;
         this.id = jsonObject.optString("id", null);
         this.createdAt = Date.stringToCalendar(jsonObject.optString("created_at", null));
         this.updatedAt = Date.stringToCalendar(jsonObject.optString("updated_at", null));
         this.checkInId = jsonObject.optString("checkin_id", null);
-        this.value = (jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null;
+        this.setValue((jsonObject.has("value") && !jsonObject.isNull("value"))? jsonObject.optString("value") : null);
         this.colourId = jsonObject.optInt("color_id", 0);
         this.trackableId = (jsonObject.has(type.getTrackableIdKey()))? jsonObject.optInt(type.getTrackableIdKey()) : null;
         this.destroy = (jsonObject.has("_destroy")) ? jsonObject.optString("_destroy") : null;
@@ -150,7 +209,8 @@ public class Trackable implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        Trackable.this.value = value;
+        valueObservable.notifySubscribers(value);
     }
 
     public String getDestroy() {
@@ -165,7 +225,7 @@ public class Trackable implements Serializable {
         return trackableId;
     }
 
-    public void setTrackableId(Integer trackableId) {
+    private void setTrackableId(Integer trackableId) {
         this.trackableId = trackableId;
     }
 
@@ -186,43 +246,12 @@ public class Trackable implements Serializable {
         this.setTrackableId(metaTrackable.getId());
     }
 
-    private final static String MT_ID = "mt_id";
-    private final static String MT_NAME = "mt_name";
-    private final static String MT_TYPE = "mt_type";
-    private final static String MT_CREATED_AT = "mt_createdAt";
-    private final static String MT_UPDATED_AT = "mt_updatedAt";
-    private final static String MT_CACHED_AT = "mt_cachedAt";
-
-    // Overriding java's serialization, this is because the realm database does not allow serialisation
-    // and a MetaTrackable is a serializable object
-    private void writeObject(ObjectOutputStream oos) throws IOException {
-        // Default serialzation.
-        oos.defaultWriteObject();
-
-        Map<String, Object> data = new HashMap<>();
-        data.put(MT_ID, metaTrackable.getId());
-        data.put(MT_NAME, metaTrackable.getName());
-        data.put(MT_TYPE, metaTrackable.getTypeRaw());
-        data.put(MT_CREATED_AT, metaTrackable.getCreatedAtRaw());
-        data.put(MT_UPDATED_AT, metaTrackable.getUpdatedAtRaw());
-        data.put(MT_CACHED_AT, metaTrackable.getCachedAtRaw());
-        oos.writeObject(data);
-    }
-
-    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
-        // Default deserializarion.
-        ois.defaultReadObject();
-
-        Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
-        if(data.containsKey(MT_ID)) {
-            if(metaTrackable == null) metaTrackable = new MetaTrackable();
-            metaTrackable.setId((Integer) data.get(MT_ID));
-            metaTrackable.setName((String) data.get(MT_NAME));
-            metaTrackable.setTypeRaw((String) data.get(MT_TYPE));
-            metaTrackable.setCreatedAtRaw((Long) data.get(MT_CREATED_AT));
-            metaTrackable.setUpdatedAtRaw((Long) data.get(MT_UPDATED_AT));
-            metaTrackable.setCachedAtRaw((Long) data.get(MT_CACHED_AT));
-        }
+    /**
+     * Subscribe to the value observable which emits whenever the value for the trackable changes.
+     * @param subscriber The subscriber in which to subscribe to the value observable.
+     */
+    public void subscribeValueObservable(Subscriber<String> subscriber) {
+        valueObservable.subscribe(subscriber);
     }
 
     @Override

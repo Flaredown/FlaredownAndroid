@@ -166,11 +166,10 @@ public class AddEditableActivity extends AppCompatActivity {
                 Searchable selected = suggestionList.get(position);
                 if(trackableType.isTrackable()) {
                     //Create trackable and pass back to checkin activity
-                    Trackable trackable = new Trackable(trackableType);
+                    Trackable trackable = new Trackable(trackableType, selected.getId());
                     MetaTrackable meta = new MetaTrackable(trackableType);
                     meta.setName(selected.getName());
                     meta.setId(selected.getId());
-                    trackable.setTrackableId(selected.getId());
                     trackable.setColourId(selected.getColor_id());
                     trackable.setCreatedAt(selected.getCreatedAt());
                     trackable.setUpdatedAt(selected.getUpdatedAt());
@@ -204,8 +203,7 @@ public class AddEditableActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(MetaTrackable result) {
                             //Create trackable and pass back to checkin activity
-                            Trackable trackable = new Trackable(trackableType);
-                            trackable.setTrackableId(result.getId());
+                            Trackable trackable = new Trackable(trackableType, result.getId());
                             trackable.setColourId(result.getColorId());
                             trackable.setCreatedAt(result.getCreatedAt());
                             trackable.setUpdatedAt(result.getUpdatedAt());
@@ -273,13 +271,13 @@ public class AddEditableActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             Searchable searchable = getItem(position);
             if (convertView == null){
-                convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.checkin_activity_add_a_dialog_result_item,parent,false);
+                convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.checkin_activity_add_a_dialog_result_item, parent, false);
             }
             TextView name = (TextView) convertView.findViewById(R.id.tv_name);
             TextView quantity = (TextView) convertView.findViewById(R.id.tv_quantity);
 
             name.setText(searchable.getName());
-            quantity.setText(String.format(getString(R.string.add_trackable_list_view_text,searchable.getUsers_count())));
+            quantity.setText(String.format(getString(R.string.add_trackable_list_view_text),searchable.getUsers_count()));
 
             return convertView;
         }

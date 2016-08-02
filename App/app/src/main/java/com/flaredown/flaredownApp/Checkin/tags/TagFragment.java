@@ -15,6 +15,8 @@ import com.flaredown.flaredownApp.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.ObservableHashSet;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
@@ -25,16 +27,21 @@ import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.List;
 
+import rx.Subscriber;
+
 /**
  * Created by thunter on 26/05/16.
  */
 public class TagFragment extends ViewPagerFragmentBase {
+
+    private static TagCollection<Tag> popularTags;
 
     private Communicate api;
 
     private FrameLayout fl_root;
     private FlowLayout fl_popular_tags;
     private FlowLayoutHelper<Tag> flh_popular_tags;
+    private ProgressBar pb_popularTags;
 
     private FlowLayout fl_selected_tags;
     private FlowLayoutHelper<Tag> flh_selected_tags;
@@ -57,12 +64,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to add to the check in.
      */
     public void addTag(Tag tag) {
-        if(flh_selected_tags != null) {
-            flh_selected_tags.addItem(tag);
-            // Update the check in.
-            getCheckInActivity().getCheckIn().addTag(tag);
-            getCheckInActivity().checkInUpdate();
-        }
+        getCheckInActivity().getCheckIn().addTag(tag);
     }
 
     /**
@@ -70,12 +72,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to remove from the check in.
      */
     public void removeTag(Tag tag) {
-        if(flh_selected_tags != null) {
-            flh_selected_tags.removeItem(tag);
-            // Update the check in.
-            getCheckInActivity().getCheckIn().removeTag(tag);
-            getCheckInActivity().checkInUpdate();
-        }
+        getCheckInActivity().getCheckIn().removeTag(tag);
     }
 
     @Nullable
@@ -84,7 +81,68 @@ public class TagFragment extends ViewPagerFragmentBase {
         super.onCreateView(inflater, container, savedInstanceState);
         api = new Communicate(getActivity());
         assignViews(inflater, container);
-        displayPopularTags();
+        Subscriber<TagCollection.CollectionChange<Tag>> popularTagsSubscriber = new Subscriber<TagCollection.CollectionChange<Tag>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(TagCollection.CollectionChange<Tag> collectionChange) {
+                switch (collectionChange.getChangeType()) {
+                    case ADD:
+                        flh_popular_tags.addItem((Tag) collectionChange.getObject());
+                        break;
+                    case REMOVE:
+                        flh_popular_tags.removeItem((Tag) collectionChange.getObject());
+                        break;
+                }
+
+                if(popularTags.size() == 0 && pb_popularTags.getVisibility() != View.VISIBLE) {
+                    pb_popularTags.setVisibility(View.VISIBLE);
+                } else if(popularTags.size() > 0 && pb_popularTags.getVisibility() != View.GONE) {
+                    pb_popularTags.setVisibility(View.GONE);
+                }
+            }
+        };
+
+        Subscriber<TagCollection.CollectionChange<Tag>> selectedTagsSubscriber = new Subscriber<TagCollection.CollectionChange<Tag>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(TagCollection.CollectionChange<Tag> tagCollectionChange) {
+                switch (tagCollectionChange.getChangeType()) {
+                    case ADD:
+                        flh_selected_tags.addItem(tagCollectionChange.getObject());
+                        break;
+                    case REMOVE:
+                        flh_selected_tags.removeItem(tagCollectionChange.getObject());
+                        break;
+                }
+            }
+        };
+
+        if(popularTags == null) {
+            popularTags = new TagCollection<>();
+            displayPopularTags();
+        } else {
+            for (Tag popularTag : popularTags) {
+                popularTagsSubscriber.onNext(new TagCollection.CollectionChange(popularTag, TagCollection.ChangeType.ADD));
+            }
+        }
 
         tv_addTag.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +154,10 @@ public class TagFragment extends ViewPagerFragmentBase {
         // Show already selected tags.
         flh_selected_tags.addItems(getCheckInActivity().getCheckIn().getTags());
 
+
+        popularTags.subscribeCollectionObservable(popularTagsSubscriber);
+        getCheckInActivity().getCheckIn().getTags().subscribeCollectionObservable(selectedTagsSubscriber);
+
         return fl_root;
     }
 
@@ -103,20 +165,19 @@ public class TagFragment extends ViewPagerFragmentBase {
      * Get and display the list of popular tags.
      */
     private void displayPopularTags() {
-        flh_popular_tags.clear();
-        fl_popular_tags.addView(new ProgressBar(getActivity()));
+        popularTags.clear();
         api.getPopularTags(new APIResponse<List<Tag>, Error>() {
             @Override
             public void onSuccess(List<Tag> result) {
-                flh_popular_tags.clear();
+                popularTags.clear();
                 for (Tag tag : result) {
-                    flh_popular_tags.addItem(tag);
+                    popularTags.add(tag);
                 }
             }
 
             @Override
             public void onFailure(Error result) {
-                fl_popular_tags.removeAllViews();
+                popularTags.clear();
                 TextView tv = new TextView(getActivity());
                 tv.setText("Error Loading Retry?");
                 fl_popular_tags.addView(tv);
@@ -156,7 +217,8 @@ public class TagFragment extends ViewPagerFragmentBase {
                 return tv;
             }
         });
-
+        pb_popularTags = new ProgressBar(getActivity());
+        fl_popular_tags.addView(pb_popularTags);
         fl_selected_tags = (FlowLayout) fl_root.findViewById(R.id.fl_selected_tags);
         flh_selected_tags = new FlowLayoutHelper<>(fl_selected_tags, new FlowLayoutHelper.Adapter<Tag>() {
             @Override
