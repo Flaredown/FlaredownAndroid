@@ -15,17 +15,11 @@ import rx.Subscriber;
 public class TagCollection <T extends Tag> extends ObservableHashSet<T> {
     @Override
     public boolean addAll(Collection<? extends T> collection) {
-        for (T object : collection) {
-            if(this.contains(object) || collection.contains(object)) throw new IllegalStateException("Tag ID already exists in collection (" + object.getId() + ")");
-            if(object.getId() == null) throw new IllegalStateException("Tag ID cannot equal null");
-        }
         return super.addAll(collection);
     }
 
     @Override
     public boolean add(T object) {
-        if(this.contains(object)) throw new IllegalStateException("Tag ID already exists in collection (" + object.getId() + ")");
-        if(object.getId() == null) throw new IllegalStateException("Tag ID cannot equal null");
         return super.add(object);
     }
 }
