@@ -1,27 +1,34 @@
 package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
+import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
+
+import rx.Subscriber;
+import rx.functions.Action1;
 
 
 /**
  * An element of the JSON returned from the check in endpoint.
  */
 public class CheckIn implements Serializable{
+    // Used for notifying changes to the check in (add/remove/value change of trackables etc.)
+    private transient ObservableHelper<Void> checkInChangeObservable = new ObservableHelper<>();
+
+
     private String id;
     private Calendar createdAt;
     private Calendar updatedAt;
     private Calendar date;
     private String note;
+    private transient ObservableHelper<String> noteObserverable = new ObservableHelper<>();
     private TrackableCollection<Trackable> conditions = new TrackableCollection<>();
     private TrackableCollection<Trackable> symptoms = new TrackableCollection<>();
     private TrackableCollection<Trackable> treatments = new TrackableCollection<>();
@@ -30,6 +37,7 @@ public class CheckIn implements Serializable{
     public CheckIn(String id, Calendar date) {
         this.id = id;
         this.date = date;
+        readResolver();
     }
 
     public CheckIn(JSONObject inputJsonObject) throws JSONException {
@@ -50,6 +58,62 @@ public class CheckIn implements Serializable{
         for (int i = 0; i < tagIdJArray.length(); i++) {
             this.tags.add(new Tag(tagIdJArray.getInt(i)));
         }
+        readResolver();
+    }
+
+    /**
+     * Run on construction and when object is dematerialized.
+     * @return
+     */
+    public Object readResolver() {
+        // Emits checkInChangeObservable when the data changes inside a trackable collection.
+        for (TrackableType trackableType : TrackableType.trackableValues()) {
+            TrackableCollection<Trackable> tc = getTrackables(trackableType);
+            tc.getDataChangeObservable().subscribe(new Subscriber<Void>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(Void aVoid) {
+                    checkInChangeObservable.notifySubscribers(null);
+                }
+            });
+        }
+
+        // Emits checkInChangeObservable when the tags collection changes.
+        tags.subscribeCollectionObservable(new Subscriber<ObservableHashSet.CollectionChange<Tag>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(ObservableHashSet.CollectionChange<Tag> collectionChange) {
+                checkInChangeObservable.notifySubscribers(null);
+            }
+        });
+
+        // Emits checkInChangeObservable when the notes string changes.
+        noteObserverable.subscribe(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                checkInChangeObservable.notifySubscribers(null);
+            }
+        });
+
+        return this;
     }
 
     /**
@@ -163,6 +227,7 @@ public class CheckIn implements Serializable{
 
     public void setNote(String note) {
         this.note = note;
+        noteObserverable.notifySubscribers(note);
     }
 
     public TrackableCollection<Trackable> getConditions() {
@@ -245,11 +310,20 @@ public class CheckIn implements Serializable{
     }
 
     public void attachMetaTrackables(TrackableType trackableType, MetaTrackable metaTrackable) {
-        TrackableCollection<Trackable> trackables = getTrackables(trackableType);
-        for (Trackable trackable : trackables) {
-            if(metaTrackable.getId() == trackable.getTrackableId()) {
-                trackable.setMetaTrackable(metaTrackable);
-                return;
+        if(trackableType.equals(TrackableType.TAG)) {
+            TagCollection<Tag> tags = getTags();
+            for (Tag tag : tags) {
+                if(metaTrackable.getId().equals(tag.getId())){
+                    tag.setMetaTrackable(metaTrackable);
+                }
+            }
+        } else {
+            TrackableCollection<Trackable> trackables = getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                if (metaTrackable.getId() == trackable.getTrackableId()) {
+                    trackable.setMetaTrackable(metaTrackable);
+                    return;
+                }
             }
         }
     }
@@ -295,6 +369,10 @@ public class CheckIn implements Serializable{
         return tags;
     }
 
+    /**
+     * Get a hash set of tag ids.
+     * @return Tag ids.
+     */
     public HashSet<Integer> getTagIds() {
         HashSet<Integer> results = new HashSet<>();
         for (Tag tag : tags) {
@@ -304,11 +382,21 @@ public class CheckIn implements Serializable{
     }
 
     /**
+     * Get the check in change observable... This observable emits when.
+     *      - A trackable is added, removed or value is changed.
+     * @return Observable helper for the check in change.
+     */
+    public ObservableHelper<Void> getCheckInChangeObservable() {
+        return checkInChangeObservable;
+    }
+
+    /**
      * Set the list of tags for the check in.
      * @param tags The list of tags to be associated with the check in.
      */
     public void setTags(TagCollection<Tag> tags) {
-        this.tags = tags;
+        this.tags.clear();
+        this.tags.addAll(tags);
     }
 
     /**

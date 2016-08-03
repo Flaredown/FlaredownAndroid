@@ -78,7 +78,7 @@ public class Styling {
     }
 
     public static void forcePortraitOrientation(Activity activity) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //TODO re-enable
     }
 
     public static void forcePortraitOnSmallDevices(Activity activity) {

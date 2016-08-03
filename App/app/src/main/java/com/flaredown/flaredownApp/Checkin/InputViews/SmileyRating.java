@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Checkin.InputViews;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
@@ -9,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 
 import java.util.ArrayList;
+
+import rx.Subscriber;
 
 /**
  * Input view for a smiley face rating used for symptom and condition tracking.
@@ -21,8 +23,8 @@ public class SmileyRating extends LinearLayout{
     private ArrayList<Button> buttons = new ArrayList<>();
     private ArrayList<SmileyRatingOnValueChange> onValueChangeListeners = new ArrayList<>();
     private ButtonClickerListener buttonClickerListener = new ButtonClickerListener();
-    private Integer value = null;
-    public SmileyRating(final Context context) {
+    private Trackable trackable;
+    public SmileyRating(final Context context, Trackable trackable) {
         super(context);
 
         // Set parameters.
@@ -47,40 +49,51 @@ public class SmileyRating extends LinearLayout{
         }
         // Set a smiley face for the 1st button
         Styling.setBackground(context, buttons.get(0), R.drawable.button_selector_meta_smiley_selector);
+        this.setTrackable(trackable);
     }
 
     /**
      * Set the value of the SmileyRating.
-     * @param value A value 0-4 or null to deselect
+     * @param trackable A value 0-4 or null to deselect
      */
-    public void setValue(@Nullable Integer value) {
-        this.value = value;
-        if(this.value == null) {
-            for (Button button : buttons) {
-                button.setSelected(false);
+    public void setTrackable(Trackable trackable) {
+        this.trackable = trackable; // TODO disassociate old subscription
+
+        Subscriber<String> subscriber = new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
             }
-        } else {
-            if (this.value < 0) this.value = 0;
-            if (this.value > 4) this.value = 4;
-            for (int i = 0; i < buttons.size(); i++) {
-                Button button = buttons.get(i);
-                button.setSelected(i <= this.value);
+
+            @Override
+            public void onError(Throwable e) {
+
             }
-            if(this.value != 0)
-                buttons.get(0).setSelected(false);
-        }
-    }
 
-    public void addOnValueChangeListener(SmileyRatingOnValueChange smileyRatingOnValueChange) {
-        onValueChangeListeners.add(smileyRatingOnValueChange);
-    }
+            @Override
+            public void onNext(String v) {
+                Integer value = (v == null) ? null : Integer.valueOf(v);
+                if(value == null) {
+                    for (Button button : buttons) {
+                        button.setSelected(false);
+                    }
+                } else {
+                    if (value < 0) value = 0;
+                    if (value > 4) value = 4;
+                    for (int i = 0; i < buttons.size(); i++) {
+                        Button button = buttons.get(i);
+                        button.setSelected(i <= value);
+                    }
+                    if(value != 0)
+                        buttons.get(0).setSelected(false);
+                }
+            }
+        };
 
-    private void triggerValueChangeListeners(int value, Integer oldValue) {
-        for (SmileyRatingOnValueChange onValueChangeListener : onValueChangeListeners) {
-            onValueChangeListener.onClick(value, oldValue);
-        }
-    }
+        trackable.subscribeValueObservable(subscriber);
 
+        subscriber.onNext(trackable.getValue());
+    }
 
     private class ButtonClickerListener implements OnClickListener {
         @Override
@@ -88,9 +101,7 @@ public class SmileyRating extends LinearLayout{
             if(v instanceof Button) {
                 int value = buttons.indexOf(v);
                 if(value != -1) {
-                    if(SmileyRating.this.value == null || !SmileyRating.this.value.equals(value))
-                        triggerValueChangeListeners(value, SmileyRating.this.value);
-                    setValue(value);
+                    trackable.setValue(String.valueOf(value));
                 }
             }
         }

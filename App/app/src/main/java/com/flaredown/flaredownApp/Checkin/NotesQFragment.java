@@ -16,6 +16,8 @@ import com.flaredown.flaredownApp.R;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import rx.Subscriber;
+
 /**
  * Allows users to write a note for the day in the check in summary view.
  */
@@ -72,17 +74,26 @@ public class NotesQFragment extends ViewPagerFragmentBase {
             }
         });
         // Save if the application is paused.
-        getCheckInActivity().addActivityPauseListener(new ActivityPauseEventListener() {
+        getCheckInActivity().isActivityPaused().getObservable().subscribe(new Subscriber<Boolean>() {
             @Override
-            public void onPause() {
-                if(changesPending.get()) {
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                if(changesPending.get() && aBoolean) {
                     updateCheckIn();
                     if (NotesQFragment.this.textChangeWaitingThread != null) {
                         NotesQFragment.this.textChangeWaitingThread.interrupt();
                         NotesQFragment.this.textChangeWaitingThread = null;
                     }
                 }
-
             }
         });
 
@@ -101,8 +112,8 @@ public class NotesQFragment extends ViewPagerFragmentBase {
      * Updates the check in note with the edit text value.
      */
     private void updateCheckIn() {
+        // Automatically submits the check in with an update.
         getCheckInActivity().getCheckIn().setNote(et_noteText.getText().toString());
-        getCheckInActivity().checkInUpdate();
     }
 
     private class TextChangedWaiting implements Runnable {

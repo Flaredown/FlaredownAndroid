@@ -244,7 +244,9 @@ public class Communicate {
         getTag(checkIn.getTagIds(), new APIResponse<TagCollection<Tag>, Error>() {
             @Override
             public void onSuccess(TagCollection<Tag> result) {
-                checkIn.setTags(result);
+                for (Tag tag : result) {
+                    checkIn.attachMetaTrackables(TrackableType.TAG, tag.getMetaTrackable());
+                }
                 requestReceived.add(result);
                 if(requestReceived.size() >= TOTAL_REQUESTS)
                     apiResponse.onSuccess(checkIn);
@@ -348,7 +350,8 @@ public class Communicate {
                 @Override
                 public void onResponse(JSONObject response) {
                     try {
-                        apiResponse.onSuccess(new CheckIn(response));
+                        CheckIn result = new CheckIn(response);
+                        processCheckin(result, apiResponse);
                     } catch (JSONException e) {
                         apiResponse.onFailure(new Error().setExceptionThrown(e).setDebugString("APIv2.Communicate.submitCheckin::JSONException").setRetryRunnable(retryRunnable));
                     }

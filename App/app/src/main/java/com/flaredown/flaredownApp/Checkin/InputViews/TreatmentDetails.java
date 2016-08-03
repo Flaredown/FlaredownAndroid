@@ -21,6 +21,8 @@ import com.flaredown.flaredownApp.R;
 
 import java.util.ArrayList;
 
+import rx.Subscriber;
+
 /**
  * Input view for a treatments used for tracking treatments.
  */
@@ -34,7 +36,6 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
     private TextView mDone;
     private AutoCompleteTextView mTreatmentDoseAutoComplete;
 
-    private TreatmentChangeListener mChangeListeners;
     private Communicate api;
 
     public TreatmentDetails(final Context context, TreatmentTrackable trackable) {
@@ -59,12 +60,7 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
         mRemove.setOnClickListener(this);
         mDone = (TextView) treatmentItemLayout.findViewById(R.id.doseDone);
         mDone.setOnClickListener(this);
-        mTreatmentName.setText(trackable.getMetaTrackable().getName());
-        if (null == trackable.getValue() || trackable.getValue().isEmpty()){
-            mTreatmentDose.setText(R.string.locales_no_dose);
-        } else {
-            mTreatmentDose.setText(trackable.getValue());
-        }
+
         mTreatmentDoseAutoComplete = (AutoCompleteTextView) findViewById(R.id.treatmentDoseAutoComplete);
         api.getSuggestedDoses(trackable.getTrackableId().toString(), new APIResponse<Search, Error>() {
             @Override
@@ -83,28 +79,53 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
         });
         mTreatmentDoseAutoComplete.setDropDownAnchor(this.getId());
 
-        if (trackable.getIsTaken()){
-            mTreatmentSwitch.setChecked(true);
-            toggleSwitchAndVisibility();
-        } else {
-            mTreatmentSwitch.setChecked(false);
-            toggleSwitchAndVisibility();
-        }
+        Subscriber<String> trackableValueSubscriber = new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+                mTreatmentName.setText(mTrackable.getMetaTrackable().getName());
+                if (null == mTrackable.getValue() || mTrackable.getValue().isEmpty()){
+                    mTreatmentDose.setText(R.string.locales_no_dose);
+                } else {
+                    mTreatmentDose.setText(mTrackable.getValue());
+                }
+
+                if (mTrackable.getIsTaken()){
+                    mTreatmentSwitch.setChecked(true);
+                    toggleSwitchAndVisibility();
+                } else {
+                    mTreatmentSwitch.setChecked(false);
+                    toggleSwitchAndVisibility();
+                }
+            }
+        };
+
+        trackableValueSubscriber.onNext(trackable.getValue());
+        trackable.subscribeValueObservable(trackableValueSubscriber);
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.treatmentRemove){
-            mChangeListeners.onRemove();
+            // TODO remove treatment dose... Need to have access to the check in object/treatments collection.
         } else if (view.getId() == R.id.treatmentDose){
             toggleDoseEdit();
         } else if (view.getId() == R.id.treatmentSwitch){
-            mChangeListeners.onIsTakenUpdate(mTreatmentSwitch.isChecked());
+            mTrackable.setIsTaken(mTreatmentSwitch.isChecked());
             toggleSwitchAndVisibility();
         } else if (view.getId() == R.id.doseDone){
             mTreatmentDose.setText(mTreatmentDoseAutoComplete.getText());
             toggleDoseEdit();
-            mChangeListeners.onUpdateDose(mTreatmentDoseAutoComplete.getText().toString());
+            mTrackable.setValue(mTreatmentDoseAutoComplete.getText().toString());
         }
 
     }
@@ -133,9 +154,5 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
             mTreatmentDose.setVisibility(View.GONE);
             mTreatmentName.setAlpha((float) .5);
         }
-    }
-
-    public void addOnChangeListener(TreatmentChangeListener listeners) {
-        mChangeListeners = listeners;
     }
 }
