@@ -384,7 +384,7 @@ public class CheckinActivity extends AppCompatActivity {
                     } else {
                         vsAnimationHelper.changeState(VIEW_STATES.CHECK_IN, true);
                     }
-                    List<ViewPagerFragmentBase> fragments = createFragments();
+                    List<ViewPagerFragmentBase> fragments = createFragments(false);
                     if (vpa_questions == null) {
                         vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
                         vp_questions.setAdapter(vpa_questions);
@@ -393,6 +393,7 @@ public class CheckinActivity extends AppCompatActivity {
                         vpa_questions.setFragments(fragments);
                         vp_questions.setCurrentItem(0, false);
                     }
+                    bt_nextQuestion.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -403,6 +404,16 @@ public class CheckinActivity extends AppCompatActivity {
         } else {
             displayCheckin(checkIn.getValue());
         }
+    }
+
+    /**
+     * If not in summary view turn to the next page.
+     * @param animate if it should animate.
+     */
+    public void nextPage(boolean animate) {
+        try {
+            vp_questions.setCurrentItem(vp_questions.getCurrentItem() + 1, animate);
+        } catch (Exception e) {} // Just in case the method is triggered before load or in summary view.
     }
 
     /**
@@ -659,8 +670,10 @@ public class CheckinActivity extends AppCompatActivity {
      * @return List of fragment objects for each page of the check in (not the extra pages inside
      * the summary fragment).
      */
-    public static List<ViewPagerFragmentBase> createFragments() {
+    public static List<ViewPagerFragmentBase> createFragments(boolean isSummaryView) {
         List<ViewPagerFragmentBase> fragments = new ArrayList<>();
+        FlaringQuestionFragment flaringQuestionFragment = FlaringQuestionFragment.newInstance(isSummaryView);
+        fragments.add(flaringQuestionFragment);
         for (TrackableType trackableType : TrackableType.trackableValues()) {
             CheckinCatalogQFragment checkinCatalogQFragment = CheckinCatalogQFragment.newInstance(trackableType);
             fragments.add(checkinCatalogQFragment);
