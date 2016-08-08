@@ -1,14 +1,13 @@
 package com.flaredown.flaredownApp.Helpers.AndroidViewAnimation;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by thunter on 26/06/16.
@@ -16,6 +15,8 @@ import java.util.Set;
 public class ViewAnimationHelper<T extends Enum<T>> {
     private Map<T, AnimationEvents> states = new HashMap<>();
     private T currentView = null;
+    private List<PendingAnimation<T>> animationPending = new LinkedList<>();
+    private boolean isAnimating = false;
 
     /**
      * Add state to the view animation helper.
@@ -38,16 +39,20 @@ public class ViewAnimationHelper<T extends Enum<T>> {
         changeState(stateEnum, animate, null);
     }
 
-    public void changeState(T stateEnum, final boolean animate, @Nullable final AnimationEndListener animationComplete) {
-        if(currentView == stateEnum) {
-            if(animationComplete != null)
-                animationComplete.addProgress(0);
+    public void changeState(final T stateEnum, final boolean animate, @Nullable final AnimationEndListener animationComplete) {
+        if(isAnimating) { // Add to queue and do nothing.
+            animationPending.add(new PendingAnimation<T>(stateEnum, animate, animationComplete));
             return;
         }
-        AnimationEvents hideAE = null;
-        if(currentView != null) {
-            hideAE = states.get(currentView);
+        isAnimating = true;
+        if(stateEnum == currentView) { // No need to animate, notify and run any pending animations.
+            if(animationComplete != null)
+                animationComplete.addProgress(0);
+            runAnimationPending();
+            return;
         }
+
+        final AnimationEvents hideAE = (currentView == null) ? null : states.get(currentView);
         final AnimationEvents showAE = states.get(stateEnum);
 
         final Counter hideProgressCounter = new Counter();
@@ -55,35 +60,74 @@ public class ViewAnimationHelper<T extends Enum<T>> {
         final AnimationEndListener showAEL = new AnimationEndListener() {
             @Override
             public void addProgress(int totalProgress) {
-                if(animationComplete != null && showProgressCounter.getValue() <= totalProgress) animationComplete.addProgress(0);
+                Log.d("TMP", "TMP " + stateEnum.toString());
                 showProgressCounter.incrementCounter();
+                if(showProgressCounter.getValue() >= totalProgress) {
+                    if(animationComplete != null) {
+                        animationComplete.addProgress(0);
+                    }
+                    isAnimating = false;
+                    runAnimationPending();
+                }
             }
         };
 
-        AnimationEndListener hideAEL = new AnimationEndListener() {
+        final AnimationEndListener hideAEL = new AnimationEndListener() {
             @Override
             public void addProgress(int totalProgress) {
-                if(hideProgressCounter.getValue() <= totalProgress) {
-                    // Animation is complete. trigger the show animation.
+                hideProgressCounter.incrementCounter();
+                if(hideProgressCounter.getValue() >= totalProgress) {
                     if(showAE.isWaitForHideAnimationComplete())
                         showAE.getShow().start(animate, showAEL);
                 }
-                hideProgressCounter.incrementCounter();
             }
         };
-
+        currentView = stateEnum;
         if(hideAE != null) {
             hideAE.getHide().start(animate, hideAEL);
         } else {
-            hideAEL.addProgress(0); // trigger the show animation.
+            hideAEL.addProgress(0);
         }
 
-        if(!showAE.isWaitForHideAnimationComplete())
+        if(!showAE.isWaitForHideAnimationComplete()) {
             showAE.getShow().start(animate, showAEL);
-        currentView = stateEnum;
+        }
+    }
+
+    /**
+     * If there is an item in the queue then pop from queue and change state.
+     */
+    private void runAnimationPending() {
+        if(animationPending.size() == 0) return;
+        PendingAnimation<T> pendingAnimation = animationPending.get(0);
+        animationPending.remove(0);
+        changeState(pendingAnimation.getStateEnum(), pendingAnimation.isAnimate(), pendingAnimation.getAnimationComplete());
     }
 
 
+    private static class PendingAnimation <T> {
+        private T stateEnum;
+        private AnimationEndListener animationComplete;
+        private boolean animate;
+
+        public PendingAnimation(T stateEnum, boolean animate, AnimationEndListener animationComplete) {
+            this.stateEnum = stateEnum;
+            this.animationComplete = animationComplete;
+            this.animate = animate;
+        }
+
+        public T getStateEnum() {
+            return stateEnum;
+        }
+
+        public AnimationEndListener getAnimationComplete() {
+            return animationComplete;
+        }
+
+        public boolean isAnimate() {
+            return animate;
+        }
+    }
 
     public static class AnimationEvents {
         private Animation show;

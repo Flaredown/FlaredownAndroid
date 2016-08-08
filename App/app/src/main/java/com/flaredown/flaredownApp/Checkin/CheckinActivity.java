@@ -74,14 +74,11 @@ public class CheckinActivity extends AppCompatActivity {
     private ImageButton bt_nextQuestion;
     private ImageButton bt_prevQuestion;
     private Button bt_submitCheckin;
-    private Button bt_not_checked_in_checkin;
 
-    private TextView tv_not_checked_in_checkin;
 
     private MainToolbarView mainToolbarView;
     private Toolbar toolbar;
     private TextView toolbarTitle;
-    private LinearLayout ll_not_checked_in;
     private LinearLayout ll_splashScreen;
     private RelativeLayout rl_checkin;
     private FrameLayout fl_checkin_summary;
@@ -118,15 +115,6 @@ public class CheckinActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        // Click listener for the not check in yet button.
-        bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO make the "You haven't checked in yet" into a page and display that way.
-                Answers.getInstance().logCustom(new CustomEvent("New Check In"));
-            }
-        });
 
         vp_questions.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -250,7 +238,7 @@ public class CheckinActivity extends AppCompatActivity {
                     rl_checkin.setVisibility(View.GONE);
                 }
             }
-        }, false));
+        }, true));
 
         vsAnimationHelper.addState(VIEW_STATES.SUMMARY, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
@@ -296,12 +284,23 @@ public class CheckinActivity extends AppCompatActivity {
                 } else
                     fl_checkin_summary.setVisibility(View.GONE);
             }
-        }, false));
+        }, true));
 
         vsAnimationHelper.addState(VIEW_STATES.SPLASH_SCREEN, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
                 if (animate) {
+                    mainToolbarView.setAlpha(1);
+                    mainToolbarView.animate()
+                            .alpha(0)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    animationEndListener.addProgress(2);
+                                }
+                            });
                     ll_splashScreen.setAlpha(0);
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.setTranslationY(0);
@@ -312,16 +311,29 @@ public class CheckinActivity extends AppCompatActivity {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
                                     super.onAnimationEnd(animation);
-                                    animationEndListener.addProgress(1);
+                                    animationEndListener.addProgress(2);
                                 }
                             });
-                } else
+                } else {
                     ll_splashScreen.setVisibility(View.VISIBLE);
+                    mainToolbarView.setAlpha(0);
+                }
             }
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
                 if (animate) {
+                    mainToolbarView.setAlpha(0);
+                    mainToolbarView.animate()
+                            .alpha(1)
+                            .setDuration(100)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    super.onAnimationEnd(animation);
+                                    animationEndListener.addProgress(2);
+                                }
+                            });
                     ll_splashScreen.setAlpha(1);
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.animate()
@@ -335,11 +347,13 @@ public class CheckinActivity extends AppCompatActivity {
                                     ll_splashScreen.setVisibility(View.GONE);
                                     ll_splashScreen.setTranslationY(0);
                                     ll_splashScreen.setAlpha(1);
-                                    animationEndListener.addProgress(1);
+                                    animationEndListener.addProgress(2);
                                 }
                             });
-                } else
+                } else {
                     ll_splashScreen.setVisibility(View.GONE);
+                    mainToolbarView.setAlpha(1);
+                }
             }
         }, false));
 
@@ -358,6 +372,7 @@ public class CheckinActivity extends AppCompatActivity {
         checkIn.getObservable().subscribe(new Action1<CheckIn>() {
             @Override
             public void call(CheckIn checkIn) {
+                Log.d("Check-in", "Loaded");
                 // Providing the activity hasn't been destroyed then display the check in.
                 if(!isActivityDestroyed) {
                     removeSummary();
@@ -379,9 +394,11 @@ public class CheckinActivity extends AppCompatActivity {
                         }
                     });
                     if (checkIn.hasResponse()) {
+                        Log.d("Check-in", "Displaying summary");
                         displaySummary();
                         return;
                     } else {
+                        Log.d("Check-in", "Displaying check in");
                         vsAnimationHelper.changeState(VIEW_STATES.CHECK_IN, true);
                     }
                     List<ViewPagerFragmentBase> fragments = createFragments(false);
@@ -423,15 +440,11 @@ public class CheckinActivity extends AppCompatActivity {
         bt_nextQuestion = (ImageButton) findViewById(R.id.bt_nextQuestion);
         bt_prevQuestion = (ImageButton) findViewById(R.id.bt_prevQuestion);
         bt_submitCheckin = (Button) findViewById(R.id.bt_submitCheckin);
-        bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
         vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
-
-        tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
 
         mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
         toolbar = (Toolbar) findViewById(R.id.toolbar_top);
         toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
         ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
         rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
         fl_checkin_summary = (FrameLayout) findViewById(R.id.fl_checkin_summary);
