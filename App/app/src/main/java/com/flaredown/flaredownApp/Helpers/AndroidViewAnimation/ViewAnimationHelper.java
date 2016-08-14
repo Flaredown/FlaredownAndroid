@@ -19,6 +19,14 @@ public class ViewAnimationHelper<T extends Enum<T>> {
     private boolean isAnimating = false;
 
     /**
+     * Get the current view.
+     * @return The current view enum.
+     */
+    public T getCurrentView() {
+        return currentView;
+    }
+
+    /**
      * Add state to the view animation helper.
      * @param stateEnum The state enum, used to show the state.
      * @param animationEvents The show and hide events.

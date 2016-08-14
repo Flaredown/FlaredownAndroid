@@ -61,6 +61,10 @@ public class CheckinActivity extends AppCompatActivity {
     public static final int ANIMATION_DURATION = 250;
     private boolean isActivityDestroyed = false;
 
+    // Save instance state static keys.
+    private final static String IS_CHECK_IN = "check in";
+    private final static String IS_CURRENT_VIEW = "current view";
+
 
     // Application state variables.... (Static so persistent across instances, should also be valid at ALL times).
     private static ImmutableObserver<CheckIn> checkIn = new ImmutableObserver<>(null);
@@ -415,9 +419,15 @@ public class CheckinActivity extends AppCompatActivity {
             }
         });
 
+        if(savedInstanceState != null && savedInstanceState.containsKey(IS_CURRENT_VIEW)) {
+            vsAnimationHelper.changeState((VIEW_STATES) savedInstanceState.getSerializable(IS_CURRENT_VIEW), false);
+        }
+
         // If no check in set, display one
         if (checkIn.getValue() == null) { // TODO handle intent
             displayCheckin(Calendar.getInstance());
+        } else if (savedInstanceState != null && savedInstanceState.containsKey(IS_CHECK_IN)) {
+            displayCheckin((CheckIn) savedInstanceState.getSerializable(IS_CHECK_IN));
         } else {
             displayCheckin(checkIn.getValue());
         }
@@ -759,6 +769,13 @@ public class CheckinActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(IS_CHECK_IN, checkIn.getValue());
+        outState.putSerializable(IS_CURRENT_VIEW, vsAnimationHelper.getCurrentView());
+        super.onSaveInstanceState(outState);
     }
 
     /**
