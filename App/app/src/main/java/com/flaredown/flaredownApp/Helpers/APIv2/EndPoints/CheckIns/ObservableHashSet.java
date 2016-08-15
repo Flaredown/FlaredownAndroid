@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,7 +15,7 @@ import rx.functions.Action1;
 /**
  * Hash set which is observable, the observable emits when an item is added/removed from the collection.
  */
-public class ObservableHashSet <T> extends HashSet<T> {
+public class ObservableHashSet <T> extends HashSet<T> implements Serializable {
     private transient ObservableHelper<CollectionChange<T>> collectionObservable = new ObservableHelper<>();
 
     public ObservableHashSet() {

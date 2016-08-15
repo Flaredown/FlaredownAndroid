@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 
 import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +13,12 @@ import rx.functions.Action1;
 /**
  * Used for storing a collection of unique Trackables.
  */
-public class TrackableCollection <T extends Trackable> extends ObservableHashSet<T> {
+public class TrackableCollection <T extends Trackable> extends ObservableHashSet<T> implements Serializable {
     // Allows the check in object to be notified if the collection changes (items added/removed or value has changed).
-    private ObservableHelper<Void> dataChangeObservable = new ObservableHelper<>();
+    private transient ObservableHelper<Void> dataChangeObservable = new ObservableHelper<>();
 
     // Stores a list of subscribers used for monitoring if the trackable value has changed.
-    private Map<Trackable, Subscriber<String>> valueChangeSubscribers = new HashMap<>();
+    private transient Map<Trackable, Subscriber<String>> valueChangeSubscribers = new HashMap<>();
 
     /**
      * Run during construction of the class, no matter the constructor (also run when being dematerialized)
