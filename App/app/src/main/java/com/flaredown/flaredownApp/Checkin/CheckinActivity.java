@@ -171,7 +171,6 @@ public class CheckinActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 displaySummary();
-                vsAnimationHelper.changeState(VIEW_STATES.SUMMARY, true);
             }
         });
         mainToolbarView.setNextOnClickListener(new View.OnClickListener() {
@@ -199,7 +198,8 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.CHECK_IN, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // Run to SHOW the check in.
+                if (animate) { // Animate.
                     rl_checkin.setAlpha(0);
                     rl_checkin.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
                     rl_checkin.setVisibility(View.VISIBLE);
@@ -214,13 +214,14 @@ public class CheckinActivity extends AppCompatActivity {
                                     animationEndListener.addProgress(1);
                                 }
                             });
-                } else
+                } else // No animation is required.
                     rl_checkin.setVisibility(View.VISIBLE);
             }
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // Run to HIDE the check in.
+                if (animate) { // Animate.
                     rl_checkin.setAlpha(1);
                     rl_checkin.setTranslationY(0);
                     rl_checkin.setVisibility(View.VISIBLE);
@@ -238,7 +239,7 @@ public class CheckinActivity extends AppCompatActivity {
                                     animationEndListener.addProgress(1);
                                 }
                             });
-                } else {
+                } else { // No need to animate.
                     rl_checkin.setVisibility(View.GONE);
                 }
             }
@@ -247,7 +248,8 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.SUMMARY, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // To SHOW the summary view.
+                if (animate) { // Animate.
                     fl_checkin_summary.setAlpha(0);
                     fl_checkin_summary.setVisibility(View.VISIBLE);
                     fl_checkin_summary.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
@@ -263,14 +265,15 @@ public class CheckinActivity extends AppCompatActivity {
                                     fl_checkin_summary.setVisibility(View.VISIBLE);
                                 }
                             });
-                } else {
+                } else { // No need to animate.
                     fl_checkin_summary.setVisibility(View.VISIBLE);
                 }
             }
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // To HIDE the summary view.
+                if (animate) { // Animate.
                     fl_checkin_summary.setAlpha(1);
                     fl_checkin_summary.setTranslationY(0);
                     fl_checkin_summary.setVisibility(View.VISIBLE);
@@ -285,7 +288,7 @@ public class CheckinActivity extends AppCompatActivity {
                                     animationEndListener.addProgress(1);
                                 }
                             });
-                } else
+                } else // No need to animate.
                     fl_checkin_summary.setVisibility(View.GONE);
             }
         }, true));
@@ -293,7 +296,8 @@ public class CheckinActivity extends AppCompatActivity {
         vsAnimationHelper.addState(VIEW_STATES.SPLASH_SCREEN, new ViewAnimationHelper.AnimationEvents(new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // To SHOW the splash screen.
+                if (animate) { // Animate.
                     mainToolbarView.setAlpha(1);
                     mainToolbarView.animate()
                             .alpha(0)
@@ -318,7 +322,7 @@ public class CheckinActivity extends AppCompatActivity {
                                     animationEndListener.addProgress(2);
                                 }
                             });
-                } else {
+                } else { //  No need to animate.
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     mainToolbarView.setAlpha(0);
                 }
@@ -326,7 +330,8 @@ public class CheckinActivity extends AppCompatActivity {
         }, new ViewAnimationHelper.Animation() {
             @Override
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
-                if (animate) {
+                // To HIDE the splash screen.
+                if (animate) { // Animate.
                     mainToolbarView.setAlpha(0);
                     mainToolbarView.animate()
                             .alpha(1)
@@ -354,7 +359,7 @@ public class CheckinActivity extends AppCompatActivity {
                                     animationEndListener.addProgress(2);
                                 }
                             });
-                } else {
+                } else { // No need to animate.
                     ll_splashScreen.setVisibility(View.GONE);
                     mainToolbarView.setAlpha(1);
                 }
@@ -362,7 +367,7 @@ public class CheckinActivity extends AppCompatActivity {
         }, false));
 
         /*
-         * Observes the check in object for when it is replaced with another. When this occurs the
+         * Observers the check in object for when it is replaced with another. When this occurs the
          * code will update the view, updating the title bar and re creating the check in fragments.
          *
          * It is done with observers as it allows previous activities which have been destroyed to

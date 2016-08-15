@@ -52,13 +52,14 @@ public class ViewAnimationHelper<T extends Enum<T>> {
             animationPending.add(new PendingAnimation<T>(stateEnum, animate, animationComplete));
             return;
         }
-        isAnimating = true;
         if(stateEnum == currentView) { // No need to animate, notify and run any pending animations.
-            if(animationComplete != null)
+            if(animationComplete != null) {
                 animationComplete.addProgress(0);
+            }
             runAnimationPending();
             return;
         }
+        isAnimating = true;
 
         final AnimationEvents hideAE = (currentView == null) ? null : states.get(currentView);
         final AnimationEvents showAE = states.get(stateEnum);
@@ -67,12 +68,14 @@ public class ViewAnimationHelper<T extends Enum<T>> {
         final Counter showProgressCounter = new Counter();
         final AnimationEndListener showAEL = new AnimationEndListener() {
             @Override
-            public void addProgress(int totalProgress) {
-                Log.d("TMP", "TMP " + stateEnum.toString());
-                showProgressCounter.incrementCounter();
+            public void addProgress(int totalProgress) {    // Method called multiple times, when the
+                                                            // function is called the same amount
+                                                            // as the totalProgress.
+
+                showProgressCounter.incrementCounter(); // Increment counter to detect when animation is finished.
                 if(showProgressCounter.getValue() >= totalProgress) {
                     if(animationComplete != null) {
-                        animationComplete.addProgress(0);
+                        animationComplete.addProgress(0); // Everything is complete notify.
                     }
                     isAnimating = false;
                     runAnimationPending();
@@ -83,9 +86,12 @@ public class ViewAnimationHelper<T extends Enum<T>> {
         final AnimationEndListener hideAEL = new AnimationEndListener() {
             @Override
             public void addProgress(int totalProgress) {
+                // Method is called multiple times... When called equal to the totalProgress value the
+                // animation is complete.
                 hideProgressCounter.incrementCounter();
                 if(hideProgressCounter.getValue() >= totalProgress) {
                     if(showAE.isWaitForHideAnimationComplete())
+                        // If the show animation is waiting for the hiding animation to complete.
                         showAE.getShow().start(animate, showAEL);
                 }
             }
@@ -94,7 +100,7 @@ public class ViewAnimationHelper<T extends Enum<T>> {
         if(hideAE != null) {
             hideAE.getHide().start(animate, hideAEL);
         } else {
-            hideAEL.addProgress(0);
+            showAE.getShow().start(animate, showAEL);
         }
 
         if(!showAE.isWaitForHideAnimationComplete()) {
