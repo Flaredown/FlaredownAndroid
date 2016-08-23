@@ -24,4 +24,5 @@
 
     <dimen name="viewpageprogress_size">7.5dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="abc_search_view_text_min_width">160dip</dimen>
 </resources>
