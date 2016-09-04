@@ -23,6 +23,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Searchable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
@@ -166,7 +167,12 @@ public class AddEditableActivity extends AppCompatActivity {
                 Searchable selected = suggestionList.get(position);
                 if(trackableType.isTrackable()) {
                     //Create trackable and pass back to checkin activity
-                    Trackable trackable = new Trackable(trackableType, selected.getId());
+                    Trackable trackable;
+                    if(trackableType.equals(TrackableType.TREATMENT))
+                        trackable = new TreatmentTrackable(selected.getId());
+                    else {
+                        trackable = new Trackable(trackableType, selected.getId());
+                    }
                     MetaTrackable meta = new MetaTrackable(trackableType);
                     meta.setName(selected.getName());
                     meta.setId(selected.getId());
@@ -174,7 +180,7 @@ public class AddEditableActivity extends AppCompatActivity {
                     trackable.setCreatedAt(selected.getCreatedAt());
                     trackable.setUpdatedAt(selected.getUpdatedAt());
                     trackable.setMetaTrackable(meta);
-                    trackable.setValue("0");
+                    trackable.setValue(null);
                     Intent intent = getIntent();
                     intent.putExtra(FlaredownConstants.RETURN_TRACKABLE_KEY,trackable);
                     setResult(RESULT_OK,intent);

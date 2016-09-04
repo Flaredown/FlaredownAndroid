@@ -65,6 +65,7 @@ public class Trackable implements Serializable {
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
         // Default deserializarion.
         ois.defaultReadObject();
+        readResolve();
 
         Map<String, Object> data = (HashMap<String, Object>) ois.readObject();
         if(data.containsKey(MT_ID)) {
