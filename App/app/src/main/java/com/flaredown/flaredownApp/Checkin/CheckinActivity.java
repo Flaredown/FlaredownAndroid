@@ -35,6 +35,7 @@ import com.flaredown.flaredownApp.Checkin.tags.TagFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
@@ -775,7 +776,7 @@ public class CheckinActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Error result) {
-                                    if(result.getStatusCode() == 422)
+                                    if (result.getStatusCode() == 422)
                                         updateLocalCheckInAndUI(trackable);
                                     else
                                         new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
@@ -793,6 +794,13 @@ public class CheckinActivity extends AppCompatActivity {
                                 })).setCancelable(false).show();
                             }
                         }
+                    }
+                    // If a tag has been returned from the add editable activity.
+                } else if(data.hasExtra(AddEditableActivity.RETURN_TAG_KEY)) {
+                    Bundle bundle = data.getExtras();
+                    Tag newTag =  (Tag) bundle.get(AddEditableActivity.RETURN_TAG_KEY);
+                    if(newTag != null) {
+                        checkIn.getValue().getTags().add(newTag);
                     }
                 }
             }
