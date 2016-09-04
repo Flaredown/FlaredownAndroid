@@ -775,7 +775,10 @@ public class CheckinActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Error result) {
-                                    new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                                    if(result.getStatusCode() == 422)
+                                        updateLocalCheckInAndUI(trackable);
+                                    else
+                                        new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
                                 }
                             });
                         } else {

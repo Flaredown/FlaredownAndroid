@@ -25,6 +25,7 @@ import com.flaredown.flaredownApp.R;
 
 import org.apmem.tools.layouts.FlowLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscriber;
@@ -147,7 +148,7 @@ public class TagFragment extends ViewPagerFragmentBase {
         tv_addTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddEditableActivity.startActivity(getActivity(), TrackableType.TAG);
+                AddEditableActivity.startActivity(getActivity(), TrackableType.TAG, getCheckInActivity().getCheckIn());
             }
         });
 

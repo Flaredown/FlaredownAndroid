@@ -3,8 +3,10 @@ package com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns;
 import com.flaredown.flaredownApp.Helpers.Observers.ObservableHelper;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.Subscriber;
@@ -53,7 +55,7 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
      */
     @Override
     public boolean add(T trackable) {
-        if(this.contains(trackable)) throw new IllegalStateException("Collection already has a Trackable with this id (" + trackable.getTrackableId() + ")."); // Force unique trackables.
+        if(this.contains(trackable)) return false; // Fail safely, but collection cannot have duplicate objects.
         if(trackable.getTrackableId() == null)
             throw new IllegalStateException("Trackable ID cannot be null"); // Trackables cannot have a null id.
 
@@ -88,8 +90,9 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
      */
     @Override
     public boolean addAll(Collection<? extends T> collection) {
-        for (T trackable : collection) {
-            if(this.contains(trackable) || collection.contains(trackable)) throw new IllegalStateException("Collection already has a Trackable with this id(" + trackable.getTrackableId() + ").");
+        List<T> collect = new ArrayList<>(collection);
+        for (T trackable : collect) {
+            if(this.contains(trackable) || collect.contains(trackable)) collect.remove(trackable);
             if(trackable.getTrackableId() == null) throw new IllegalStateException("Trackable ID cannot be null");
 
             // Track changes
@@ -113,7 +116,7 @@ public class TrackableCollection <T extends Trackable> extends ObservableHashSet
             trackable.subscribeValueObservable(subscriber);
             valueChangeSubscribers.put(trackable, subscriber);
         }
-        return super.addAll(collection);
+        return super.addAll(collect);
     }
 
     /**

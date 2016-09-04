@@ -122,7 +122,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         tv_addTrackable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddEditableActivity.startActivity(getActivity(), trackableType);
+                AddEditableActivity.startActivity(getActivity(), trackableType, getCheckInActivity().getCheckIn());
             }
         });
         return fl_root;

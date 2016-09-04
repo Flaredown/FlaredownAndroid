@@ -20,8 +20,11 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.MetaTrackable;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
@@ -36,17 +39,20 @@ import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AddEditableActivity extends AppCompatActivity {
-    public static void startActivity(Activity activity, TrackableType resourceType) {
+    public static void startActivity(Activity activity, TrackableType resourceType, CheckIn checkIn) {
         Intent intent = new Intent(activity,AddEditableActivity.class);
         intent.putExtra(RESOURCE_TYPE_KEY, resourceType);
+        intent.putExtra(CHECK_IN_KEY, checkIn);
         activity.startActivityForResult(intent,FlaredownConstants.ADD_TRACKABLE_REQUEST_CODE);
     }
 
 
     // Constants
     public final static String RESOURCE_TYPE_KEY = "resource_type";
+    public final static String CHECK_IN_KEY = "resource already selected key";
     public final static String CHECK_IN_DATE_KEY = "check_in_date_key";
     public final static String RETURN_TAG_KEY = "return_tag_key";
 
@@ -58,6 +64,9 @@ public class AddEditableActivity extends AppCompatActivity {
     private TextView tv_addNewTrackableSub;
     private ListView lv_suggestions;
     private ProgressBar pb_loading;
+
+    private CheckIn checkIn;
+    private List<Integer> currentTrackableIds;
 
     private Communicate api;
     private long lastSuggestionRequest; // Used to throttle the number of requests.
@@ -89,13 +98,27 @@ public class AddEditableActivity extends AppCompatActivity {
         mainToolbarView.setBackButton(true);
 
         // Check that the required arguments are passed through the intent.
-        if(!(getIntent().hasExtra(RESOURCE_TYPE_KEY))) {
+        if(!(getIntent().hasExtra(RESOURCE_TYPE_KEY)) || !getIntent().hasExtra(CHECK_IN_KEY)) {
             // Should never occur, but just in case close activity.
             finish();
             return;
         }
 
         trackableType = (TrackableType) getIntent().getSerializableExtra(RESOURCE_TYPE_KEY);
+        checkIn = (CheckIn) getIntent().getSerializableExtra(CHECK_IN_KEY);
+
+        currentTrackableIds = new ArrayList<>();
+        if(TrackableType.TAG.equals(trackableType)) {
+            TagCollection<Tag> tags = checkIn.getTags();
+            for (Tag tag : tags) {
+                currentTrackableIds.add(tag.getId());
+            }
+        } else {
+            TrackableCollection<Trackable> trackables = checkIn.getTrackables(trackableType);
+            for (Trackable trackable : trackables) {
+                currentTrackableIds.add(trackable.getTrackableId());
+            }
+        }
 
         // Set the title and Add new x.
         tv_addNewTrackableSub.setText(String.format(getString(R.string.add_new_trackable), trackableType.name().toLowerCase()));
@@ -255,8 +278,17 @@ public class AddEditableActivity extends AppCompatActivity {
         api.search(input, trackableType.toString().toLowerCase(), new APIResponse<Search, Error>() {
             @Override
             public void onSuccess(Search result) {
+                List<Searchable> items = new ArrayList<>(result.getSearchables());
+                for (Integer currentTrackableId : currentTrackableIds) {
+                    for (int i = 0; i < items.size(); i++) {
+                        Searchable item = items.get(i);
+                        if(item.getId() == currentTrackableId) {
+                            items.remove(item);
+                        }
+                    }
+                }
                 suggestionList.clear();
-                suggestionList.addAll(result.getSearchables());
+                suggestionList.addAll(items);
                 suggestionAdapter.notifyDataSetChanged();
                 pb_loading.setVisibility(View.INVISIBLE);
             }
