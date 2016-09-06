@@ -44,7 +44,7 @@ public class NotesQFragment extends ViewPagerFragmentBase {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         assignViews(inflater, container);
-        this.checkIn = getCheckInActivity().getCheckIn();
+        this.checkIn = getCheckinFragment().getCheckIn();
 
         // Display note if available
         if(this.checkIn.getNote() != null && !"".equals(this.checkIn.getNote()) && !"null".equals(this.checkIn.getNote())) {
@@ -74,7 +74,7 @@ public class NotesQFragment extends ViewPagerFragmentBase {
             }
         });
         // Save if the application is paused.
-        getCheckInActivity().isActivityPaused().getObservable().subscribe(new Subscriber<Boolean>() {
+        getCheckinFragment().isActivityPaused().getObservable().subscribe(new Subscriber<Boolean>() {
             @Override
             public void onCompleted() {
 
@@ -113,7 +113,7 @@ public class NotesQFragment extends ViewPagerFragmentBase {
      */
     private void updateCheckIn() {
         // Automatically submits the check in with an update.
-        getCheckInActivity().getCheckIn().setNote(et_noteText.getText().toString());
+        getCheckinFragment().getCheckIn().setNote(et_noteText.getText().toString());
     }
 
     private class TextChangedWaiting implements Runnable {

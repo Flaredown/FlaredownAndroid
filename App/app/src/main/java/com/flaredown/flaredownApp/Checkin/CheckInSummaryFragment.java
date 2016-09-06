@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
@@ -26,7 +27,7 @@ public class CheckInSummaryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private View root;
-    private CheckinActivity activity;
+    private MainActivity activity;
     private LinearLayout ll_fragmentHolder;
     private List<ViewPagerFragmentBase> fragments;
     private TextView tv_checkinSuccess;
@@ -59,7 +60,7 @@ public class CheckInSummaryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = (CheckinActivity) getActivity();
+        activity = (MainActivity) getActivity();
         setRetainInstance(true);
     }
 
@@ -72,7 +73,7 @@ public class CheckInSummaryFragment extends Fragment {
 
 
     private void assembleFragments() {
-        fragments = CheckinActivity.createFragments(true);
+        fragments = CheckinFragment.createFragments(true);
         fragments.add(0, NotesQFragment.newInstance());
         int i = 0;
         FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();

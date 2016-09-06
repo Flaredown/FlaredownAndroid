@@ -112,7 +112,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             }
         };
 
-        getCheckInActivity().getCheckIn().getTrackables(trackableType).subscribeCollectionObservable(trackableSubscriber);
+        getCheckinFragment().getCheckIn().getTrackables(trackableType).subscribeCollectionObservable(trackableSubscriber);
 
         tv_catalog.setText(trackableType.getNameResId());
         tv_question.setText(trackableType.getQuestionResId());
@@ -144,11 +144,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
 
     private void inflateQuestions() {
         lv_questionHolder.setAdapter(currentQuestionsAdapter);
-        HashSet<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
+        HashSet<Trackable> trackables = getCheckinFragment().getCheckIn().getTrackables(trackableType);
         for (final Trackable trackable : trackables) {
             trackableSubscriber.onNext(new ObservableHashSet.CollectionChange(trackable, ObservableHashSet.ChangeType.ADD));
         }
     }
+
 
     public void removeTrackable(Trackable trackable){
         //TODO: Implement delete trackables
