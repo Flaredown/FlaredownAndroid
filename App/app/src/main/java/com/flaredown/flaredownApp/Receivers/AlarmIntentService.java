@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
-import com.flaredown.flaredownApp.Checkin.CheckinActivity;
+import com.flaredown.flaredownApp.Checkin.CheckinFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
@@ -170,7 +170,7 @@ public class AlarmIntentService extends IntentService{
         Long diff = (firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
         //Figure out if alarm has already been triggered within 60 seconds
         if (diff >= -60000 && diff <= 60000) {//fire now
-            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 1, new Intent(getApplicationContext(), CheckinActivity.class), 0);
+            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 1, new Intent(getApplicationContext(), CheckinFragment.class), 0);
             NotificationManager notificationManager;
             Notification myNotification;
             int MY_NOTIFICATION_ID = new Random().nextInt();
@@ -205,7 +205,7 @@ public class AlarmIntentService extends IntentService{
         Long diff = (firingCal.getTimeInMillis() - TimeHelper.getCurrentTimezoneOffset(Calendar.getInstance())) - currentCal.getTimeInMillis();
         //Figure out if alarm has already been triggered within 60 seconds
         if (diff >= -60000 && diff <= 60000) { ///fire now
-            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 1, new Intent(getApplicationContext(), CheckinActivity.class), 0);
+            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 1, new Intent(getApplicationContext(), CheckinFragment.class), 0);
             NotificationManager notificationManager;
             Notification myNotification;
             int MY_NOTIFICATION_ID = new Random().nextInt();

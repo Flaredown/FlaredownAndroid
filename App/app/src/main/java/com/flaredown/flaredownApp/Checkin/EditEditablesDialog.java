@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import java.util.List;
@@ -89,7 +90,7 @@ public class EditEditablesDialog extends DialogFragment {
         final View.OnClickListener deleteButtonClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(v instanceof Editable && getActivity() instanceof CheckinActivity){
+                if(v instanceof Editable && getActivity() instanceof MainActivity){
                     final Editable editable = (Editable) v;
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -100,7 +101,7 @@ public class EditEditablesDialog extends DialogFragment {
 //                    builder.setPositiveButton("Remove", new DialogInterface.OnClickListener() {
 //                        @Override
 //                        public void onClick(DialogInterface dialog, int which) {
-//                            final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
+//                            final CheckinFragment checkinActivity = (CheckinFragment) getActivity();
 //                            //editable.progress(true);
 //                            final ProgressDialog progressDialog = ProgressDialog.show(getActivity(), "", "Loading");
 //
@@ -156,9 +157,9 @@ public class EditEditablesDialog extends DialogFragment {
 //            public void onClick(View v) {
 //                int requestCode = 9987;
 //                AddEditableActivity.startActivity(getActivity(), addATrackableTitle.toString(), "/" + catalog + "/search", requestCode, items);
-//                if (getActivity() instanceof CheckinActivity) {
-//                    final CheckinActivity checkinActivity = (CheckinActivity) getActivity();
-//                    checkinActivity.setOnActivityResultListener(new CheckinActivity.OnActivityResultListener() {
+//                if (getActivity() instanceof CheckinFragment) {
+//                    final CheckinFragment checkinActivity = (CheckinFragment) getActivity();
+//                    checkinActivity.setOnActivityResultListener(new CheckinFragment.OnActivityResultListener() {
 //                        @Override
 //                        public void onActivityResult(int requestCode, int resultCode, Intent data) {
 //                            if (resultCode == Activity.RESULT_OK && data.hasExtra(AddEditableActivity.RESULT)) {

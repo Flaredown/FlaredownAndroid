@@ -2,9 +2,8 @@ package com.flaredown.flaredownApp.Checkin;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.content.Intent;
-import android.database.DatabaseUtils;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -13,13 +12,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -51,18 +48,17 @@ import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import rx.Subscriber;
 import rx.functions.Action1;
 
-public class CheckinActivity extends AppCompatActivity {
-    public Communicate API;
+public class CheckinFragment extends Fragment {
+    private Communicate API;
+    private Context mContext;
     private static final String DEBUG_KEY = "CHECK_IN";
     public static final int ANIMATION_DURATION = 250;
     private boolean isActivityDestroyed = false;
-
 
     // Application state variables.... (Static so persistent across instances, should also be valid at ALL times).
     private static ImmutableObserver<CheckIn> checkIn = new ImmutableObserver<>(null);
@@ -102,24 +98,58 @@ public class CheckinActivity extends AppCompatActivity {
         SPLASH_SCREEN, CHECK_IN, SUMMARY
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This is optional, and non-graphical fragments can return null (which
+     * is the default implementation).  This will be called between
+     * {@link #onCreate(Bundle)} and {@link #onActivityCreated(Bundle)}.
+     * <p/>
+     * <p>If you return a View from here, you will later be called in
+     * {@link #onDestroyView} when the view is being released.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Styling.forcePortraitOnSmallDevices(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.checkin_activity);
-        Intent launchIntent = getIntent();
-        API = new Communicate(this);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.checkin_fragment,container,false);
+    }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mContext = getActivity().getApplicationContext();
+        Styling.forcePortraitOnSmallDevices(getActivity());
+
+        API = new Communicate(mContext);
         if (!API.isCredentialsSaved()) {
-            new ForceLogin(this);
+            new ForceLogin(getActivity());
             return;
         }
         Styling.setFont(); // Uses the Calligraphy library to inject the font.
-        assignViews(); // Assign all the variables which are associated with view.
+        assignViews(view); // Assign all the variables which are associated with view.
 
-        // Set up the tool bar
+/*        // Set up the tool bar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);*/
 
         // Click listener for the not check in yet button.
         bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
@@ -211,7 +241,7 @@ public class CheckinActivity extends AppCompatActivity {
             public void start(boolean animate, final ViewAnimationHelper.AnimationEndListener animationEndListener) {
                 if (animate) {
                     rl_checkin.setAlpha(0);
-                    rl_checkin.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
+                    rl_checkin.setTranslationY(Styling.getInDP(getActivity(), 100));
                     rl_checkin.setVisibility(View.VISIBLE);
                     rl_checkin.animate()
                             .alpha(1)
@@ -236,7 +266,7 @@ public class CheckinActivity extends AppCompatActivity {
                     rl_checkin.setVisibility(View.VISIBLE);
                     rl_checkin.animate()
                             .alpha(0)
-                            .translationY(Styling.getInDP(CheckinActivity.this, 100))
+                            .translationY(Styling.getInDP(getActivity(), 100))
                             .setDuration(ANIMATION_DURATION)
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -260,7 +290,7 @@ public class CheckinActivity extends AppCompatActivity {
                 if (animate) {
                     fl_checkin_summary.setAlpha(0);
                     fl_checkin_summary.setVisibility(View.VISIBLE);
-                    fl_checkin_summary.setTranslationY(Styling.getInDP(CheckinActivity.this, 100));
+                    fl_checkin_summary.setTranslationY(Styling.getInDP(getActivity(), 100));
                     fl_checkin_summary.animate()
                             .translationY(0)
                             .alpha(1)
@@ -309,7 +339,7 @@ public class CheckinActivity extends AppCompatActivity {
                     ll_splashScreen.setTranslationY(0);
                     ll_splashScreen.animate()
                             .alpha(1)
-                            .translationY(Styling.getInDP(CheckinActivity.this, 0))
+                            .translationY(Styling.getInDP(getActivity(), 0))
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
@@ -328,7 +358,7 @@ public class CheckinActivity extends AppCompatActivity {
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.animate()
                             .alpha(0)
-                            .translationY(-Styling.getInDP(CheckinActivity.this, 100))
+                            .translationY(-Styling.getInDP(getActivity(), 100))
                             .setDuration(ANIMATION_DURATION)
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
@@ -377,7 +407,7 @@ public class CheckinActivity extends AppCompatActivity {
 
                         @Override
                         public void onNext(Void aVoid) {
-                            checkInUpdate();
+                            checkInUpdate(view);
                         }
                     });
                     if (checkIn.hasResponse()) {
@@ -388,7 +418,7 @@ public class CheckinActivity extends AppCompatActivity {
                     }
                     List<ViewPagerFragmentBase> fragments = createFragments();
                     if (vpa_questions == null) {
-                        vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+                        vpa_questions = new ViewPagerAdapter(getChildFragmentManager(), fragments);
                         vp_questions.setAdapter(vpa_questions);
                     } else {
                         vpa_questions.removeAllFragments();
@@ -410,22 +440,22 @@ public class CheckinActivity extends AppCompatActivity {
     /**
      * Assign all the variables which are associated with the view.
      */
-    private void assignViews() {
-        bt_nextQuestion = (ImageButton) findViewById(R.id.bt_nextQuestion);
-        bt_prevQuestion = (ImageButton) findViewById(R.id.bt_prevQuestion);
-        bt_submitCheckin = (Button) findViewById(R.id.bt_submitCheckin);
-        bt_not_checked_in_checkin = (Button) findViewById(R.id.bt_not_checked_in_checkin);
-        vp_questions = (ViewPager) findViewById(R.id.vp_questionPager);
+    private void assignViews(View view) {
+        bt_nextQuestion = (ImageButton) view.findViewById(R.id.bt_nextQuestion);
+        bt_prevQuestion = (ImageButton) view.findViewById(R.id.bt_prevQuestion);
+        bt_submitCheckin = (Button) view.findViewById(R.id.bt_submitCheckin);
+        bt_not_checked_in_checkin = (Button) view.findViewById(R.id.bt_not_checked_in_checkin);
+        vp_questions = (ViewPager) view.findViewById(R.id.vp_questionPager);
 
-        tv_not_checked_in_checkin = (TextView) findViewById(R.id.tv_not_checked_in_checkin);
+        tv_not_checked_in_checkin = (TextView) view.findViewById(R.id.tv_not_checked_in_checkin);
 
-        mainToolbarView = (MainToolbarView) findViewById(R.id.main_toolbar_view);
-        toolbar = (Toolbar) findViewById(R.id.toolbar_top);
-        toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
-        ll_not_checked_in = (LinearLayout) findViewById(R.id.ll_not_checked_in);
-        ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
-        rl_checkin = (RelativeLayout) findViewById(R.id.rl_checkin);
-        fl_checkin_summary = (FrameLayout) findViewById(R.id.fl_checkin_summary);
+        mainToolbarView = (MainToolbarView) view.findViewById(R.id.main_toolbar_view);
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar_top);
+        toolbarTitle = (TextView) view.findViewById(R.id.toolbar_title);
+        ll_not_checked_in = (LinearLayout) view.findViewById(R.id.ll_not_checked_in);
+        ll_splashScreen = (LinearLayout) view.findViewById(R.id.ll_splashScreen);
+        rl_checkin = (RelativeLayout) view.findViewById(R.id.rl_checkin);
+        fl_checkin_summary = (FrameLayout) view.findViewById(R.id.fl_checkin_summary);
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -500,7 +530,7 @@ public class CheckinActivity extends AppCompatActivity {
         return checkIn.getValue();
     }
 
-    public void checkInUpdate() { // TODO reduce update frequencies.
+    public void checkInUpdate(final View view) { // TODO reduce update frequencies.
         final Calendar updateTime = lastUpdate = Calendar.getInstance();
         if(!isActivityDestroyed)
             API.submitCheckin(checkIn.getValue(), new APIResponse<CheckIn, Error>() {
@@ -525,7 +555,7 @@ public class CheckinActivity extends AppCompatActivity {
 
                 PreferenceKeys.log(PreferenceKeys.LOG_D, DEBUG_KEY, "Check in saved successfully");
                 if (isActivityPaused().getValue()) {
-                    Toast.makeText(getApplicationContext(), getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, getResources().getText(R.string.locales_summary_title), Toast.LENGTH_SHORT).show();
                 } else {
                     new Thread(new Runnable() {
                         @Override
@@ -533,7 +563,7 @@ public class CheckinActivity extends AppCompatActivity {
                             try {
                                 Thread.sleep(Calendar.getInstance().getTimeInMillis() - updateTime.getTimeInMillis() + 1000);
                                 if (updateTime.equals(lastUpdate))
-                                    SnackbarStyling.colorSnackBar(Snackbar.make(findViewById(R.id.cl_root_view), R.string.locales_summary_title, Snackbar.LENGTH_SHORT), getResources().getColor(R.color.background)).show();
+                                    SnackbarStyling.colorSnackBar(Snackbar.make(view.findViewById(R.id.cl_root_view), R.string.locales_summary_title, Snackbar.LENGTH_SHORT), getResources().getColor(R.color.background)).show();
                             } catch (InterruptedException e) {
                             }
                         }
@@ -543,7 +573,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                new ErrorDialog(getActivity(), result).setCancelable(false).show();
             }
         });
     }
@@ -568,7 +598,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                new ErrorDialog(getActivity(), result).setCancelable(false).show();
             }
         });
     }
@@ -591,7 +621,7 @@ public class CheckinActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Error result) {
-                new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                new ErrorDialog(getActivity(), result).setCancelable(false).show();
             }
         });
     }
@@ -602,14 +632,14 @@ public class CheckinActivity extends AppCompatActivity {
      * @param checkIn The object for the check in to display.
      */
     private void displayCheckin(final CheckIn checkIn) {
-        CheckinActivity.checkIn.setValue(checkIn);
+        this.checkIn.setValue(checkIn);
     }
 
     private void displaySummary() {
         try {
             removeSummary();
             f_checkin_sumary = CheckInSummaryFragment.newInstance();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
             transaction.replace(fl_checkin_summary.getId(), f_checkin_sumary);
             transaction.commitAllowingStateLoss();
@@ -619,7 +649,7 @@ public class CheckinActivity extends AppCompatActivity {
             }
             vsAnimationHelper.changeState(VIEW_STATES.SUMMARY, true);
         } catch (Exception e) {
-            new ErrorDialog(CheckinActivity.this, new Error().setExceptionThrown(e).setDebugString("CheckinActivity:displaySummary...DISPLAYSUMMARY")).setCancelable(false).show();
+            new ErrorDialog(getActivity(), new Error().setExceptionThrown(e).setDebugString("CheckinFragment:displaySummary...DISPLAYSUMMARY")).setCancelable(false).show();
         }
     }
 
@@ -636,11 +666,49 @@ public class CheckinActivity extends AppCompatActivity {
     }
 
     /**
+     * Called when the view previously created by {@link #onCreateView} has
+     * been detached from the fragment.  The next time the fragment needs
+     * to be displayed, a new view will be created.  This is called
+     * after {@link #onStop()} and before {@link #onDestroy()}.  It is called
+     * <em>regardless</em> of whether {@link #onCreateView} returned a
+     * non-null view.  Internally it is called after the view's state has
+     * been saved but before it has been removed from its parent.
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        isActivityDestroyed = true;
+    }
+
+    /**
+     * Called when the Fragment is no longer resumed.  This is generally
+     * tied to {@link Activity#onPause() Activity.onPause} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        isActivityPaused().setValue(true);
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * This is generally
+     * tied to {@link Activity#onResume() Activity.onResume} of the containing
+     * Activity's lifecycle.
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        isActivityPaused().setValue(false);
+    }
+
+    /**
      * Remove the summary fragment (including fragment transaction removal and setting field to null).
      */
     private void removeSummary() {
         if (f_checkin_sumary != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
             transaction.remove(f_checkin_sumary);
             transaction.commitAllowingStateLoss();
             f_checkin_sumary = null;
@@ -671,30 +739,11 @@ public class CheckinActivity extends AppCompatActivity {
         return fragments;
     }
 
-
     @Override
-    protected void onPause() {
-        super.onPause();
-        isActivityPaused.setValue(true);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        isActivityPaused.setValue(false);
-    }
-
-    @Override
-    protected void onDestroy() {
-        isActivityDestroyed = true;
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK) {
+        if (resultCode == getActivity().RESULT_OK) {
             if (requestCode == FlaredownConstants.ADD_TRACKABLE_REQUEST_CODE) {
                 // Retrieve trackable from intent.
                 if (data.hasExtra(FlaredownConstants.RETURN_TRACKABLE_KEY)) {
@@ -716,14 +765,14 @@ public class CheckinActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(Error result) {
-                                    new ErrorDialog(CheckinActivity.this, result).setCancelable(false).show();
+                                    new ErrorDialog(getActivity(), result).setCancelable(false).show();
                                 }
                             });
                         } else {
                             try {
                                 updateLocalCheckInAndUI(trackable);
                             } catch (IllegalStateException e) {
-                                new ErrorDialog(this, new Error().setExceptionThrown(e).setDebugString("AddEditableActivity result exception catched.").setRetryRunnable(new Runnable() {
+                                new ErrorDialog(getActivity(), new Error().setExceptionThrown(e).setDebugString("AddEditableActivity result exception catched.").setRetryRunnable(new Runnable() {
                                     @Override
                                     public void run() {
                                         onActivityResult(requestCode, resultCode, data);

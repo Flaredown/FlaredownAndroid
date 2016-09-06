@@ -7,14 +7,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -44,13 +46,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-import io.intercom.android.sdk.*;
+import io.intercom.android.sdk.Intercom;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsFragment extends Fragment {
     Context mContext;
     TextView tv_AccountTitle;
     TextView tv_EditAccount;
@@ -73,44 +74,76 @@ public class SettingsActivity extends AppCompatActivity {
     Alarm mProxyAlarm;
     List<Treatment> mTreatments;
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This is optional, and non-graphical fragments can return null (which
+     * is the default implementation).  This will be called between
+     * {@link #onCreate(Bundle)} and {@link #onActivityCreated(Bundle)}.
+     * <p/>
+     * <p>If you return a View from here, you will later be called in
+     * {@link #onDestroyView} when the view is being released.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings_activity);
-        mContext = this;
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.settings_fragment,container,false);
+    }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         Styling.setFont();
         mRealm = Realm.getDefaultInstance();
+        mContext = getContext();
 
         flareDownAPI = new Communicate(mContext);
         if(!flareDownAPI.isCredentialsSaved()) {  // Prevent other code running if not logged in.
-            new ForceLogin(this);
-            return;
+            new ForceLogin(getActivity());
         }
 
-        tv_AccountTitle = (TextView) findViewById(R.id.tv_accountTitle);
-        tv_EditAccount = (TextView) findViewById(R.id.tv_editAccount);
-        tv_SettingsLogout = (TextView) findViewById(R.id.tv_settingsLogout);
-        tv_checkinRemindTitle = (TextView) findViewById(R.id.tv_checkinRemindTitle);
-        tv_checkinRemindTime = (TextView) findViewById(R.id.tv_checkinRemindTime);
-        tv_treatmentRemindTitle = (TextView) findViewById(R.id.tv_treatmentRemindTitle);
-        sw_checkinReminder = (Switch) findViewById(R.id.sw_checkinReminder);
-        ll_treatmentReminder = (LinearLayout)findViewById(R.id.llTreatmentReminder);
-        tv_terms = (TextView)findViewById(R.id.terms);
-        tv_policy = (TextView)findViewById(R.id.privacy_policy);
-        llSettingsProgress = (LinearLayout) findViewById(R.id.llSettingsProgress);
-        rlSettings = (RelativeLayout) findViewById(R.id.rlSettings);
-        tv_help = (TextView) findViewById(R.id.tv_help);
+        tv_AccountTitle = (TextView) view.findViewById(R.id.tv_accountTitle);
+        tv_EditAccount = (TextView) view.findViewById(R.id.tv_editAccount);
+        tv_SettingsLogout = (TextView) view.findViewById(R.id.tv_settingsLogout);
+        tv_checkinRemindTitle = (TextView) view.findViewById(R.id.tv_checkinRemindTitle);
+        tv_checkinRemindTime = (TextView) view.findViewById(R.id.tv_checkinRemindTime);
+        tv_treatmentRemindTitle = (TextView) view.findViewById(R.id.tv_treatmentRemindTitle);
+        sw_checkinReminder = (Switch) view.findViewById(R.id.sw_checkinReminder);
+        ll_treatmentReminder = (LinearLayout) view.findViewById(R.id.llTreatmentReminder);
+        tv_terms = (TextView) view.findViewById(R.id.terms);
+        tv_policy = (TextView) view.findViewById(R.id.privacy_policy);
+        llSettingsProgress = (LinearLayout) view.findViewById(R.id.llSettingsProgress);
+        rlSettings = (RelativeLayout) view.findViewById(R.id.rlSettings);
+        tv_help = (TextView) view.findViewById(R.id.tv_help);
 
         llSettingsProgress.setVisibility(View.VISIBLE);
         rlSettings.setVisibility(View.GONE);
 
         //Set Toolbar
-        Toolbar mainToolbarView = (Toolbar) findViewById(R.id.toolbar_top);
-        TextView title = (TextView) findViewById(R.id.toolbar_title);
+        Toolbar mainToolbarView = (Toolbar) view.findViewById(R.id.toolbar_top);
+        TextView title = (TextView) view.findViewById(R.id.toolbar_title);
         title.setText(R.string.title_activity_settings);
-        setSupportActionBar(mainToolbarView);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        //setSupportActionBar(mainToolbarView);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //Get checkin reminder from realm if one exists
         RealmQuery<Alarm> query = mRealm.where(Alarm.class);
@@ -167,7 +200,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 FragmentEditAccount frag = new FragmentEditAccount();
                 ft.attach(frag);
                 frag.show(ft, FlaredownConstants.EDIT_ACCOUNT_FRAGMENT_TITLE);
@@ -180,8 +213,8 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 removeAndUnscheduleAllAlarms();
                 flareDownAPI.userSignOut();
-                new ForceLogin(SettingsActivity.this);
-                finish();
+                new ForceLogin(getActivity());
+                //finish();
             }
         });
 
@@ -270,6 +303,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         updateLocales();
 
+
+
     }
 
     private void showTreatments(){
@@ -295,7 +330,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View view) {
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                     FragmentTreatmentReminder frag = new FragmentTreatmentReminder();
                     frag.setArguments(bundleTitle);
                     ft.attach(frag);
@@ -329,9 +364,9 @@ public class SettingsActivity extends AppCompatActivity {
         RealmResults<Alarm> alarms = query.findAll();
         for (Alarm alarm : alarms){
             //Recreate pending intent and delete
-            Intent recreatedIntent = new Intent(getApplicationContext(),AlarmReceiver.class);
-            PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), alarm.getId(), recreatedIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
+            Intent recreatedIntent = new Intent(getActivity(),AlarmReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(getActivity(), alarm.getId(), recreatedIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager manager = (AlarmManager) getActivity().getSystemService(getActivity().ALARM_SERVICE);
             manager.cancel(pi);
         }
         //Remove from Realm
@@ -360,7 +395,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    @Override
+   /* @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
@@ -370,7 +405,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_settings, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -381,13 +416,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id ==android.R.id.home){
-            NavUtils.navigateUpFromSameTask(this);
+            NavUtils.navigateUpFromSameTask(getActivity());
         }
 
         if (id == R.id.action_save){
             save();
-            Toast.makeText(this, R.string.locales_settings_saved, Toast.LENGTH_LONG).show();
-            NavUtils.navigateUpFromSameTask(this);
+            Toast.makeText(getActivity(), R.string.locales_settings_saved, Toast.LENGTH_LONG).show();
+            NavUtils.navigateUpFromSameTask(getActivity());
         }
         return super.onOptionsItemSelected(item);
     }
@@ -419,4 +454,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+/*    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }*/
 }

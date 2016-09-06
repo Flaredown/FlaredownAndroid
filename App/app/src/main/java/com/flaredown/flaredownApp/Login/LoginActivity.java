@@ -1,6 +1,5 @@
 package com.flaredown.flaredownApp.Login;
 
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -8,9 +7,9 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,14 +23,15 @@ import android.widget.TextView;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
-import com.flaredown.flaredownApp.Checkin.CheckinActivity;
-import com.flaredown.flaredownApp.Helpers.APIv2.*;
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
-import com.flaredown.flaredownApp.WebView.WebViewActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     private Context mContext;
     private static final String IS_RESTORING = "restoring";
@@ -205,7 +205,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         .putMethod("default")
                         .putSuccess(true));
 
-                    Intent intent = new Intent(mContext, WebViewActivity.class);
+                    Intent intent = new Intent(mContext, MainActivity.class);
                     // Stops the transition animation from occurring.
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     // Prevents the user going back.

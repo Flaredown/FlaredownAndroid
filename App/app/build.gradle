@@ -67,7 +67,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.3.0'
     compile ('io.intercom.android:intercom-sdk-base:1.+@aar') { transitive = true }
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') { transitive = true; }
-    compile 'com.github.squiggie:BottomBar:master-SNAPSHOT'
+    compile 'com.github.squiggie:BottomBar:1.4.0.2'
 
     //--- RxJava
     compile 'io.reactivex:rxandroid:1.1.0'

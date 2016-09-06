@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Settings.SettingsActivity">
+    tools:context=".Settings.SettingsFragment">
 
     <com.flaredown.flaredownApp.Toolbars.MainToolbarView
         android:id="@+id/main_toolbar_view"

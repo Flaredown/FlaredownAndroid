@@ -2,15 +2,14 @@ package com.flaredown.flaredownApp.WebView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
-import android.view.KeyEvent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
@@ -18,15 +17,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.BuildConfig;
-import com.flaredown.flaredownApp.Checkin.CheckinActivity;
+import com.flaredown.flaredownApp.Checkin.CheckinFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Login.ForceLogin;
 import com.flaredown.flaredownApp.R;
-import com.flaredown.flaredownApp.Settings.SettingsActivity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -36,46 +33,63 @@ import java.util.regex.Pattern;
 /**
  * Created by thunter on 07/06/16.
  */
-public class WebViewActivity extends Activity {
+public class WebViewFragment extends Fragment {
     private WebView wv_main;
-    private FloatingActionButton fab_settings;
     private LinearLayout ll_splashScreen;
 
     private CookieManager cookieManager;
     private Communicate API;
-    private String oldUrl = "";
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This is optional, and non-graphical fragments can return null (which
+     * is the default implementation).  This will be called between
+     * {@link #onCreate(Bundle)} and {@link #onActivityCreated(Bundle)}.
+     * <p/>
+     * <p>If you return a View from here, you will later be called in
+     * {@link #onDestroyView} when the view is being released.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // TODO remove
-        Intent intent = new Intent(WebViewActivity.this, CheckinActivity.class);
-        startActivity(intent);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.web_view_fragment,container,false);
+    }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.  The fragment's
+     * view hierarchy is not however attached to its parent at this point.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        Styling.forcePortraitOnSmallDevices(this);
+        Styling.forcePortraitOnSmallDevices(getActivity());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.web_view_activity);
-        API = new Communicate(this);
+
+        API = new Communicate(getActivity());
         if (!API.isCredentialsSaved()) { // Ensure the user is signed in.
-            new ForceLogin(this);
+            new ForceLogin(getActivity());
             return;
         }
 
         // Assigning variables.
-        wv_main = (WebView) findViewById(R.id.wv_main);
-        fab_settings = (FloatingActionButton) findViewById(R.id.fab_settings);
-        ll_splashScreen = (LinearLayout) findViewById(R.id.ll_splashScreen);
-
-
-
-        fab_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(WebViewActivity.this, SettingsActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        wv_main = (WebView) view.findViewById(R.id.wv_main);
+        ll_splashScreen = (LinearLayout) view.findViewById(R.id.ll_splashScreen);
 
         cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -90,15 +104,11 @@ public class WebViewActivity extends Activity {
         } catch (UnsupportedEncodingException e) {
         }
 
-
-
         WebSettings webSettings = wv_main.getSettings();
 
         webSettings.setJavaScriptEnabled(true);
 
         // Set the website url
-
-
         WebViewClient webViewClient = new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -110,8 +120,8 @@ public class WebViewActivity extends Activity {
                     ll_splashScreen.setVisibility(View.VISIBLE);
                     ll_splashScreen.animate()
                             .alpha(0)
-                            .translationY(-Styling.getInDP(WebViewActivity.this, 100))
-                            .setDuration(CheckinActivity.ANIMATION_DURATION)
+                            .translationY(-Styling.getInDP(getActivity(), 100))
+                            .setDuration(CheckinFragment.ANIMATION_DURATION)
                             .setListener(new AnimatorListenerAdapter() {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
@@ -137,23 +147,18 @@ public class WebViewActivity extends Activity {
 
     }
 
-    @Override
+/*    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if((keyCode == KeyEvent.KEYCODE_BACK) && wv_main.canGoBack()) {
             wv_main.goBack();
             return true;
         }
         return super.onKeyUp(keyCode, event);
-    }
+    }*/
+
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        wv_main.saveState(outState);
-    }
-
-    @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.getInstance().stopSync();
@@ -161,7 +166,7 @@ public class WebViewActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             CookieSyncManager.getInstance().sync();
@@ -179,8 +184,8 @@ public class WebViewActivity extends Activity {
                     String checkinId = remainder.split("/", 2)[0];
                     // TODO launch android activity and tell which check in to view.
 
-                    Intent intent = new Intent(WebViewActivity.this, CheckinActivity.class);
-                    intent.putExtra(CheckinActivity.I_CHECK_IN_ID, checkinId);
+                    Intent intent = new Intent(getActivity(), CheckinFragment.class);
+                    intent.putExtra(CheckinFragment.I_CHECK_IN_ID, checkinId);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
                     new Thread(new Runnable() {
@@ -188,7 +193,7 @@ public class WebViewActivity extends Activity {
                         public void run() {
                             try {
                                 Thread.sleep(1000);
-                                WebViewActivity.this.runOnUiThread(new Runnable() {
+                                getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         wv_main.goBack();
@@ -200,8 +205,8 @@ public class WebViewActivity extends Activity {
 //                    wv_main.goBack();
                 } else if(endPoint.equals("login")) {
                     API.userSignOut();
-                    new ForceLogin(WebViewActivity.this);
-                    finish();
+                    new ForceLogin(getActivity());
+                    return;
                 }
             }
         }
