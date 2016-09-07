@@ -83,6 +83,18 @@ public class SettingsFragment extends Fragment {
     Subscriber<List<Treatment>> mSubscriber;
 
     /**
+     * Called when the fragment is no longer in use.  This is called
+     * after {@link #onStop()} and before {@link #onDetach()}.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSubscriber != null && !mSubscriber.isUnsubscribed()){
+            mSubscriber.unsubscribe();
+        }
+    }
+
+    /**
      * Called to have the fragment instantiate its user interface view.
      * This is optional, and non-graphical fragments can return null (which
      * is the default implementation).  This will be called between
@@ -180,7 +192,8 @@ public class SettingsFragment extends Fragment {
         mSubscriber = new Subscriber<List<Treatment>>() {
             @Override
             public void onCompleted() {
-
+                llSettingsProgress.setVisibility(View.GONE);
+                rlSettings.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -192,8 +205,6 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onNext(List<Treatment> treatments) {
                 showTreatments();
-                llSettingsProgress.setVisibility(View.GONE);
-                rlSettings.setVisibility(View.VISIBLE);
             }
         };
 
