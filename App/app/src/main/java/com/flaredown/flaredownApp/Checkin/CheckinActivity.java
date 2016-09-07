@@ -433,13 +433,25 @@ public class CheckinActivity extends AppCompatActivity {
             vsAnimationHelper.changeState((VIEW_STATES) savedInstanceState.getSerializable(IS_CURRENT_VIEW), false);
         }
 
-        // If no check in set, display one
-        if (checkIn.getValue() == null) { // TODO handle intent
-            displayCheckin(Calendar.getInstance());
-        } else if (savedInstanceState != null && savedInstanceState.containsKey(IS_CHECK_IN)) {
+
+        if(checkIn.getValue() != null) {
+            // The check in object is static, and is the same across all activity instances.
+            // Meaning if the phone is rotated (app is restarted) the checkIn object should have a
+            // value.
+
+            // This will notify the subscriber causing it to update the view... As the subscriber
+            // does not run on first instance.
+            displayCheckin(checkIn.getValue());
+
+        } else if(savedInstanceState != null && savedInstanceState.containsKey(IS_CHECK_IN)) {
+            // This is more precautionary, I assume it could be possible for android to have a reason
+            // to clear all static variables... i.e. a app has been paused to long etc.
+            // So to be safe also give the option to load the model from savedInstanceState
             displayCheckin((CheckIn) savedInstanceState.getSerializable(IS_CHECK_IN));
         } else {
-            displayCheckin(checkIn.getValue());
+            // This is run when a fresh activity is run... or there is no previous evidence of the
+            // check in object so it creates one from scratch.
+            displayCheckin(Calendar.getInstance());
         }
     }
 
