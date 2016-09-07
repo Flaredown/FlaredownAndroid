@@ -31,6 +31,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
@@ -50,6 +51,11 @@ import io.intercom.android.sdk.Intercom;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
+import rx.schedulers.Schedulers;
 
 public class SettingsFragment extends Fragment {
     Context mContext;
@@ -73,6 +79,8 @@ public class SettingsFragment extends Fragment {
     Alarm mAlarm;
     Alarm mProxyAlarm;
     List<Treatment> mTreatments;
+    Observable<List<Treatment>> mObservable;
+    Subscriber<List<Treatment>> mSubscriber;
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -162,39 +170,34 @@ public class SettingsFragment extends Fragment {
             tv_checkinRemindTime.setText(time);
         }
 
-        flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+        mObservable = Observable.defer(new Func0<Observable<List<Treatment>>>() {
             @Override
-            public void onSuccess(Trackings trackings) {
-                List<Integer> ids = new ArrayList<>();
-                for (int i = 0; i < trackings.size(); i++) {
-                    ids.add(trackings.get(i).getTrackable_id());
-                }
-                flareDownAPI.getTreatments(ids, new APIResponse<List<Treatment>, Error>() {
-                    @Override
-                    public void onSuccess(List<Treatment> treatments) {
-                        if (mTreatments != null){
-                            mTreatments.clear();
-                        }
-                        mTreatments = treatments;
-                        showTreatments();
-                        llSettingsProgress.setVisibility(View.GONE);
-                        rlSettings.setVisibility(View.VISIBLE);
-                    }
+            public Observable<List<Treatment>> call() {
+                return Observable.just(mTreatments);
+            }
+        });
 
-                    @Override
-                    public void onFailure(Error result) {
-                        llSettingsProgress.setVisibility(View.GONE);
-                        rlSettings.setVisibility(View.VISIBLE);
-                    }
-                });
+        mSubscriber = new Subscriber<List<Treatment>>() {
+            @Override
+            public void onCompleted() {
+
             }
 
             @Override
-            public void onFailure(Error result) {
+            public void onError(Throwable e) {
                 llSettingsProgress.setVisibility(View.GONE);
                 rlSettings.setVisibility(View.VISIBLE);
             }
-        });
+
+            @Override
+            public void onNext(List<Treatment> treatments) {
+                showTreatments();
+                llSettingsProgress.setVisibility(View.GONE);
+                rlSettings.setVisibility(View.VISIBLE);
+            }
+        };
+
+        getAllTreatments();
 
         //Listeners
         tv_EditAccount.setOnClickListener(new View.OnClickListener() {
@@ -303,8 +306,40 @@ public class SettingsFragment extends Fragment {
 
         updateLocales();
 
+    }
 
+    private void getAllTreatments() {
+        flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, Error>() {
+            @Override
+            public void onSuccess(Trackings trackings) {
+                List<Integer> ids = new ArrayList<>();
+                for (int i = 0; i < trackings.size(); i++) {
+                    ids.add(trackings.get(i).getTrackable_id());
+                }
+                flareDownAPI.getTreatments(ids, new APIResponse<List<Treatment>, Error>() {
+                    @Override
+                    public void onSuccess(List<Treatment> treatments) {
+                        if (mTreatments != null){
+                            mTreatments.clear();
+                        }
+                        mTreatments = treatments;
+                        mObservable.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(mSubscriber);
+                    }
 
+                    @Override
+                    public void onFailure(Error result) {
+                        new ErrorDialog(mContext, result).setCancelable(false).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Error result) {
+                new ErrorDialog(mContext, result).setCancelable(false).show();
+            }
+        });
     }
 
     private void showTreatments(){
@@ -395,18 +430,6 @@ public class SettingsFragment extends Fragment {
 
     }
 
-   /* @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_settings, menu);
-        return true;
-    }*/
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -454,8 +477,4 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-/*    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }*/
 }

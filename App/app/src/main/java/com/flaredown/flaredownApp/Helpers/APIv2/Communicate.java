@@ -421,7 +421,7 @@ public class Communicate {
                     Trackings trackings = new Trackings(response);
                     if(trackings.size() <= 0) {
                         // No Trackings found
-                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.checkInDate::NoTrackings").setRetryRunnable(retryRunnable));
+                        apiResponse.onFailure(new Error().setDebugString("APIv2.Communicate.getTrackings::NoTrackings").setRetryRunnable(retryRunnable));
                     } else {
                         apiResponse.onSuccess(trackings);
                     }
@@ -432,7 +432,7 @@ public class Communicate {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.checkInDate::VolleyError").setRetryRunnable(retryRunnable));
+                apiResponse.onFailure(new Error(error).setDebugString("APIv2.Communicate.getTrackings::VolleyError").setRetryRunnable(retryRunnable));
             }
         });
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
