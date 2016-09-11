@@ -32,9 +32,9 @@ public class FlaringQuestionFragment extends ViewPagerFragmentBase {
      * @throws JSONException
      */
     public static FlaringQuestionFragment newInstance(boolean isSummaryView) {
+        FlaringQuestionFragment fragment = new FlaringQuestionFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_SUMMARY_VIEW, isSummaryView);
-        FlaringQuestionFragment fragment = new FlaringQuestionFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,7 +43,10 @@ public class FlaringQuestionFragment extends ViewPagerFragmentBase {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isSummaryView = getArguments().getBoolean(ARG_SUMMARY_VIEW);
+        if(getArguments() != null && getArguments().containsKey(ARG_SUMMARY_VIEW))
+            isSummaryView = getArguments().getBoolean(ARG_SUMMARY_VIEW);
+        else
+            isSummaryView = false; // Setting default value if not set.
         assignViews(inflater, container);
         bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
             @Override

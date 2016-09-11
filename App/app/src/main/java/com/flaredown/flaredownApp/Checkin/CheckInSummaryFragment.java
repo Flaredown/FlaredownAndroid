@@ -43,8 +43,6 @@ public class CheckInSummaryFragment extends Fragment {
      */
     public static CheckInSummaryFragment newInstance() throws JSONException{
         CheckInSummaryFragment fragment = new CheckInSummaryFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 

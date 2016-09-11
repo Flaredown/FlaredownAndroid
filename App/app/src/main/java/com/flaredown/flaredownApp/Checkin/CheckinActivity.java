@@ -421,7 +421,12 @@ public class CheckinActivity extends AppCompatActivity {
                         vp_questions.setAdapter(vpa_questions);
                     } else {
                         vpa_questions.removeAllFragments();
-                        vpa_questions.setFragments(fragments);
+                        // Fixing an issue where the application would crash when the user changes date
+                        // and changes pages quickly (often have to do repeatedly) The crash would
+                        // state fragment already active.... https://github.com/Flaredown/FlaredownAndroid/issues/61
+                        // To resolve I recreate the adapter as well as removing the fragments.
+                        vpa_questions = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+                        vp_questions.setAdapter(vpa_questions);
                         vp_questions.setCurrentItem(0, false);
                     }
                     bt_nextQuestion.setVisibility(View.INVISIBLE);

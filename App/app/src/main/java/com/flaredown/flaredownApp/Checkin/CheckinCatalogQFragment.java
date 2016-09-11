@@ -62,9 +62,9 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
      * @throws JSONException
      */
     public static CheckinCatalogQFragment newInstance(TrackableType trackableType) {
+        CheckinCatalogQFragment fragment = new CheckinCatalogQFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_TRACKABLE_TYPE, trackableType);
-        CheckinCatalogQFragment fragment = new CheckinCatalogQFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,7 +74,10 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         super.onCreate(savedInstanceState);
         try {
             Bundle bundleArguments = getArguments();
-            trackableType = (TrackableType) bundleArguments.getSerializable(ARG_TRACKABLE_TYPE);
+            if(bundleArguments != null && bundleArguments.containsKey(ARG_TRACKABLE_TYPE))
+                trackableType = (TrackableType) bundleArguments.getSerializable(ARG_TRACKABLE_TYPE);
+            else
+                trackableType = TrackableType.CONDITION; // Setting default value if not set.
 
         } catch (Exception e) {
             e.printStackTrace();
