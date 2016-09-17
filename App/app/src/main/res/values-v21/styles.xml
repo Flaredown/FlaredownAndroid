@@ -6,12 +6,11 @@
     <style name="AppTheme.v21" parent="AppTheme.Base">
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:progressBarStyle">@style/AppTheme.ProgressBar</item>
-        <item name="android:buttonStyle">@style/AppTheme.Button.v21</item>
         <item name="android:colorPrimary">@color/background</item>
     </style>
 
 
-    <style name="AppTheme.Button.v21" parent="AppTheme.Button">
+    <style name="AppTheme.Button" parent="AppTheme.Button.Base">
         <item name="android:stateListAnimator">@null</item>
     </style>
 

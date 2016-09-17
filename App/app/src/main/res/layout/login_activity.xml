@@ -117,7 +117,8 @@
                     android:text="@string/action_sign_in"
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="@dimen/sep_margin_medium"
-                    android:paddingBottom="3dp" />
+                    android:paddingBottom="3dp"
+                    style="@style/AppTheme.Button" />
 
             </LinearLayout>
 

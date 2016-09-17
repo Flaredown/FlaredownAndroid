@@ -38,7 +38,8 @@
                 android:paddingLeft="@dimen/sep_margin_medium"
                 android:paddingRight="@dimen/sep_margin_medium"
                 android:paddingTop="@dimen/sep_margin_small"
-                android:paddingBottom="@dimen/sep_margin_small" />
+                android:paddingBottom="@dimen/sep_margin_small"
+                style="@style/AppTheme.Button" />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
