@@ -51,7 +51,7 @@ public class FlaringQuestionFragment extends ViewPagerFragmentBase {
         bt_not_checked_in_checkin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getCheckInActivity().nextPage(true);
+                getCheckinFragment().nextPage(true);
             }
         });
         return fl_root;

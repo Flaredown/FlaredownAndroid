@@ -45,7 +45,7 @@ public class MainToolbarView extends LinearLayout{
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        Intent intent = new Intent(context, SettingsActivity.class);
+                        Intent intent = new Intent(context, SettingsFragment.class);
                         context.startActivity(intent);
                         return true;
                     }

@@ -15,12 +15,12 @@ import com.flaredown.flaredownApp.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Checkin.ViewPagerFragmentBase;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.ObservableHashSet;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlowLayoutHelper;
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -65,7 +65,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to add to the check in.
      */
     public void addTag(Tag tag) {
-        getCheckInActivity().getCheckIn().addTag(tag);
+        getCheckinFragment().getCheckIn().addTag(tag);
     }
 
     /**
@@ -73,7 +73,7 @@ public class TagFragment extends ViewPagerFragmentBase {
      * @param tag The tag to remove from the check in.
      */
     public void removeTag(Tag tag) {
-        getCheckInActivity().getCheckIn().removeTag(tag);
+        getCheckinFragment().getCheckIn().removeTag(tag);
     }
 
     @Nullable
@@ -148,16 +148,16 @@ public class TagFragment extends ViewPagerFragmentBase {
         tv_addTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddEditableActivity.startActivity(getActivity(), TrackableType.TAG, getCheckInActivity().getCheckIn());
+                AddEditableActivity.startActivity(getActivity(), TrackableType.TAG, ((MainActivity) getActivity()).getCheckinFragment().getCheckIn());
             }
         });
 
         // Show already selected tags.
-        flh_selected_tags.addItems(getCheckInActivity().getCheckIn().getTags());
+        flh_selected_tags.addItems(getCheckinFragment().getCheckIn().getTags());
 
 
         popularTags.subscribeCollectionObservable(popularTagsSubscriber);
-        getCheckInActivity().getCheckIn().getTags().subscribeCollectionObservable(selectedTagsSubscriber);
+        getCheckinFragment().getCheckIn().getTags().subscribeCollectionObservable(selectedTagsSubscriber);
 
         return fl_root;
     }

@@ -21,6 +21,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
@@ -115,7 +116,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
             }
         };
 
-        getCheckInActivity().getCheckIn().getTrackables(trackableType).subscribeCollectionObservable(trackableSubscriber);
+        getCheckinFragment().getCheckIn().getTrackables(trackableType).subscribeCollectionObservable(trackableSubscriber);
 
         tv_catalog.setText(trackableType.getNameResId());
         tv_question.setText(trackableType.getQuestionResId());
@@ -125,7 +126,7 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
         tv_addTrackable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddEditableActivity.startActivity(getActivity(), trackableType, getCheckInActivity().getCheckIn());
+                AddEditableActivity.startActivity(getActivity(), trackableType, ((MainActivity) getActivity()).getCheckinFragment().getCheckIn());
             }
         });
         return fl_root;
@@ -147,11 +148,12 @@ public class CheckinCatalogQFragment extends ViewPagerFragmentBase{
 
     private void inflateQuestions() {
         lv_questionHolder.setAdapter(currentQuestionsAdapter);
-        HashSet<Trackable> trackables = getCheckInActivity().getCheckIn().getTrackables(trackableType);
+        HashSet<Trackable> trackables = getCheckinFragment().getCheckIn().getTrackables(trackableType);
         for (final Trackable trackable : trackables) {
             trackableSubscriber.onNext(new ObservableHashSet.CollectionChange(trackable, ObservableHashSet.ChangeType.ADD));
         }
     }
+
 
     public void removeTrackable(Trackable trackable){
         //TODO: Implement delete trackables

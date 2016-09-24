@@ -1,18 +1,23 @@
 buildscript {
     repositories {
+        jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
+        classpath "io.realm:realm-gradle-plugin:1.1.0"
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 repositories {
+    jcenter()
     maven { url 'https://maven.fabric.io/public' }
 }
+
+apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
 
 
 android {
@@ -20,11 +25,11 @@ android {
     buildToolsVersion '24.0.1'
     defaultConfig {
         applicationId 'com.flaredown.flaredownApp'
+        applicationId 'com.flaredown.flaredownApp'
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
-        versionName "0.01"
-    }
+        versionName "0.01" }
     buildTypes {
         release {
             minifyEnabled true
@@ -32,6 +37,7 @@ android {
         }
         debug {
             minifyEnabled false
+            buildConfigField "String","INTERCOM_API", "\""+getIntercomApiKey()+"\""
         }
     }
     productFlavors {
@@ -57,12 +63,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'org.apmem.tools:layouts:1.9@aar'
-    compile 'io.realm:realm-android:0.84.2'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
-    compile ('io.intercom.android:intercom-sdk-base:1.+@aar') {
-        transitive = true
-    }
+    compile ('io.intercom.android:intercom-sdk-base:1.+@aar') { transitive = true }
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') { transitive = true; }
+    compile 'com.github.squiggie:BottomBar:1.4.0.2'
 
     //--- RxJava
     compile 'io.reactivex:rxandroid:1.1.0'
@@ -72,7 +77,11 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'org.robolectric:robolectric:3.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-        transitive = true;
-    }
+
+}
+
+def getIntercomApiKey(){
+    def Properties props = new Properties()
+    props.load(new FileInputStream(new File('api.properties')))
+    return props['intercom_api']
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
@@ -134,6 +135,10 @@ public class TreatmentDetails extends LinearLayout implements View.OnClickListen
             mTreatmentDose.setVisibility(View.VISIBLE);
             mTreatmentDoseAutoComplete.setVisibility(View.GONE);
             mDone.setVisibility(View.GONE);
+            //Hide Keyboard
+            View v = getRootView();
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         } else {
             mTreatmentDose.setVisibility(View.GONE);
             mTreatmentDoseAutoComplete.setVisibility(View.VISIBLE);

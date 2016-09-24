@@ -5,7 +5,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Helper.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.Calendar;
 
 import io.intercom.com.google.gson.annotations.SerializedName;
@@ -182,7 +181,7 @@ public class MetaTrackable extends RealmObject {
     public static void clearExpiredItems(Realm realmInstance, long maxAge) {
         realmInstance.beginTransaction();
         RealmQuery<MetaTrackable> query = realmInstance.where(MetaTrackable.class).lessThanOrEqualTo("cachedAtRaw", Calendar.getInstance().getTimeInMillis() - maxAge).isNotNull("cachedAtRaw");
-        query.findAll().clear();
+        query.findAll().deleteAllFromRealm();
         realmInstance.commitTransaction();
     }
 
