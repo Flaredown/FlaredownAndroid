@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Settings;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -47,7 +47,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
-import io.intercom.android.sdk.Intercom;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -92,6 +91,7 @@ public class SettingsFragment extends Fragment {
         if (mSubscriber != null && !mSubscriber.isUnsubscribed()){
             mSubscriber.unsubscribe();
         }
+        save();
     }
 
     /**
@@ -161,9 +161,6 @@ public class SettingsFragment extends Fragment {
         Toolbar mainToolbarView = (Toolbar) view.findViewById(R.id.toolbar_top);
         TextView title = (TextView) view.findViewById(R.id.toolbar_title);
         title.setText(R.string.title_activity_settings);
-        //setSupportActionBar(mainToolbarView);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        //getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //Get checkin reminder from realm if one exists
         RealmQuery<Alarm> query = mRealm.where(Alarm.class);
@@ -259,7 +256,7 @@ public class SettingsFragment extends Fragment {
                 alertDialog.setTitle("");
 
                 final TimePicker picker = new TimePicker(mContext);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 picker.setLayoutParams(lp);
                 picker.setIs24HourView(DateFormat.is24HourFormat(mContext));
                 picker.setCurrentHour(Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
@@ -311,7 +308,7 @@ public class SettingsFragment extends Fragment {
         tv_help.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intercom.client().displayConversationsList();
+                
             }
         });
 
