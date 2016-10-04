@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //Bottom Menu Bar
         mBottomBar = BottomBar.attach(this, savedInstanceState, ContextCompat.getColor(this, R.color.accent_hover), ContextCompat.getColor(this, R.color.white), .25f);
+        mBottomBar.noNavBarGoodness();
+        mBottomBar.noScalingGoodness();
+        mBottomBar.noResizeGoodness();
         mBottomBar.setItems(R.menu.menu_bottom);
         mBottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override
