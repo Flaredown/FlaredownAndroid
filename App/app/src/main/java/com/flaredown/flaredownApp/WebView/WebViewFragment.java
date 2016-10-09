@@ -23,6 +23,7 @@ import com.flaredown.flaredownApp.Checkin.CheckinFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Login.ForceLogin;
+import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import java.io.UnsupportedEncodingException;
@@ -184,7 +185,8 @@ public class WebViewFragment extends Fragment {
                     String checkinId = remainder.split("/", 2)[0];
                     // TODO launch android activity and tell which check in to view.
 
-                    Intent intent = new Intent(getActivity(), CheckinFragment.class);
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra(MainActivity.I_VIEW, MainActivity.Views.CHECK_IN);
                     intent.putExtra(CheckinFragment.I_CHECK_IN_ID, checkinId);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
