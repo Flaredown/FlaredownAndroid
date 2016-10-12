@@ -31,6 +31,7 @@ import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
+import com.flaredown.flaredownApp.Register.RegisterActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private TextView tv_ForgotPassword;
     private TextView tv_noInternetConnection;
+    private TextView tv_register;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -74,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mPasswordView = (EditText) findViewById(R.id.password);
         tv_ForgotPassword = (TextView) findViewById(R.id.tv_ForgotPassword);
+        tv_register = (TextView) findViewById(R.id.tv_register);
         tv_ForgotPassword.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +92,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     return true;
                 }
                 return false;
+            }
+        });
+        tv_register.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
 

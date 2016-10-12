@@ -1,13 +1,17 @@
 package com.flaredown.flaredownApp.Main;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.flaredown.flaredownApp.Checkin.CheckinFragment;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Settings.SettingsFragment;
 import com.flaredown.flaredownApp.WebView.WebViewFragment;

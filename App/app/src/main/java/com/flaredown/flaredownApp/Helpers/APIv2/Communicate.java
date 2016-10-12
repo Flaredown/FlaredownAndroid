@@ -90,17 +90,7 @@ public class Communicate {
             @Override
             public void onResponse(JSONObject response) {
                 Session session = new Session(response);
-                // Save the user details to remain logged in.
-                SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
-                SharedPreferences.Editor spe = sp.edit();
-                spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, session.getEmail());
-                spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, session.getToken());
-                spe.putString(PreferenceKeys.SP_Av2_USER_ID, session.getUserId());
-                spe.putString(PreferenceKeys.SP_Av2_SESSION_ID, session.getId());
-                spe.putLong(PreferenceKeys.SP_Av2_CREATED_AT, session.getCreatedAt().getTimeInMillis());
-                spe.putLong(PreferenceKeys.SP_Av2_UPDATED_AT, session.getUpdatedAt().getTimeInMillis());
-                spe.apply();
-
+                userSignIn(session);
                 apiResponse.onSuccess(session);
             }
         }, new Response.ErrorListener() {
@@ -110,6 +100,23 @@ public class Communicate {
             }
         }).setParams(parameters);
         QueueProvider.getQueue(context).add(jsonObjectExtraRequest);
+    }
+
+    /**
+     * Sign a user in given a session object (just saves shared preferences).
+     * @param session The session object to start the user with.
+     */
+    public void userSignIn(Session session) {
+        // Save the user details to remain logged in.
+        SharedPreferences sp = PreferenceKeys.getSharedPreferences(context);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putString(PreferenceKeys.SP_Av2_USER_EMAIL, session.getEmail());
+        spe.putString(PreferenceKeys.SP_Av2_USER_TOKEN, session.getToken());
+        spe.putString(PreferenceKeys.SP_Av2_USER_ID, session.getUserId());
+        spe.putString(PreferenceKeys.SP_Av2_SESSION_ID, session.getId());
+        spe.putLong(PreferenceKeys.SP_Av2_CREATED_AT, session.getCreatedAt().getTimeInMillis());
+        spe.putLong(PreferenceKeys.SP_Av2_UPDATED_AT, session.getUpdatedAt().getTimeInMillis());
+        spe.apply();
     }
 
     public void userSignOut() {

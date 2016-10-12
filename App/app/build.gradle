@@ -45,11 +45,15 @@ android {
             applicationId 'com.flaredown.flaredownApp'
             buildConfigField "String", "API_BASE_URI", "\"http://staging.flaredown.com/api\""
             buildConfigField "String", "WEB_URL", "\"http://staging.flaredown.com\""
+            buildConfigField "String", "WEB_URL_SIGNUP", "\"http://staging.flaredown.com/signup\""
+
             resValue "string", "app_name", "Flaredown"
         }
         productDebug {
             buildConfigField "String", "API_BASE_URI", "\"http://staging.flaredown.com/api\""
             buildConfigField "String", "WEB_URL", "\"http://staging.flaredown.com\""
+            buildConfigField "String", "WEB_URL_SIGNUP", "\"http://staging.flaredown.com/signup\""
+
             resValue "string", "app_name", "\"Flaredown Debug\""
             applicationId 'com.flaredown.flaredownApp.DEBUG'
             ext.enableCrashlytics = false // Disable Crashlytics in debugging mode
