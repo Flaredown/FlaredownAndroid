@@ -98,6 +98,26 @@
                         android:singleLine="true"
                         style="@style/AppTheme.EditText" />
 
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:text="Not a member yet? "
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_pre_signup" />
+
+                        <TextView
+                            android:id="@+id/tv_register"
+                            android:text="@string/locales_unauthenticated_register"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/accent" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <TextView
