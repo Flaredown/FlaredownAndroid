@@ -29,7 +29,11 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
-        versionName "0.01" }
+        versionName "0.01"
+        manifestPlaceholders = [
+                fabricApiKey:getApiProperties()['fabric_api']
+        ]
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -88,4 +92,10 @@ def getIntercomApiKey(){
     def Properties props = new Properties()
     props.load(new FileInputStream(new File('api.properties')))
     return props['intercom_api']
+}
+
+def getApiProperties() {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(new File('api.properties')))
+    return props
 }
