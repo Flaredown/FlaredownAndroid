@@ -23,8 +23,10 @@ The application is following [this](https://guides.codepath.com/android/Organizi
 git clone https://github.com/Flaredown/FlaredownAndroid.git
 ```
 3. Open Android Stuido, select open an existing Android Studio and navigate to the folder.
-4. Create an emulator in android studio, version 14-23 (optional, can use an Android phone)
-5. Run the application selecting the emulator (which should already be running) or select phone, which is in developer mode.
+4. Copy the App/api.properties.sample to App/api.properties and fill in the api keys.
+	- Note if you do not have the api keys for fabric enter a random string (should work fine in debug as fabric is disabled).
+5. Create an emulator in android studio, version 14-23 (optional, can use an Android phone)
+6. Run the application selecting the emulator (which should already be running) or select phone, which is in developer mode.
 
 ### TODO.
 - Checkin
