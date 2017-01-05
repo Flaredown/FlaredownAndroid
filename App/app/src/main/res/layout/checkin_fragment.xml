@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/cl_root_view"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Checkin.CheckinFragment">
+    tools:context=".Activities.Checkin.CheckinFragment">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,7 +42,7 @@
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin">
 
-                <com.flaredown.flaredownApp.Checkin.ViewPagerProgress
+                <com.flaredown.flaredownApp.Activities.Checkin.ViewPagerProgress
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/vpp_questionProgress"
@@ -122,7 +122,7 @@
                 android:id="@+id/f_checkin_summary"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:name="com.flaredown.flaredownApp.Checkin.Checkin_summary_fragment"/> -->
+                android:name="com.flaredown.flaredownApp.Activities.Checkin.Checkin_summary_fragment"/> -->
         </FrameLayout>
 
         <LinearLayout
