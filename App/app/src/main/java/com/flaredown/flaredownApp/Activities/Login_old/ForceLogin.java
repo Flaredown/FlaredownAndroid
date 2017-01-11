@@ -1,4 +1,4 @@
-package com.flaredown.flaredownApp.Activities.Login;
+package com.flaredown.flaredownApp.Activities.Login_old;
 
 import android.app.Activity;
 import android.content.Intent;

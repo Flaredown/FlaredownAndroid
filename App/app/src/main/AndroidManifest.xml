@@ -38,7 +38,7 @@
             <!-- Note when removing the web view update the meta-data on all activities. -->
         </activity>
         <activity
-            android:name=".Activities.Login.LoginActivity"
+            android:name=".Activities.Login_old.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
             android:screenOrientation="behind"
@@ -96,11 +96,11 @@
         </activity>
         <activity android:name=".Activities.Register.RegisterActivity"
             android:label="@string/title_activity_register"
-            android:parentActivityName=".Activities.Login.LoginActivity"
+            android:parentActivityName=".Activities.Login_old.LoginActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.Login.LoginActivity"/>
+                android:value=".Activities.Login_old.LoginActivity"/>
         </activity>
         <meta-data android:name="io.fabric.ApiKey" android:value="${fabricApiKey}"/>
     </application>

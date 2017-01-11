@@ -22,7 +22,7 @@ import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
-import com.flaredown.flaredownApp.Activities.Login.ForceLogin;
+import com.flaredown.flaredownApp.Activities.Login_old.ForceLogin;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
