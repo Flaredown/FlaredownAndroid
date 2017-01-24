@@ -1,9 +1,11 @@
 package com.flaredown.flaredownApp.Helpers.Wrappers.Mosby;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.hannesdorfmann.mosby.mvp.lce.MvpLceView;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.AbsParcelableLceViewState;
+import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 /**
@@ -31,7 +33,7 @@ public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapp
      * Keep track if the view is loading something.
      */
     @ParcelableThisPlease
-    protected boolean isLoading = false;
+    public boolean isLoading = false;
 
     @Override
     public void apply(V view, boolean retained) {
@@ -66,5 +68,32 @@ public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapp
      */
     public void setStateHideLoading() {
         this.isLoading = false;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+
+        // Manually parceling the loaded data object (as it is a generic)
+        if(loadedData == null)
+            dest.writeInt(0); // Set object null flag to false
+        else {
+            dest.writeInt(1); // Set object null flag to true
+            dest.writeSerializable(loadedData.getClass()); // Store the class... enabling the reading of the object.
+            dest.writeParcelable(loadedData, flags); // Storing the actual object.
+        }
+
+
+    }
+
+    @Override
+    protected void readFromParcel(Parcel in) {
+        super.readFromParcel(in);
+
+        if(in.readInt() == 1) {
+            loadedData = in.readParcelable(((Class<?>)in.readSerializable()).getClassLoader()); // Read the object.
+        } else {
+            loadedData = null;
+        }
     }
 }

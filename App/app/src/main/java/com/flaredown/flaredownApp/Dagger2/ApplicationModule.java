@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.SharedPreferences;
 
+import com.flaredown.flaredownApp.FlaredownApplication;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
 import javax.inject.Singleton;
@@ -16,14 +17,14 @@ import dagger.Provides;
  */
 
 @Module
-public class AppModule {
-    Application application;
+public class ApplicationModule {
+    FlaredownApplication application;
 
     /**
      * Dagger2 Module for injection of the application.
      * @param application
      */
-    public AppModule(Application application) {
+    public ApplicationModule(FlaredownApplication application) {
         this.application = application;
     }
 
@@ -33,7 +34,7 @@ public class AppModule {
      */
     @Provides
     @Singleton
-    Application providesApplication() {
+    FlaredownApplication providesApplication() {
         return this.application;
     }
 

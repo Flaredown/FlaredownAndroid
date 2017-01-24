@@ -3,8 +3,9 @@ package com.flaredown.flaredownApp.Helpers.Wrappers.Android;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-import com.flaredown.flaredownApp.FlaredownApp;
+import com.flaredown.flaredownApp.FlaredownApplication;
 
 import javax.inject.Inject;
 
@@ -12,9 +13,9 @@ import javax.inject.Inject;
  * Activity wrapper, provide extra functionality to the android application and should be used in
  * place of the Activity class.
  */
-public abstract class ActivityWrapper extends Activity {
+public abstract class ActivityWrapper extends AppCompatActivity {
     @Inject
-    private FlaredownApp application;
+    FlaredownApplication application;
 
 
 
@@ -49,7 +50,7 @@ public abstract class ActivityWrapper extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((FlaredownApp) getApplication()).getAppComponent().inject(this);
+        ((FlaredownApplication) getApplication()).getApplicationComponent().inject(this);
 
         // Set the activity as the active activity (overwriting the current active activity).
         application.setActiveActivity(this);
