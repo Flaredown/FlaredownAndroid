@@ -7,6 +7,7 @@ import com.crashlytics.android.Crashlytics;
 import com.flaredown.flaredownApp.Dagger2.ApplicationComponent;
 import com.flaredown.flaredownApp.Dagger2.ApplicationModule;
 import com.flaredown.flaredownApp.Dagger2.DaggerApplicationComponent;
+import com.flaredown.flaredownApp.Dagger2.HasComponent;
 import com.flaredown.flaredownApp.Helpers.Migration;
 
 import io.fabric.sdk.android.Fabric;
@@ -14,7 +15,7 @@ import io.intercom.android.sdk.Intercom;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
-public class FlaredownApplication extends Application {
+public class FlaredownApplication extends Application implements HasComponent<ApplicationComponent> {
 
     /**
      * The current active (not paused) activity.
@@ -35,6 +36,8 @@ public class FlaredownApplication extends Application {
         this.applicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        this.applicationComponent.injectApplication(this);
 
 
 
@@ -119,7 +122,8 @@ public class FlaredownApplication extends Application {
      * Get the Dagger2 App component.
      * @return Dagger2 Application Component.
      */
-    public ApplicationComponent getApplicationComponent() {
+    @Override
+    public ApplicationComponent getComponent() {
         return applicationComponent;
     }
 }

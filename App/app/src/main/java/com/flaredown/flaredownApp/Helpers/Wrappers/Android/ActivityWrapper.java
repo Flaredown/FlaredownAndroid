@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.flaredown.flaredownApp.Dagger2.ApplicationComponent;
+import com.flaredown.flaredownApp.Dagger2.HasComponent;
 import com.flaredown.flaredownApp.FlaredownApplication;
 
 import javax.inject.Inject;
@@ -13,10 +15,12 @@ import javax.inject.Inject;
  * Activity wrapper, provide extra functionality to the android application and should be used in
  * place of the Activity class.
  */
-public abstract class ActivityWrapper extends AppCompatActivity {
+public abstract class ActivityWrapper extends AppCompatActivity implements HasComponent<ActivityComponent> {
+    ActivityComponent activityComponent;
+
+
     @Inject
     FlaredownApplication application;
-
 
 
 
@@ -50,7 +54,13 @@ public abstract class ActivityWrapper extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((FlaredownApplication) getApplication()).getApplicationComponent().inject(this);
+        ((HasComponent<ApplicationComponent>) getApplication()).getComponent().injectActivity(this);
+
+        activityComponent = DaggerActivityComponent
+                .builder()
+                .applicationComponent(((HasComponent<ApplicationComponent>) getApplication()).getComponent())
+                .activityModule(new ActivityModule(this))
+                .build();
 
         // Set the activity as the active activity (overwriting the current active activity).
         application.setActiveActivity(this);
@@ -127,5 +137,10 @@ public abstract class ActivityWrapper extends AppCompatActivity {
         super.onResume();
         // Set the current active activity to this one.
         application.setActiveActivity(this);
+    }
+
+    @Override
+    public ActivityComponent getComponent() {
+        return activityComponent;
     }
 }

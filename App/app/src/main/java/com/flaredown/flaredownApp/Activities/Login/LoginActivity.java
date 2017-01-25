@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
 
+import com.flaredown.flaredownApp.Dagger2.HasComponent;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.flaredown.flaredownApp.R;
 

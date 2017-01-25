@@ -1,5 +1,9 @@
 package com.flaredown.flaredownApp.Dagger2;
 
+import android.app.Fragment;
+
+import com.flaredown.flaredownApp.Activities.Login.LoginFragment;
+import com.flaredown.flaredownApp.FlaredownApplication;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 
 import javax.inject.Inject;
@@ -13,9 +17,11 @@ import dagger.Component;
 @Singleton
 @Component(modules = { ApplicationModule.class })
 public interface ApplicationComponent {
-    /**
-     * For injecting an ActivityWrapper object.
-     * @param activity The activity for injecting.
-     */
-    void inject(ActivityWrapper activity);
+    void injectApplication(FlaredownApplication application);
+
+    void injectActivity(ActivityWrapper activityWrapper);
+
+    // Support injecting into both types of fragments.
+    void injectFragment(Fragment fragment);
+    void injectFragment(android.support.v4.app.Fragment fragment);
 }
