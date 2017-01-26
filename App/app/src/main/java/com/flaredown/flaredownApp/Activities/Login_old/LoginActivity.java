@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.login_fragment);
 
         // Set up the login form.
-        tv_noInternetConnection = (TextView) findViewById(R.id.tv_noInternetConnection);
+        tv_noInternetConnection = (TextView) findViewById(R.id.errorView);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.act_email);
 
         mPasswordView = (EditText) findViewById(R.id.password);

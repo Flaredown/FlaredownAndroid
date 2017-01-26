@@ -11,7 +11,7 @@ import com.flaredown.flaredownApp.Dagger2.HasComponent;
 import com.flaredown.flaredownApp.FlaredownApplication;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityComponent;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
-import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.FragmentWRapper;
+import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.FragmentWrapper;
 import com.flaredown.flaredownApp.R;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.LceViewState;
 
@@ -24,7 +24,9 @@ import javax.inject.Inject;
  *      - {@link LoginActivity}
  */
 
-public class LoginFragment extends FragmentWRapper<LinearLayout, LoginModel, LoginView, LoginPresenter, LoginViewState> {
+public class LoginFragment
+        extends FragmentWrapper<LinearLayout, LoginModel, LoginView, LoginPresenter, LoginViewState>
+        implements LoginView {
     private ActivityComponent loginComponent;
 
     @Inject
@@ -51,12 +53,30 @@ public class LoginFragment extends FragmentWRapper<LinearLayout, LoginModel, Log
         return inflater.inflate(R.layout.login_fragment, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    @Override
+    public void onNewViewStateInstance() {
+        super.onNewViewStateInstance();
+    }
+
+    @Override
+    public void onViewStateInstanceRestored(boolean instanceStateRetained) {
+        super.onViewStateInstanceRestored(instanceStateRetained);
+    }
+
+
+
     /**
      * Create the view state object of this class
      */
     @Override
     public LceViewState<LoginModel, LoginView> createViewState() {
-        return null;
+        return new LoginViewState();
     }
 
     @Override
@@ -81,6 +101,13 @@ public class LoginFragment extends FragmentWRapper<LinearLayout, LoginModel, Log
 
     @Override
     public LoginPresenter createPresenter() {
-        return null;
+        return new LoginPresenter();
     }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+
 }

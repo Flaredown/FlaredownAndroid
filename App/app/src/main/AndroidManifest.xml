@@ -38,7 +38,7 @@
             <!-- Note when removing the web view update the meta-data on all activities. -->
         </activity>
         <activity
-            android:name=".Activities.Login_old.LoginActivity"
+            android:name=".Activities.Login.LoginActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
             android:screenOrientation="behind"

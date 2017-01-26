@@ -23,7 +23,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
-import com.flaredown.flaredownApp.Activities.Login_old.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.R;

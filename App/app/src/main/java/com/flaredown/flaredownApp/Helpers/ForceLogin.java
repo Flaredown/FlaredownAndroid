@@ -1,10 +1,10 @@
-package com.flaredown.flaredownApp.Activities.Login_old;
+package com.flaredown.flaredownApp.Helpers;
 
 import android.app.Activity;
 import android.content.Intent;
 
+import com.flaredown.flaredownApp.Activities.Login.LoginActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 
 /**
  * Created by thunter on 14/09/15.

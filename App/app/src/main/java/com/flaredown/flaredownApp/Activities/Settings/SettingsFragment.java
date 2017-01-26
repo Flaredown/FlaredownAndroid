@@ -34,7 +34,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
-import com.flaredown.flaredownApp.Activities.Login_old.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;

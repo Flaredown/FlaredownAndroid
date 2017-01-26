@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Activities.Login_old.LoginActivity"
-    tools:ignore="fontPath">
+    tools:ignore="fontPath"
+    android:id="@+id/contentView">
     <!-- Login progress -->
 
     <ScrollView
@@ -22,7 +23,8 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:animateLayoutChanges="true">
+            android:animateLayoutChanges="true"
+            android:id="@+id/loadingView">
 
             <ImageView
                 android:id="@+id/iv_fdLogo"
@@ -49,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No Internet Connection"
-                android:id="@+id/tv_noInternetConnection"
+                android:id="@+id/errorView"
                 android:layout_gravity="center_horizontal"
                 android:textColor="#f00"
                 android:visibility="gone"

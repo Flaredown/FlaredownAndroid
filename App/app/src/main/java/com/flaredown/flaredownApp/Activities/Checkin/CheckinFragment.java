@@ -47,7 +47,7 @@ import com.flaredown.flaredownApp.Helpers.Observers.ImmutableObserver;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.SnackbarStyling;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
-import com.flaredown.flaredownApp.Activities.Login_old.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Toolbars.MainToolbarView;

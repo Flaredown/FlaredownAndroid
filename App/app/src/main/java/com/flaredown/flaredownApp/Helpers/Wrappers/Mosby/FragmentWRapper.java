@@ -19,7 +19,7 @@ import com.hannesdorfmann.mosby.mvp.viewstate.lce.MvpLceViewStateFragment;
  * @param <P> The type of Presenter.
  * @param <VS> The type for the ViewState.
  */
-public abstract class FragmentWRapper<CV extends View, M extends Parcelable, V extends MvpLceView<M>, P extends MvpPresenter<V>, VS> extends MvpLceViewStateFragment<CV, M, V, P> {
+public abstract class FragmentWrapper<CV extends View, M extends Parcelable, V extends MvpLceView<M>, P extends MvpPresenter<V>, VS> extends MvpLceViewStateFragment<CV, M, V, P> {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
