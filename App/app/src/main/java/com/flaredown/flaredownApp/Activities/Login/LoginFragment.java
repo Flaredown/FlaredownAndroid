@@ -17,6 +17,9 @@ import com.hannesdorfmann.mosby.mvp.viewstate.lce.LceViewState;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Login Fragment, Enables the user to login to their Flaredown account.
  *
@@ -28,6 +31,9 @@ public class LoginFragment
         extends FragmentWrapper<LinearLayout, LoginModel, LoginView, LoginPresenter, LoginViewState>
         implements LoginView {
     private ActivityComponent loginComponent;
+
+    @BindView(R.id.ll_email_login_form)
+    LinearLayout ll_emailLoginFrom;
 
     @Inject
     public FlaredownApplication application;
@@ -56,12 +62,14 @@ public class LoginFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
 
     }
 
     @Override
     public void onNewViewStateInstance() {
         super.onNewViewStateInstance();
+        getPresenter().doSplashScreen();
     }
 
     @Override
@@ -91,7 +99,7 @@ public class LoginFragment
 
     @Override
     public LoginModel getData() {
-        return null;
+        return getViewState().getLoadedData();
     }
 
     @Override
@@ -109,5 +117,15 @@ public class LoginFragment
 
     }
 
+    @Override
+    public void showContent() {
+        getViewState().setStateShowContent(getData());
+        ll_emailLoginFrom.setVisibility(View.VISIBLE);
+    }
 
+    @Override
+    public void showSplashScreen() {
+        getViewState().setStateSplashScreen();
+        ll_emailLoginFrom.setVisibility(View.GONE);
+    }
 }

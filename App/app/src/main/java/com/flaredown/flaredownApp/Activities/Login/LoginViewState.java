@@ -12,6 +12,8 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
 @ParcelablePlease(allFields = false)
 public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> implements Parcelable {
+    final int STATE_SPLASH_SCREEN = 50;
+
 
     @Override
     public int describeContents() {
@@ -34,4 +36,21 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
             return new LoginViewState[size];
         }
     };
+
+    @Override
+    public void apply(LoginView view, boolean retained) {
+
+
+        switch (currentViewState) {
+            case STATE_SPLASH_SCREEN:
+                view.showSplashScreen();
+                break;
+            default:
+                super.apply(view, retained);
+        }
+    }
+
+    public void setStateSplashScreen() {
+        this.currentViewState = STATE_SPLASH_SCREEN;
+    }
 }

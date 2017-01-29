@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Helpers.Wrappers.Mosby;
 
 import android.os.Parcelable;
 
+import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 
@@ -16,4 +17,17 @@ import com.hannesdorfmann.mosby.mvp.MvpPresenter;
 public abstract class PresenterWrapper<V extends ViewWrapper<M>, M extends Parcelable>
         extends MvpBasePresenter<V>
         implements MvpPresenter<V>{
+
+    public FragmentWrapper getFragment() {
+        if(isViewAttached())
+            return getView().getFragment();
+        else
+            return null;
+    }
+
+    public ActivityWrapper getActivity() {
+        if(isViewAttached())
+            return getView().getActivityw();
+        return null;
+    }
 }

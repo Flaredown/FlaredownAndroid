@@ -29,6 +29,8 @@ ParcelablePlease library does not work because the Generic Type param. (it think
  */
 public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapper<D>> extends AbsParcelableLceViewState<D, V>{
 
+
+
     /**
      * Keep track if the view is loading something.
      */
@@ -68,6 +70,10 @@ public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapp
      */
     public void setStateHideLoading() {
         this.isLoading = false;
+    }
+
+    public D getLoadedData() {
+        return loadedData;
     }
 
     @Override

@@ -7,4 +7,6 @@ import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.ViewWrapper;
  */
 
 public interface LoginView extends ViewWrapper<LoginModel> {
+
+    public void showSplashScreen();
 }

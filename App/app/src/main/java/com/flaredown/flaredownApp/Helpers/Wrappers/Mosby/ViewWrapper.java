@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Helpers.Wrappers.Mosby;
 
 import android.os.Parcelable;
 
+import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.hannesdorfmann.mosby.mvp.lce.MvpLceView;
 
 /**
@@ -16,4 +17,8 @@ public interface ViewWrapper<M extends Parcelable> extends MvpLceView<M> {
      * Stop showing the loading screen.
      */
     public void hideLoading();
+
+    public ActivityWrapper getActivityw();
+
+    public FragmentWrapper getFragment();
 }
