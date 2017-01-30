@@ -16,28 +16,6 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
 
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        LoginViewStateParcelablePlease.writeToParcel(this, dest, flags);
-    }
-
-    public static final Creator<LoginViewState> CREATOR = new Creator<LoginViewState>() {
-        public LoginViewState createFromParcel(Parcel source) {
-            LoginViewState target = new LoginViewState();
-            LoginViewStateParcelablePlease.readFromParcel(target, source);
-            return target;
-        }
-
-        public LoginViewState[] newArray(int size) {
-            return new LoginViewState[size];
-        }
-    };
-
-    @Override
     public void apply(LoginView view, boolean retained) {
 
 
@@ -53,4 +31,29 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
     public void setStateSplashScreen() {
         this.currentViewState = STATE_SPLASH_SCREEN;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        LoginViewStateParcelablePlease.writeToParcel(this, dest, flags);
+        super.writeToParcel(dest, flags);
+    }
+
+    public static final Creator<LoginViewState> CREATOR = new Creator<LoginViewState>() {
+        public LoginViewState createFromParcel(Parcel source) {
+            LoginViewState target = new LoginViewState();
+            LoginViewStateParcelablePlease.readFromParcel(target, source);
+            target.readFromParcel(source);
+            return target;
+        }
+
+        public LoginViewState[] newArray(int size) {
+            return new LoginViewState[size];
+        }
+    };
 }

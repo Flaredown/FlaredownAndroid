@@ -36,11 +36,11 @@ public class LoginActivity extends ActivityWrapper {
 
         // Bind Butterknife fields.
         ButterKnife.bind(this);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.fl_fragment_container, f_login = new LoginFragment(), LOGIN_FRAGMENT_TAG)
-                .commit();
+        if(getLoginFragment() == null)
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_fragment_container, f_login = new LoginFragment(), LOGIN_FRAGMENT_TAG)
+                    .commit();
     }
 
     /**

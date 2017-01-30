@@ -16,7 +16,6 @@ public class ForceLogin {
             Intent intent = new Intent(activity, LoginActivity.class);
             //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
             activity.finish();

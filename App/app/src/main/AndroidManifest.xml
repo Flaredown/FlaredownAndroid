@@ -20,37 +20,14 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Activities.WebView.WebViewFragment"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
-        <activity
-            android:name=".Activities.Checkin.CheckinFragment"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:parentActivityName=".Activities.WebView.WebViewFragment"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.WebView.WebViewFragment"/>
-            <!-- Note when removing the web view update the meta-data on all activities. -->
-        </activity>
-        <activity
             android:name=".Activities.Login.LoginActivity"
-            android:finishOnTaskLaunch="true"
             android:label="@string/title_activity_login"
             android:screenOrientation="behind"
-            android:windowSoftInputMode="adjustResize|stateVisible"/>
-        <activity
-            android:name=".Activities.Settings.SettingsFragment"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".Activities.WebView.WebViewFragment"
-            android:screenOrientation="behind">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.WebView.WebViewFragment"/>
+            android:windowSoftInputMode="adjustResize|stateVisible">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Activities.Checkin.AddEditableActivity"
@@ -69,18 +46,6 @@
             android:label="@string/title_activity_policy_web_view"
             android:screenOrientation="behind"
             android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.Settings.SettingsFragment"/>
-        </activity>
-        <activity
-            android:name=".Activities.Settings.EditAccount.FragmentEditAccount"
-            android:label="@string/title_activity_edit_account"
-            android:parentActivityName=".Activities.Settings.SettingsFragment"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.Settings.SettingsFragment"/>
         </activity>
 
         <service
@@ -96,11 +61,10 @@
         </activity>
         <activity android:name=".Activities.Register.RegisterActivity"
             android:label="@string/title_activity_register"
-            android:parentActivityName=".Activities.Login_old.LoginActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Activities.Login_old.LoginActivity"/>
+                android:value=".Activities.Login.LoginActivity"/>
         </activity>
         <meta-data android:name="io.fabric.ApiKey" android:value="${fabricApiKey}"/>
     </application>

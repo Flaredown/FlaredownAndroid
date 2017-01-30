@@ -27,7 +27,7 @@ ParcelablePlease library does not work because the Generic Type param. (it think
  work b/c you cannot edit the class relating to the issue (not with out copying each one then
  updating would be difficult).
  */
-public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapper<D>> extends AbsParcelableLceViewState<D, V>{
+public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapper<D>> extends AbsParcelableLceViewState<D, V> implements Parcelable{
 
 
 
