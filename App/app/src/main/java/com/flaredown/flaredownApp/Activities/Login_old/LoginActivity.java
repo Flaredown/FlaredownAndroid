@@ -225,7 +225,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     setView(VIEW_LOGIN);
                     // Check for incorrect credentials
                     if(result.getStatusCode() ==  401 && result.getErrorList().indexOf("invalid email or password") >= 0) {
-                        String errorMessage = mContext.getString(R.string.locales_nice_errors_bad_credentials);
+                        String errorMessage =  mContext.getString(R.string.locales_nice_errors_bad_credentials);
                         mEmailView.setError(errorMessage);
                         mPasswordView.setError(errorMessage);
                     } else

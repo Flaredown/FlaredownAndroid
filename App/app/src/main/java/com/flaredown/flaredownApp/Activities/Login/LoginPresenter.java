@@ -1,6 +1,13 @@
 package com.flaredown.flaredownApp.Activities.Login;
 
+import android.content.Intent;
+
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;
+import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2.Error;
 import com.flaredown.flaredownApp.Helpers.UserFriendlyThrowable;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.PresenterWrapper;
 import com.flaredown.flaredownApp.R;
@@ -34,7 +41,7 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
         }).start();
     }
 
-    public void doLogin(String username, String password) {
+    public void doLogin(String email, String password) {
         if(isViewAttached()) {
             getView().clearFields();
             getView().showLoading(true);
@@ -44,7 +51,7 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
             List<String> errors = new LinkedList<>();
 
             // Warn against empty email field.
-            if(username == null || "".equals(username)) {
+            if(email == null || "".equals(email)) {
                 emailErrors.add(String.format(FlaredownApplication.getStringResource(R.string.warning_field_empty), FlaredownApplication.getStringResource(R.string.field_email)));
                 errors.add(FlaredownApplication.getStringResource(R.string.warning_generic_empty_field));
             }
@@ -99,27 +106,33 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
                 return; // No longer needs to continue.
             }
 
-
-
-
-            new Thread(new Runnable() {
+            // Submit login request.
+            new Communicate(getActivity()).userSignIn(email, password, new APIResponse<Session, Error>() { // TODO rewrite communication helpers.
                 @Override
-                public void run() {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                public void onSuccess(Session result) {
+                    if(isViewAttached()) {
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        getActivity().startActivity(intent);
+                        // Ensure no animation occurs.
+                        getActivity().overridePendingTransition(0, 0);
+                        getActivity().finish();
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isViewAttached()) {
-                                getView().hideLoading();
-                            }
-                        }
-                    });
                 }
-            }).start();
+
+                @Override
+                public void onFailure(Error result) {
+                    if(isViewAttached()) {
+                        getView().hideLoading();
+
+                        if(result.getStatusCode() == 401) {
+                            String errorMessage = FlaredownApplication.getStringResource(R.string.locales_nice_errors_bad_credentials);
+                            onError(new UserFriendlyThrowable(errorMessage));
+                        }
+                    }
+                }
+            });
         }
     }
 
