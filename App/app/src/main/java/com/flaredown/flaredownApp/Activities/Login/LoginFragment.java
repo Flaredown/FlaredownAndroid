@@ -8,14 +8,19 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Dagger2.HasComponent;
 import com.flaredown.flaredownApp.FlaredownApplication;
+import com.flaredown.flaredownApp.Helpers.ErrorMessageDeterminer;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityComponent;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.FragmentWrapper;
 import com.flaredown.flaredownApp.R;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.LceViewState;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -43,6 +48,9 @@ public class LoginFragment
 
     @BindView(R.id.et_password)
     EditText et_password;
+
+    @BindView(R.id.errorView)
+    TextView tv_error;
 
     @Inject
     public FlaredownApplication application;
@@ -113,7 +121,7 @@ public class LoginFragment
 
     @Override
     protected String getErrorMessage(Throwable e, boolean pullToRefresh) {
-        return "";
+        return ErrorMessageDeterminer.getErrorMessage(e).getMessage();
     }
 
     @Override
@@ -136,6 +144,38 @@ public class LoginFragment
     public void showContent() {
         getViewState().setStateShowContent(getData());
         ll_emailLoginFrom.setVisibility(View.VISIBLE);
+        act_email.requestFocus();
+    }
+
+    @Override
+    public void showError(Throwable e, boolean pullToRefresh) {
+        getViewState().setStateShowError(e, pullToRefresh);
+        if(e == null) {
+            // Hide the error.
+            tv_error.setVisibility(View.GONE);
+            return;
+        }
+        tv_error.setText(getErrorMessage(e, pullToRefresh));
+        tv_error.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void clearError() {
+        showError(null, true);
+    }
+
+    @Override
+    public void setFieldErrorMessages(String email, String password) {
+        getViewState().setStateErrorFieldMessages(email, password);
+        act_email.setError(email);
+        et_password.setError(password);
+    }
+
+    @Override
+    public void clearFields() {
+        setFieldErrorMessages(null, null);
+        clearError();
+        et_password.setText("");
     }
 
     @Override

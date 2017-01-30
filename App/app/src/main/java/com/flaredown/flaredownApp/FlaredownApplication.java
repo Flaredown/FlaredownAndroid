@@ -2,6 +2,8 @@ package com.flaredown.flaredownApp;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.res.Resources;
+import android.support.annotation.StringRes;
 
 import com.crashlytics.android.Crashlytics;
 import com.flaredown.flaredownApp.Dagger2.ApplicationComponent;
@@ -16,6 +18,8 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class FlaredownApplication extends Application implements HasComponent<ApplicationComponent> {
+    private static FlaredownApplication instance;
+
     /**
      * Dagger2 App Component.
      */
@@ -24,6 +28,7 @@ public class FlaredownApplication extends Application implements HasComponent<Ap
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
 
         // Dagger 2
         this.applicationComponent = DaggerApplicationComponent.builder()
@@ -52,5 +57,15 @@ public class FlaredownApplication extends Application implements HasComponent<Ap
     @Override
     public ApplicationComponent getComponent() {
         return applicationComponent;
+    }
+
+
+    /**
+     * Get string resources without worrying about context.
+     * @param resId The resId of the string to {@return}.
+     * @return The string related to the {@param resId}
+     */
+    public static String getStringResource(@StringRes int resId) {
+        return instance.getString(resId);
     }
 }

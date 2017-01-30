@@ -17,6 +17,13 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
     @ParcelableThisPlease
     public boolean isLoading = false;
 
+    @ParcelableThisPlease
+    public String errorEmailField = null;
+
+    @ParcelableThisPlease
+    public String errorPasswordField = null;
+
+
     final int STATE_SPLASH_SCREEN = 50;
 
 
@@ -34,10 +41,15 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
             }
         }
 
+        view.showError(exception, retained);
+
         switch (currentViewState) {
             case STATE_SPLASH_SCREEN:
                 view.showSplashScreen();
                 break;
+            case STATE_SHOW_CONTENT:
+                view.setFieldErrorMessages(errorEmailField, errorPasswordField);
+                super.apply(view, retained);
             default:
                 super.apply(view, retained);
         }
@@ -47,6 +59,12 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
     @Override
     public void setStateShowLoading(boolean pullToRefresh) {
         this.setStateShowLoading();
+    }
+
+    @Override
+    public void setStateShowError(Throwable e, boolean pullToRefresh) {
+        // Not setting current state as other items can be visible when displaying an error.
+        exception = e;
     }
 
     public void setStateShowLoading() {
@@ -61,6 +79,15 @@ public class LoginViewState extends ViewStateWrapper<LoginModel, LoginView> impl
         this.currentViewState = STATE_SPLASH_SCREEN;
     }
 
+    /**
+     * Set state: for the email and password fields.
+     * @param email Email field error message.
+     * @param password Password field error message.
+     */
+    public void setStateErrorFieldMessages(String email, String password) {
+        this.errorEmailField = email;
+        this.errorPasswordField = password;
+    }
 
     @Override
     public int describeContents() {

@@ -11,4 +11,13 @@ public interface LoginView extends ViewWrapper<LoginModel> {
     public void showSplashScreen();
 
     void hideLoading();
+
+    void setFieldErrorMessages(String email, String password);
+
+    /**
+     * Clear the login field error messages and password fields. (Email field is left alone).
+     */
+    void clearFields();
+
+    void clearError();
 }

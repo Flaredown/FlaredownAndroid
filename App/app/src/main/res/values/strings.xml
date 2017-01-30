@@ -19,4 +19,11 @@
     <string name="add_trackable_activity_title">Add %s</string>
     <string name="add_trackable_list_view_text">%s users</string>
     <string name="add_new_trackable">Add new %s</string>
+
+
+    <!-- Login activity -->
+    <string name="warning_generic_empty_field">Please complete all missing information.</string>
+    <string name="warning_field_empty" formatted="false">%s is empty</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Password</string>
 </resources>
