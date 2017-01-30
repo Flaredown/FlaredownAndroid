@@ -39,37 +39,7 @@ public abstract class ViewStateWrapper<D extends Parcelable, V extends ViewWrapp
 
     @Override
     public void apply(V view, boolean retained) {
-        if(isLoading) {
-            view.showLoading(false);
-        } else {
-            view.hideLoading();
-        }
-
         super.apply(view, retained);
-    }
-
-    /**
-     * Set the view's state to loading.
-     * @param pullToRefresh doesn't matter
-     */
-    @Deprecated
-    @Override
-    public void setStateShowLoading(boolean pullToRefresh) {
-        setStateShowLoading();
-    }
-
-    /**
-     * Set the view's state to loading.
-     */
-    public void setStateShowLoading() {
-        this.isLoading = true;
-    }
-
-    /**
-     * Set the view's state to not loading.
-     */
-    public void setStateHideLoading() {
-        this.isLoading = false;
     }
 
     public D getLoadedData() {

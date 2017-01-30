@@ -30,4 +30,11 @@ public abstract class PresenterWrapper<V extends ViewWrapper<M>, M extends Parce
             return getView().getActivityw();
         return null;
     }
+
+    public void runOnUiThread(Runnable runnable) {
+        ActivityWrapper activity = getActivity();
+        if(activity != null) {
+            activity.runOnUiThread(runnable);
+        }
+    }
 }

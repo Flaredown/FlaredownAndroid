@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.flaredown.flaredownApp.Dagger2.HasComponent;
@@ -19,6 +21,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Login Fragment, Enables the user to login to their Flaredown account.
@@ -34,6 +37,12 @@ public class LoginFragment
 
     @BindView(R.id.ll_email_login_form)
     LinearLayout ll_emailLoginFrom;
+
+    @BindView(R.id.act_email)
+    AutoCompleteTextView act_email;
+
+    @BindView(R.id.et_password)
+    EditText et_password;
 
     @Inject
     public FlaredownApplication application;
@@ -113,8 +122,14 @@ public class LoginFragment
     }
 
     @Override
-    public void hideLoading() {
+    public void showLoading(boolean pullToRefresh) {
+        getViewState().setStateShowLoading();
+        ll_emailLoginFrom.setVisibility(View.GONE);
+    }
 
+    public void hideLoading() {
+        getViewState().setStateHideLoading();
+        getViewState().apply(this, true, false);
     }
 
     @Override
@@ -127,5 +142,10 @@ public class LoginFragment
     public void showSplashScreen() {
         getViewState().setStateSplashScreen();
         ll_emailLoginFrom.setVisibility(View.GONE);
+    }
+
+    @OnClick(R.id.bt_sign_in)
+    public void loginClick(View view) {
+        getPresenter().doLogin(act_email.getText().toString(), et_password.getText().toString());
     }
 }
