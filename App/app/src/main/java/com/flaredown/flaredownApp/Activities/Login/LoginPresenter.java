@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp.Activities.Login;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
@@ -163,6 +164,11 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
                 }
             }).start();
         }
+    }
+
+    public void doOpenForgotPassword() {
+        Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(FlaredownApplication.getStringResource(R.string.password_reset_website)));
+        getActivity().startActivity(intent); // TODO, Implement native or make local web wrapper.
     }
 
 

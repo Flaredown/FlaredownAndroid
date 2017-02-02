@@ -19,9 +19,6 @@ import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.FragmentWrapper;
 import com.flaredown.flaredownApp.R;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.LceViewState;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -192,5 +189,10 @@ public class LoginFragment
     @OnClick(R.id.tv_register)
     public void registerClick(View view) {
         getPresenter().doOpenRegisterForm();
+    }
+
+    @OnClick(R.id.tv_forgotPassword)
+    public void forgotPasswordClick(View view) {
+        getPresenter().doOpenForgotPassword();
     }
 }

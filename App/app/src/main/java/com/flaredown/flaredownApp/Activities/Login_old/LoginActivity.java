@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView = (AutoCompleteTextView) findViewById(R.id.act_email);
 
         mPasswordView = (EditText) findViewById(R.id.et_password);
-        tv_ForgotPassword = (TextView) findViewById(R.id.tv_ForgotPassword);
+        tv_ForgotPassword = (TextView) findViewById(R.id.tv_forgotPassword);
         tv_register = (TextView) findViewById(R.id.tv_register);
         tv_ForgotPassword.setOnClickListener(new OnClickListener() {
             @Override
