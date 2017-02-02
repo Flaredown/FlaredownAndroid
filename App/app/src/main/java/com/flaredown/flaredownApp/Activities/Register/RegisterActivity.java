@@ -2,6 +2,7 @@ package com.flaredown.flaredownApp.Activities.Register;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +25,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
+import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;
@@ -37,6 +39,15 @@ public class RegisterActivity extends AppCompatActivity {
     private LinearLayout ll_splashScreen;
 
     private CookieManager cookieManager;
+
+    /**
+     * Starts the acivity from another activity.
+     * @param activity The activity to start this activity from.
+     */
+    public static void startActivity(Activity activity) {
+        activity.startActivity(new Intent(activity, RegisterActivity.class));
+    }
+
     private Communicate API;
 
     @Override

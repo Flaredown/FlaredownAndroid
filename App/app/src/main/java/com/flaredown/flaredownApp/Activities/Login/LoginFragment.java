@@ -188,4 +188,9 @@ public class LoginFragment
     public void loginClick(View view) {
         getPresenter().doLogin(act_email.getText().toString(), et_password.getText().toString());
     }
+
+    @OnClick(R.id.tv_register)
+    public void registerClick(View view) {
+        getPresenter().doOpenRegisterForm();
+    }
 }

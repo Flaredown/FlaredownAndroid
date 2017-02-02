@@ -3,6 +3,7 @@ package com.flaredown.flaredownApp.Activities.Login;
 import android.content.Intent;
 
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
+import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;
 import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
@@ -22,6 +23,10 @@ import java.util.List;
 public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
 
     public void doSplashScreen() {
+        doSplashScreen(null);
+    }
+
+    public void doSplashScreen(Runnable doAfter) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -133,6 +138,30 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
                     }
                 }
             });
+        }
+    }
+
+    public void doOpenRegisterForm() {
+        if(isViewAttached()) {
+            getView().showSplashScreen();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getView().showContent();
+                            RegisterActivity.startActivity(getActivity());
+                        }
+                    });
+                }
+            }).start();
         }
     }
 
