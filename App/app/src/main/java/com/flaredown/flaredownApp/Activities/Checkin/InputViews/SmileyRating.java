@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.R;
 

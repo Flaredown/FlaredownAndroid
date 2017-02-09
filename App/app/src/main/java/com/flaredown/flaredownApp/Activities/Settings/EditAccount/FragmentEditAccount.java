@@ -18,14 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.ForceLogin;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Country;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Profile.Profile;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Profile.Country;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Profile.Profile;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONObject;
@@ -91,7 +91,7 @@ public class FragmentEditAccount extends DialogFragment implements View.OnClickL
             userID = sp.getString(PreferenceKeys.SP_Av2_USER_ID, null);
             mFlaredownAPI = new Communicate(mContext);
             //Get current_user information
-            mFlaredownAPI.getProfile(userID, new APIResponse<Profile, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+            mFlaredownAPI.getProfile(userID, new APIResponse<Profile, com.flaredown.flaredownApp.Helpers.APIv2_old.Error>() {
                 @Override
                 public void onSuccess(Profile result) {
                     mCurrentUser = result;

@@ -13,12 +13,12 @@ import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Activities.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Activities.Checkin.ViewPagerFragmentBase;
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TagCollection;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Tag;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TagCollection;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Tag;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.FlowLayoutHelper;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;

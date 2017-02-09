@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 
 import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;

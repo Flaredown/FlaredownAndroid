@@ -10,11 +10,11 @@ import android.content.Intent;
 import android.support.v7.app.NotificationCompat;
 
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.CheckIn;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Tracking;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.CheckIn;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Trackings.Tracking;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
 import com.flaredown.flaredownApp.Models.Alarm;

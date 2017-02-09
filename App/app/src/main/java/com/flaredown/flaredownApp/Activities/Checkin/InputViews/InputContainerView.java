@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.Trackable;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable;
 
 /**
  * Container for a question input, providing a question title above the input view.

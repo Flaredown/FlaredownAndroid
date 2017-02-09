@@ -21,11 +21,10 @@ import android.widget.LinearLayout;
 
 import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
-import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;

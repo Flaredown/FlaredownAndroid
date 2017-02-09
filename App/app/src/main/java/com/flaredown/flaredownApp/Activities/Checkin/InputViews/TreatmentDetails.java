@@ -11,12 +11,12 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TreatmentTrackable;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Search;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Searches.Searchable;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TreatmentTrackable;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Searches.Search;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Searches.Searchable;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.R;
 
 import java.util.ArrayList;

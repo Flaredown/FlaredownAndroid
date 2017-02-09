@@ -26,11 +26,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Activities.Settings.EditAccount.FragmentEditAccount;
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Trackings.Trackings;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableType;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Trackings.Trackings;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
@@ -162,7 +162,7 @@ public class SettingsFragment extends Fragment {
             tv_checkinRemindTime.setText(time);
         }
 
-        flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+        flareDownAPI.getTrackings(TrackableType.TREATMENT, Calendar.getInstance(), new APIResponse<Trackings, com.flaredown.flaredownApp.Helpers.APIv2_old.Error>() {
             @Override
             public void onSuccess(Trackings trackings) {
                 List<Integer> ids = new ArrayList<>();

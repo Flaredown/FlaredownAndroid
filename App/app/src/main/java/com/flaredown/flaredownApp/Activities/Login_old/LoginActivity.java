@@ -22,11 +22,11 @@ import android.widget.TextView;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
-import com.flaredown.flaredownApp.Helpers.APIv2.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2.EndPoints.Session.Session;
-import com.flaredown.flaredownApp.Helpers.APIv2.Error;
-import com.flaredown.flaredownApp.Helpers.APIv2.ErrorDialog;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Session.Session;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //mAuthTask = new UserLoginTask(email, password);
             //mAuthTask.execute((Void) null);
 
-            new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2.Error>() {
+            new Communicate(this).userSignIn(email, password, new APIResponse<Session, com.flaredown.flaredownApp.Helpers.APIv2_old.Error>() {
                 @Override
                 public void onSuccess(Session result) {
                     // Tell Fabric.
