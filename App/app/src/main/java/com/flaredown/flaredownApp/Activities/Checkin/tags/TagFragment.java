@@ -6,21 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.flaredown.flaredownApp.Activities.Checkin.AddEditableActivity;
 import com.flaredown.flaredownApp.Activities.Checkin.ViewPagerFragmentBase;
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableType;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.FlowLayoutHelper;
-import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.apmem.tools.layouts.FlowLayout;

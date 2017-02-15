@@ -8,9 +8,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
-import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Activities.Settings.SettingsFragment;
 import com.flaredown.flaredownApp.Activities.WebView.WebViewFragment;
+import com.flaredown.flaredownApp.R;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 

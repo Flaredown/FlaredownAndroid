@@ -32,9 +32,9 @@ import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Trackings.Trackings;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
 import com.flaredown.flaredownApp.Helpers.TimeHelper;
-import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Models.Alarm;
 import com.flaredown.flaredownApp.Models.Treatment;
 import com.flaredown.flaredownApp.R;

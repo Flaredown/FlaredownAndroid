@@ -20,12 +20,12 @@ import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
-import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
-import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
-import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Profile.Country;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Profile.Profile;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
+import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
+import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONObject;

@@ -3,9 +3,7 @@ package com.flaredown.flaredownApp.Helpers.Wrappers.Mosby;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.hannesdorfmann.mosby.mvp.lce.MvpLceView;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.AbsParcelableLceViewState;
-import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelableThisPlease;
 
 /**

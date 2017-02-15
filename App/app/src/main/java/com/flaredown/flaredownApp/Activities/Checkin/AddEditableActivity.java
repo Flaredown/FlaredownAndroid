@@ -22,6 +22,7 @@ import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.CheckIn;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.MetaTrackable;
+import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TagCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableCollection;
@@ -29,7 +30,6 @@ import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TreatmentTrackable;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Searches.Search;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Searches.Searchable;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Tag;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;

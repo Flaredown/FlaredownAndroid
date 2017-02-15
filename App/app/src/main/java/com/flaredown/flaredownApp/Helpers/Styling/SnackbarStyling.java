@@ -4,8 +4,6 @@ import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
-import com.flaredown.flaredownApp.BuildConfig;
-
 /**
  * Created by thunter on 03/04/16.
  */

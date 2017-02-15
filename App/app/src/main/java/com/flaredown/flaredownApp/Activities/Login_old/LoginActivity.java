@@ -22,16 +22,16 @@ import android.widget.TextView;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.LoginEvent;
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
+import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
-import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Receivers.InternetStatusBroadcastReceiver;
-import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 
 import java.util.ArrayList;
 import java.util.List;

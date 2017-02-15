@@ -1,7 +1,5 @@
 package com.flaredown.flaredownApp.Helpers.Wrappers.Android;
 
-import com.flaredown.flaredownApp.Activities.Login.LoginActivity;
-
 import dagger.Module;
 import dagger.Provides;
 

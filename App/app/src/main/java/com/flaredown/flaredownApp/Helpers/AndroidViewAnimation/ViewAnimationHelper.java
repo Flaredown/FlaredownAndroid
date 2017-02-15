@@ -1,7 +1,6 @@
 package com.flaredown.flaredownApp.Helpers.AndroidViewAnimation;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
 import java.util.HashMap;

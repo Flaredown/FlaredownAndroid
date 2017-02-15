@@ -16,12 +16,12 @@ import android.widget.TextView;
 import com.flaredown.flaredownApp.Activities.Checkin.InputViews.InputContainerView;
 import com.flaredown.flaredownApp.Activities.Checkin.InputViews.SmileyRating;
 import com.flaredown.flaredownApp.Activities.Checkin.InputViews.TreatmentDetails;
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.ObservableHashSet;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.Trackable;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableCollection;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TrackableType;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.TreatmentTrackable;
-import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;

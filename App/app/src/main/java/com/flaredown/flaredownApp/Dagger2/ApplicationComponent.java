@@ -2,11 +2,9 @@ package com.flaredown.flaredownApp.Dagger2;
 
 import android.app.Fragment;
 
-import com.flaredown.flaredownApp.Activities.Login.LoginFragment;
 import com.flaredown.flaredownApp.FlaredownApplication;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Component;

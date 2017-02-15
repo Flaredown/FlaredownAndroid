@@ -1,8 +1,6 @@
 package com.flaredown.flaredownApp;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.res.Resources;
 import android.support.annotation.StringRes;
 
 import com.crashlytics.android.Crashlytics;

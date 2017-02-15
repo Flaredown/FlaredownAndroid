@@ -2,9 +2,8 @@ package com.flaredown.flaredownApp.Helpers.Wrappers.Android;
 
 import android.app.Fragment;
 
-import com.flaredown.flaredownApp.Activities.Login.LoginFragment;
-import com.flaredown.flaredownApp.Dagger2.ApplicationComponent;
 import com.flaredown.flaredownApp.Dagger2.ActivityScope;
+import com.flaredown.flaredownApp.Dagger2.ApplicationComponent;
 
 import dagger.Component;
 

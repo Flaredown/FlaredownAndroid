@@ -6,9 +6,6 @@ import android.content.Intent;
 import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
 import com.flaredown.flaredownApp.API.ServerParsingException;
 import com.flaredown.flaredownApp.Activities.Login.LoginActivity;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
-
-import static com.flaredown.flaredownApp.API.ResponseModel.Sessions.getFromSharedPreferences;
 
 /**
  * Created by thunter on 14/09/15.

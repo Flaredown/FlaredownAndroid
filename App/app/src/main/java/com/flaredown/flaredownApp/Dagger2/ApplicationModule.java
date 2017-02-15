@@ -1,7 +1,5 @@
 package com.flaredown.flaredownApp.Dagger2;
 
-import android.app.Application;
-import android.app.backup.SharedPreferencesBackupHelper;
 import android.content.SharedPreferences;
 
 import com.flaredown.flaredownApp.FlaredownApplication;

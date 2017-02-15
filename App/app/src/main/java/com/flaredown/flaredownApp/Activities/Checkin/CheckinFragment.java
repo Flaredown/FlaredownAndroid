@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flaredown.flaredownApp.Activities.Checkin.tags.TagFragment;
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.CheckIns.CheckIn;
@@ -43,12 +44,11 @@ import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.ErrorDialog;
 import com.flaredown.flaredownApp.Helpers.AndroidViewAnimation.ViewAnimationHelper;
 import com.flaredown.flaredownApp.Helpers.FlaredownConstants;
+import com.flaredown.flaredownApp.Helpers.ForceLogin;
 import com.flaredown.flaredownApp.Helpers.Observers.ImmutableObserver;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.flaredown.flaredownApp.Helpers.Styling.SnackbarStyling;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
-import com.flaredown.flaredownApp.Helpers.ForceLogin;
-import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 import com.flaredown.flaredownApp.Toolbars.MainToolbarView;
 

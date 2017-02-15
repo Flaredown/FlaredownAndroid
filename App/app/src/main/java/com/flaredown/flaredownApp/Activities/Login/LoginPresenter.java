@@ -2,7 +2,6 @@ package com.flaredown.flaredownApp.Activities.Login;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 import com.flaredown.flaredownApp.API.OnRequestErrorListener;
 import com.flaredown.flaredownApp.API.OnRequestSuccessListener;
@@ -11,10 +10,6 @@ import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.APIResponse;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Session.Session;
-import com.flaredown.flaredownApp.Helpers.APIv2_old.Error;
 import com.flaredown.flaredownApp.Helpers.UserFriendlyThrowable;
 import com.flaredown.flaredownApp.Helpers.Wrappers.Mosby.PresenterWrapper;
 import com.flaredown.flaredownApp.R;

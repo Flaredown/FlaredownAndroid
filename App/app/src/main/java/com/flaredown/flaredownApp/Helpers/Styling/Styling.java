@@ -3,7 +3,6 @@ package com.flaredown.flaredownApp.Helpers.Styling;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -14,7 +13,6 @@ import com.flaredown.flaredownApp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 

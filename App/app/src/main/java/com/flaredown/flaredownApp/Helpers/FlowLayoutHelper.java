@@ -1,15 +1,11 @@
 package com.flaredown.flaredownApp.Helpers;
 
-import android.content.Context;
-import android.database.DataSetObserver;
 import android.view.View;
-import android.widget.Adapter;
 
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Currently the FlowLayout library does not support adapters yet, this is a helper class to allow

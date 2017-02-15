@@ -6,8 +6,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -19,12 +19,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
-import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Activities.Checkin.CheckinFragment;
+import com.flaredown.flaredownApp.Activities.Main.MainActivity;
+import com.flaredown.flaredownApp.BuildConfig;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.Communicate;
 import com.flaredown.flaredownApp.Helpers.APIv2_old.EndPoints.Session.Session;
 import com.flaredown.flaredownApp.Helpers.Styling.Styling;
-import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.R;
 
 import org.json.JSONException;

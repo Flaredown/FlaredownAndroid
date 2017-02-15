@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.flaredown.flaredownApp.Helpers.Wrappers.Android.ActivityWrapper;
 import com.hannesdorfmann.mosby.mvp.MvpPresenter;
-import com.hannesdorfmann.mosby.mvp.lce.MvpLceView;
 import com.hannesdorfmann.mosby.mvp.viewstate.lce.MvpLceViewStateFragment;
 
 /**
