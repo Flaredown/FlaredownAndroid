@@ -2,7 +2,12 @@ package com.flaredown.flaredownApp.Activities.Login;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
+import com.flaredown.flaredownApp.API.OnRequestErrorListener;
+import com.flaredown.flaredownApp.API.OnRequestSuccessListener;
+import com.flaredown.flaredownApp.API.Requests.UserSignIn;
+import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;
@@ -113,32 +118,44 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
             }
 
             // Submit login request.
-            new Communicate(getActivity()).userSignIn(email, password, new APIResponse<Session, Error>() { // TODO rewrite communication helpers.
-                @Override
-                public void onSuccess(Session result) {
-                    if(isViewAttached()) {
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        getActivity().startActivity(intent);
-                        // Ensure no animation occurs.
-                        getActivity().overridePendingTransition(0, 0);
-                        getActivity().finish();
+            new UserSignIn(email, password) {{
+                setOnRequestSuccessListener(new OnRequestSuccessListener<Sessions>() {
+                    @Override
+                    public void success(Sessions object) {
+                        object.storeSession(getActivity(), true);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                getActivity().startActivity(intent);
+                                // Ensure no animation occurs.
+                                getActivity().overridePendingTransition(0, 0);
+                                getActivity().finish();
+                            }
+                        });
                     }
-                }
+                });
 
-                @Override
-                public void onFailure(Error result) {
-                    if(isViewAttached()) {
-                        getView().hideLoading();
-
-                        if(result.getStatusCode() == 401) {
-                            String errorMessage = FlaredownApplication.getStringResource(R.string.locales_nice_errors_bad_credentials);
-                            onError(new UserFriendlyThrowable(errorMessage));
-                        }
+                setOnRequestErrorListener(new OnRequestErrorListener<Throwable>() {
+                    @Override
+                    public void error(final Throwable error) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(error instanceof UserSignIn.InvalidCredentialsException)
+                                    LoginPresenter.this.onError(new UserFriendlyThrowable(getActivity().getString(R.string.locales_nice_errors_bad_credentials)));
+                                else
+                                    LoginPresenter.this.onError(error);
+                                getView().hideLoading();
+                            }
+                        });
                     }
-                }
-            });
+                });
+
+                start(getActivity());
+            }};
         }
     }
 

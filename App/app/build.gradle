@@ -120,6 +120,8 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     // Volley helps send http requests
 
+    compile 'com.google.code.gson:gson:2.8.0'
+
 }
 
 def getIntercomApiKey(){

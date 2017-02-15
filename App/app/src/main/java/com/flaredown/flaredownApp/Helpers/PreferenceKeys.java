@@ -27,6 +27,8 @@ public class PreferenceKeys {
     public static final String SP_Av2_CREATED_AT = "APIv2User[created_at]";
     public static final String SP_Av2_UPDATED_AT = "APIv2User[updated_at]";
 
+    public static final String USER_SESSION = "USER_SESSION";
+
     public static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }

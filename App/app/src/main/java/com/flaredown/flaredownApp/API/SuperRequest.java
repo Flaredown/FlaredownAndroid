@@ -1,35 +1,92 @@
 package com.flaredown.flaredownApp.API;
 
+import android.content.Context;
 import android.os.Parcelable;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.flaredown.flaredownApp.Helpers.Volley.QueueProvider;
+import com.flaredown.flaredownApp.Helpers.Volley.VolleyRequestWrapper;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 
 /**
  * Abstract class for API request objects.
  */
-public abstract class SuperRequest<D extends Parcelable, E extends RequestErrorException> {
+public abstract class SuperRequest<D extends Parcelable> {
 
     private RequestMethod requestMethod;
-    private String url;
+    private boolean hasRequestRun = false;
+    private String endpoint;
 
     private OnRequestSuccessListener<D> onRequestSuccessListener;
-    private OnRequestErrorListener<E> onRequestErrorListener;
+    private OnRequestErrorListener<Throwable> onRequestErrorListener;
 
-    public SuperRequest(RequestMethod requestMethod, String url) {
+    public SuperRequest(RequestMethod requestMethod, String endpoint) {
         this.requestMethod = requestMethod;
+        this.endpoint = endpoint;
+    }
+
+    public final void start(Context context) {
+        if(hasRequestRun) {
+            fail(new IllegalStateException("Request has already been started, a request object " +
+                    "should only be started once."));
+            return;
+        }
+
+        VolleyRequestWrapper volleyRequestWrapper = new VolleyRequestWrapper(this.requestMethod.getVolleyMethod(), EndPointUrl.getAPIUrl(this.endpoint, getGetParams()), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                success(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                fail(error);
+            }
+        }) {{
+            setHeaders(SuperRequest.this.getHeaders());
+            setPostParams(SuperRequest.this.getPostParams());
+        }};
+
+        QueueProvider.getQueue(context).add(volleyRequestWrapper);
+
+        hasRequestRun = true;
     }
 
     /**
-     * Method called on successful request.
-     * @param data The data received.
+     * Called on successful request, calls {@link #triggerOnRequestSuccessListener(Parcelable)}
+     * converting the received data from a String to {@link D}.
+     * @param data
      */
-    protected abstract void onRequestSuccess(String data);
+    private void success(String data) {
+        try {
+            triggerOnRequestSuccessListener(onRequestSuccess(data));
+        } catch (Throwable throwable) {
+            fail(throwable);
+        }
+    }
 
     /**
-     * Method called on request error.
+     * Called on error, calls {@link #triggerOnRequestErrorListener(Throwable)}
      * @param object
      */
-    protected abstract void onRequestError(String object); // TODO pass correct object.
+    private void fail(Throwable object){
+        triggerOnRequestErrorListener(onRequestError(object));
+    }
+
+    /**
+     * Method called on successful request, used to convert the returned string into a object before event trigger.
+     * @param data The data received.
+     */
+    protected abstract D onRequestSuccess(String data) throws Throwable;
+
+    /**
+     * Method called on request error, used for processing errors before event trigger.
+     * @param object
+     */
+    protected Throwable onRequestError(Throwable object) {
+        return object;
+    };
 
     /**
      * Called to retrieve the headers for a request.
@@ -66,26 +123,26 @@ public abstract class SuperRequest<D extends Parcelable, E extends RequestErrorE
     /**
      * If a {@link OnRequestSuccessListener} has been set call it passing the {@param object}
      */
-    protected void triggerOnRequestSuccessListener(D object) {
+    private void triggerOnRequestSuccessListener(D object) {
         if(onRequestSuccessListener != null)
-            onRequestSuccessListener.onSucdess(object);
+            onRequestSuccessListener.success(object);
     }
 
     /**
      * If a {@link OnRequestErrorListener} has been set call it passing the {@param errorException}
      */
-    protected void triggerOnRequestErrorListenr(E errorException) {
+    private void triggerOnRequestErrorListener(Throwable errorException) {
         if(onRequestErrorListener != null)
-            onRequestErrorListener.onError(errorException);
+            onRequestErrorListener.error(errorException);
     }
 
     // *** Setters and getters ***
 
-    public void setOnRequestSuccessListener(OnRequestSuccessListener<D> onRequestSuccessListener) {
+    public final void setOnRequestSuccessListener(OnRequestSuccessListener<D> onRequestSuccessListener) {
         this.onRequestSuccessListener = onRequestSuccessListener;
     }
 
-    public void setOnRequestErrorListener(OnRequestErrorListener<E> onRequestErrorListener) {
+    public final void setOnRequestErrorListener(OnRequestErrorListener<Throwable> onRequestErrorListener) {
         this.onRequestErrorListener = onRequestErrorListener;
     }
 }

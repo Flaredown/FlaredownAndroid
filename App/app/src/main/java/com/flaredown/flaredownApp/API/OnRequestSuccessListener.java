@@ -7,5 +7,5 @@ import android.os.Parcelable;
  * @param <D> The object type the request returns.
  */
 public interface OnRequestSuccessListener<D extends Parcelable> {
-    void onSucdess(D object);
+    void success(D object);
 }
