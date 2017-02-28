@@ -1,9 +1,9 @@
-package com.flaredown.flaredownApp.API.Requests;
+package com.flaredown.flaredownApp.API_old.Requests;
 
 import com.android.volley.VolleyError;
-import com.flaredown.flaredownApp.API.RequestMethod;
-import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
-import com.flaredown.flaredownApp.API.SuperRequest;
+import com.flaredown.flaredownApp.API_old.RequestMethod;
+import com.flaredown.flaredownApp.API_old.ResponseModel.Sessions;
+import com.flaredown.flaredownApp.API_old.SuperRequest;
 import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
 
 /**

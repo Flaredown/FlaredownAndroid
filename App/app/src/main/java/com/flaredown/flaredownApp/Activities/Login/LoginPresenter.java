@@ -3,10 +3,10 @@ package com.flaredown.flaredownApp.Activities.Login;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.flaredown.flaredownApp.API.OnRequestErrorListener;
-import com.flaredown.flaredownApp.API.OnRequestSuccessListener;
-import com.flaredown.flaredownApp.API.Requests.UserSignIn;
-import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
+import com.flaredown.flaredownApp.API_old.OnRequestErrorListener;
+import com.flaredown.flaredownApp.API_old.OnRequestSuccessListener;
+import com.flaredown.flaredownApp.API_old.Requests.UserSignIn;
+import com.flaredown.flaredownApp.API_old.ResponseModel.Sessions;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;

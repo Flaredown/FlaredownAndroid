@@ -3,8 +3,8 @@ package com.flaredown.flaredownApp.Helpers;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.flaredown.flaredownApp.API.ResponseModel.Sessions;
-import com.flaredown.flaredownApp.API.ServerParsingException;
+import com.flaredown.flaredownApp.API_old.ResponseModel.Sessions;
+import com.flaredown.flaredownApp.API_old.ServerParsingException;
 import com.flaredown.flaredownApp.Activities.Login.LoginActivity;
 
 /**

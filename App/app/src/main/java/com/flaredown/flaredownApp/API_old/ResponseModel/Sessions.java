@@ -1,11 +1,11 @@
-package com.flaredown.flaredownApp.API.ResponseModel;
+package com.flaredown.flaredownApp.API_old.ResponseModel;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.flaredown.flaredownApp.API.ServerParsingException;
+import com.flaredown.flaredownApp.API_old.ServerParsingException;
 import com.flaredown.flaredownApp.Helpers.PreferenceKeys;
 import com.google.gson.annotations.SerializedName;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;

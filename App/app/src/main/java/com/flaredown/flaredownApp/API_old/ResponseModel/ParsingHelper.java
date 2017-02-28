@@ -1,8 +1,8 @@
-package com.flaredown.flaredownApp.API.ResponseModel;
+package com.flaredown.flaredownApp.API_old.ResponseModel;
 
 import android.os.Parcelable;
 
-import com.flaredown.flaredownApp.API.ServerParsingException;
+import com.flaredown.flaredownApp.API_old.ServerParsingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
