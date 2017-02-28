@@ -40,8 +40,10 @@ public class FlaredownApplication extends Application implements HasComponent<Ap
         Fabric.with(this, new Crashlytics());
         Intercom.initialize(this, BuildConfig.INTERCOM_API, BuildConfig.APPLICATION_ID);
 
+        Realm.init(this);
+
         //Default Realm Configuration
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this)
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
                 .schemaVersion(1)
                 .migration(new Migration())
                 .build();

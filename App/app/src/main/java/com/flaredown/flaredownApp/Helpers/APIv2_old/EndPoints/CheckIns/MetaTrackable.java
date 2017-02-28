@@ -13,10 +13,12 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
 /**
  * Provides extra information about a trackable.
  */
+@RealmClass
 public class MetaTrackable extends RealmObject {
     private Integer colorId;
 

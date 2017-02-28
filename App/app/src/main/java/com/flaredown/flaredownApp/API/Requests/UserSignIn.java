@@ -36,7 +36,7 @@ public class UserSignIn extends SuperRequest<Sessions>{
 
     @Override
     protected Throwable onRequestError(Throwable object) {
-        if(object instanceof VolleyError && ((VolleyError) object).networkResponse.statusCode == 401)
+        if(object != null && object instanceof VolleyError && ((VolleyError) object).networkResponse.statusCode == 401)
             return new InvalidCredentialsException();
         return super.onRequestError(object);
     }
