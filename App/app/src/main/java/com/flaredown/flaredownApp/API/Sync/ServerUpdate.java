@@ -31,4 +31,14 @@ public abstract class ServerUpdate extends RealmObject {
     public String createPrimaryKey() {
         return UUID.randomUUID().toString();
     }
+
+    /**
+     * A protected convenience method to allow subclasses to set the behaviour of the update object.
+     * When this method returns true (which is the default behaviour) any updates that fail due to
+     * connectivity issues will be stored and attempted later on, when connectivity is restored.
+     * @return true if the model is stored, default true.
+     */
+    protected boolean allowStorage() {
+        return true;
+    }
 }

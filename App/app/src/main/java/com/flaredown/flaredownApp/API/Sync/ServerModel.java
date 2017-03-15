@@ -34,16 +34,4 @@ public abstract class ServerModel extends RealmObject{
     public String createPrimaryKey() {
         return UUID.randomUUID().toString();
     }
-
-    /**
-     * Get the endpoint for this model.
-     * @return The endpoint for this model.
-     */
-    public abstract String getEnpoint();
-
-    /**
-     * Get the request point for this method.
-     * @return The method for this model.
-     */
-    public abstract RequestMethod getRequestMethod();
 }
