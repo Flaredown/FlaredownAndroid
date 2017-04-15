@@ -15,8 +15,8 @@ import io.realm.annotations.PrimaryKey;
  * Pending sent data is also stored in the model.
  */
 
-public abstract class ServerModel extends RealmObject{
-    @PrimaryKey
+public abstract class ServerModel {
+//    @PrimaryKey
     private String realmId;
 
     private long realmCreationTime;

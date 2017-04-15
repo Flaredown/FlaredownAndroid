@@ -146,6 +146,8 @@ public class LoginFragment
 
     @Override
     public void showError(Throwable e, boolean pullToRefresh) {
+        // TODO make error and content allowed to be displayed at the same time.
+        showContent();
         getViewState().setStateShowError(e, pullToRefresh);
         if(e == null) {
             // Hide the error.

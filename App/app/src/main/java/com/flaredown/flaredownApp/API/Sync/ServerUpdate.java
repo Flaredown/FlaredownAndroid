@@ -1,5 +1,12 @@
 package com.flaredown.flaredownApp.API.Sync;
 
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Consumer;
+import com.annimon.stream.function.Predicate;
+import com.flaredown.flaredownApp.Helpers.Volley.WebAttributes;
+
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -12,8 +19,7 @@ import io.realm.annotations.PrimaryKey;
  * Updates may be stored in realm, if the request fails and is need to be sent again.
  */
 
-public abstract class ServerUpdate extends RealmObject {
-    @PrimaryKey
+public abstract class ServerUpdate<M extends ServerModel> {
     private String id = null;
     private long updateStart;
 
@@ -21,6 +27,25 @@ public abstract class ServerUpdate extends RealmObject {
         updateStart = System.currentTimeMillis(); // Record the time the request was started.
         id = createPrimaryKey();
     }
+
+    /**
+     * Used for converting the json response sent from the server to a Object.
+     * @param json The json string to convert to an object.
+     * @return The server model object which is generated from the json.
+     */
+    public abstract M generateServerModel(String json);
+
+    /**
+     * Get the endpoint string for this update object.
+     * @return String The endpoint string for this update object.
+     */
+    public abstract String getEndpoint();
+
+    /**
+     * Get the request method for this update object.
+     * @return The request method for this update object
+     */
+    public abstract RequestMethod getRequestMethod();
 
 
 
@@ -40,5 +65,36 @@ public abstract class ServerUpdate extends RealmObject {
      */
     protected boolean allowStorage() {
         return true;
+    }
+
+    /**
+     * Returns a WebAttributes object containing all the web attributes for this server update.
+     * @return WebAttributes object containing all the web attributes.
+     */
+    public WebAttributes getWebAttributes() {
+        final WebAttributes webAttributes = new WebAttributes();
+        Stream.of(this.getClass().getDeclaredFields()).forEach(new Consumer<Field>() {
+            @Override
+            public void accept(Field field) {
+                if(field.isAnnotationPresent(WebParameter.class)) {
+                    try {
+                        String key = field.getAnnotation(WebParameter.class).keyValue();
+
+                        // Default behaviour is to use the field name.
+                        if(key == null || "".equals(key)) {
+                            key = field.getName();
+                        }
+
+                        String value = String.valueOf(field.get(ServerUpdate.this));
+
+                        webAttributes.put(key, value);
+
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        return webAttributes;
     }
 }

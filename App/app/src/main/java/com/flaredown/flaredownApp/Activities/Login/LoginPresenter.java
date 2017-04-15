@@ -2,11 +2,19 @@ package com.flaredown.flaredownApp.Activities.Login;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
-import com.flaredown.flaredownApp.API_old.OnRequestErrorListener;
-import com.flaredown.flaredownApp.API_old.OnRequestSuccessListener;
-import com.flaredown.flaredownApp.API_old.Requests.UserSignIn;
-import com.flaredown.flaredownApp.API_old.ResponseModel.Sessions;
+import com.android.volley.VolleyError;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.LoginEvent;
+import com.flaredown.flaredownApp.API.Endpoints.Session.SessionEndpoint;
+import com.flaredown.flaredownApp.API.Endpoints.Session.SessionLogin;
+import com.flaredown.flaredownApp.API.Endpoints.Session.SessionModel;
+import com.flaredown.flaredownApp.API.Sync.DataSource;
+import com.flaredown.flaredownApp.API.Sync.OnErrorListener;
+import com.flaredown.flaredownApp.API.Sync.OnModelUpdateListener;
+import com.flaredown.flaredownApp.API.Sync.ServerModel;
+import com.flaredown.flaredownApp.API.Sync.UpdateManager;
 import com.flaredown.flaredownApp.Activities.Main.MainActivity;
 import com.flaredown.flaredownApp.Activities.Register.RegisterActivity;
 import com.flaredown.flaredownApp.FlaredownApplication;
@@ -112,45 +120,35 @@ public class LoginPresenter extends PresenterWrapper<LoginView, LoginModel> {
                 return; // No longer needs to continue.
             }
 
-            // Submit login request.
-            new UserSignIn(email, password) {{
-                setOnRequestSuccessListener(new OnRequestSuccessListener<Sessions>() {
+            new SessionEndpoint().sendRequest(new SessionLogin(email, password), new UpdateManager<SessionModel>() {{
+                setErrorListener(new OnErrorListener() {
                     @Override
-                    public void success(Sessions object) {
-                        object.storeSession(getActivity(), true);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                                getActivity().startActivity(intent);
-                                // Ensure no animation occurs.
-                                getActivity().overridePendingTransition(0, 0);
-                                getActivity().finish();
-                            }
-                        });
+                    public void onError(Throwable throwable, boolean cachedCalled) {
+                        if(throwable instanceof VolleyError) {
+                            final VolleyError error = (VolleyError) throwable;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(isViewAttached()) {
+                                        getView().showError(error, true);
+                                    }
+                                }
+                            });
+                        }
                     }
                 });
-
-                setOnRequestErrorListener(new OnRequestErrorListener<Throwable>() {
+                setModelUpdateListener(new OnModelUpdateListener<SessionModel>() {
                     @Override
-                    public void error(final Throwable error) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                if(error instanceof UserSignIn.InvalidCredentialsException)
-                                    LoginPresenter.this.onError(new UserFriendlyThrowable(getActivity().getString(R.string.locales_nice_errors_bad_credentials)));
-                                else
-                                    LoginPresenter.this.onError(error);
-                                getView().hideLoading();
-                            }
-                        });
+                    public void onUpdate(DataSource dataSource, SessionModel model) {
+                        MainActivity.startActivityNoHistoryNoAnimation(getActivity());
+                        model.saveToSharedPreferences(getActivity());
+                        // Record successful login through fabric.
+                        Answers.getInstance().logLogin(new LoginEvent()
+                            .putMethod("default")
+                            .putSuccess(true));
                     }
                 });
-
-                start(getActivity());
-            }};
+            }});
         }
     }
 

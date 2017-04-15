@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.Activities.Main;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -15,6 +17,44 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    /**
+     * Start the activity.
+     * @param context
+     */
+    public static void startActivity(Context context) {
+        startActivity(context, new Intent(context, MainActivity.class));
+    }
+
+    /**
+     * Start the activity with the intent flags, {@link Intent#FLAG_ACTIVITY_NO_ANIMATION} and
+     * {@link Intent#FLAG_ACTIVITY_NO_HISTORY}. Mainly used for the login in view to start this view.
+     * @param activity The activity to start from.
+     */
+    public static void startActivityNoHistoryNoAnimation(Activity activity) {
+        Intent intent = new Intent(activity, MainActivity.class);
+
+        // Disable activity transitions.
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+        // Disable history, back button doesn't return to activity.
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0,0);
+        activity.finish();
+    }
+
+    /**
+     * Start activity, from pre-existing intent.
+     * @param context The context to start the activity from.
+     * @param intent The pre-existing intent.
+     */
+    public static void startActivity(Context context, Intent intent) {
+        context.startActivity(intent);
+    }
+
+
     public static final String I_VIEW = "View Type";
     private BottomBar mBottomBar;
     private CheckinFragment checkinFragment;

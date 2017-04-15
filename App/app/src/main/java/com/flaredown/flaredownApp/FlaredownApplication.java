@@ -1,6 +1,7 @@
 package com.flaredown.flaredownApp;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.annotation.StringRes;
 
 import com.crashlytics.android.Crashlytics;
@@ -22,6 +23,8 @@ public class FlaredownApplication extends Application implements HasComponent<Ap
      * Dagger2 App Component.
      */
     private ApplicationComponent applicationComponent;
+
+
 
     @Override
     public void onCreate() {
@@ -67,5 +70,13 @@ public class FlaredownApplication extends Application implements HasComponent<Ap
      */
     public static String getStringResource(@StringRes int resId) {
         return instance.getString(resId);
+    }
+
+    /**
+     * Get the Application Instance.
+     * @return The application instance.
+     */
+    public static FlaredownApplication getInstance() {
+        return instance;
     }
 }

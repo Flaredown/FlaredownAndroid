@@ -20,14 +20,24 @@ public class PreferenceKeys {
     //public static final String P_USER_EMAIL = "user_email";
     //public static final String P_AUTH_TOKEN = "auth_token";
 
+    @Deprecated
     public static final String SP_Av2_USER_TOKEN = "APIv2User[token]";
+    @Deprecated
     public static final String SP_Av2_USER_EMAIL = "APIv2User[email]";
+    @Deprecated
     public static final String SP_Av2_USER_ID = "APIv2User[id]";
+    @Deprecated
     public static final String SP_Av2_SESSION_ID = "APIv2User[session_id]";
+    @Deprecated
     public static final String SP_Av2_CREATED_AT = "APIv2User[created_at]";
+    @Deprecated
     public static final String SP_Av2_UPDATED_AT = "APIv2User[updated_at]";
 
     public static final String USER_SESSION = "USER_SESSION";
+
+
+
+    public static final String USER_SESSION_JSON = "USER_SESSION_JSON";
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);

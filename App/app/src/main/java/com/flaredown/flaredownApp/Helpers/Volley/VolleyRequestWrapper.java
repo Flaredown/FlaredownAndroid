@@ -1,5 +1,7 @@
 package com.flaredown.flaredownApp.Helpers.Volley;
 
+import android.support.annotation.Nullable;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyLog;
